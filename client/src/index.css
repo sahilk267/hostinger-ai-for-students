@@ -781,6 +781,8 @@ h1 span, h2 em { color: var(--evergreen); font-style: italic; font-weight: 500; 
 .explorer-mission-number { color: #c7bca9; font: 600 26px "Fraunces", serif; }
 .explorer-mission-card > small { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; color: var(--evergreen); font-size: 10px; font-weight: 800; }
 .explorer-mission-card > small svg { position: static; }
+.explorer-facilitator-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--evergreen); font-size: 11px; font-weight: 800; text-decoration: none; }
+.explorer-facilitator-link:focus-visible { outline: 2px solid var(--saffron); outline-offset: 3px; }
 .explorer-method-note { display: flex; gap: 12px; margin-top: 24px; padding: 17px; color: var(--evergreen); background: var(--sage); }
 .explorer-method-note svg { flex: 0 0 auto; margin-top: 1px; color: #a96e18; }
 .explorer-method-note strong { font: 600 18px "Fraunces", serif; }

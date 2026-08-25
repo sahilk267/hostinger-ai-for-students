@@ -124,6 +124,7 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(reportSource).toContain("not a psychological assessment, school grade, IQ score or prediction of a future career");
     expect(reportSource).toContain("conversation starter");
     expect(pageSource).toContain("Private by default");
+    expect(pageSource).toContain('href="/explorer/pilot-review"');
     expect(routerSource).toContain('path="/explorer"');
     for (const prohibited of EXPLORER_PROHIBITED_OUTPUTS) expect(prohibited.length).toBeGreaterThan(0);
     expect(pageSource.toLowerCase()).not.toContain("your child will become");
