@@ -8,6 +8,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { sdk } from "./_core/sdk";
+import { invokeLLM } from "./_core/llm";
 import { sendAuthenticationCode, sendContactMessage } from "./mail";
 import { AUTH_EMAIL_CODE_COOKIE, canRequestEmailCode, clearEmailCodeChallenge, createEmailCodeChallenge, localEmailOpenId, normalizeEmail, verifyEmailCode } from "./authEmail";
 
@@ -58,6 +59,72 @@ export const appRouter = router({
       return {
         success: true,
       } as const;
+    }),
+  }),
+  explorer: router({
+    profiles: protectedProcedure.query(({ ctx }) => db.listExplorerProfilesForUser(ctx.user.id)),
+    createProfile: protectedProcedure.input(z.object({
+      displayName: z.string().trim().min(1).max(80),
+      ageBand: z.enum(["5-7", "8-10", "11-13", "14-17"]),
+      language: z.string().trim().min(2).max(32).default("en"),
+      consentVersion: z.literal("explorer-consent-v1"),
+    })).mutation(({ ctx, input }) => db.createExplorerProfile({ userId: ctx.user.id, ...input })),
+    saveAttempt: protectedProcedure.input(z.object({
+      profileId: z.number().int().positive(),
+      missionId: z.string().trim().min(1).max(80),
+      attemptNumber: z.number().int().min(1).max(20),
+      difficulty: z.enum(["supported", "standard", "stretch"]),
+      language: z.string().trim().min(2).max(32).default("en"),
+      accessibilityMode: z.string().trim().min(1).max(64).default("standard"),
+      evidenceJson: z.string().min(1).max(12000),
+      observationJson: z.string().min(1).max(4000),
+      startedAt: z.date(),
+    })).mutation(({ ctx, input }) => db.saveExplorerAttempt({ userId: ctx.user.id, ...input })),
+    deleteProfile: protectedProcedure.input(z.object({ profileId: z.number().int().positive() })).mutation(async ({ ctx, input }) => { await db.softDeleteExplorerProfile(ctx.user.id, input.profileId); return { success: true as const }; }),
+    feedback: protectedProcedure.input(z.object({
+      ageBand: z.enum(["5-7", "8-10", "11-13", "14-17"]),
+      skill: z.enum(["planning", "evidence", "creativity", "explanation", "flexibility", "reflection"]),
+      objective: z.string().trim().min(1).max(500),
+      rubric: z.array(z.string().trim().min(1).max(180)).min(3).max(5),
+      evidenceJson: z.string().trim().min(1).max(6000),
+    })).mutation(async ({ input }) => {
+      try {
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: "You are a cautious learning coach. Return JSON only. Comment on the submitted practice evidence, not the child as a person. Never diagnose, score IQ, infer personality/disability/mental health, rank children, or predict a career. Use age-appropriate language. Say when the evidence is too limited. Recommend one small next experiment and one reflection question. Do not repeat private details from the evidence." },
+            { role: "user", content: JSON.stringify({ ageBand: input.ageBand, skill: input.skill, objective: input.objective, rubric: input.rubric, evidence: input.evidenceJson }) },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "explorer_practice_feedback",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  encouragement: { type: "string", maxLength: 280 },
+                  nextExperiment: { type: "string", maxLength: 280 },
+                  reflectionQuestion: { type: "string", maxLength: 220 },
+                  limitation: { type: "string", maxLength: 220 },
+                },
+                required: ["encouragement", "nextExperiment", "reflectionQuestion", "limitation"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+        const content = response.choices?.[0]?.message?.content;
+        if (typeof content !== "string") throw new Error("Feedback response was empty");
+        const parsed = JSON.parse(content) as Record<string, unknown>;
+        return {
+          encouragement: String(parsed.encouragement || "You showed your thinking in the evidence you shared."),
+          nextExperiment: String(parsed.nextExperiment || "Try the same skill in a new situation."),
+          reflectionQuestion: String(parsed.reflectionQuestion || "What would you keep or change next time?"),
+          limitation: String(parsed.limitation || "This is feedback on one practice attempt, not a label or prediction."),
+        };
+      } catch {
+        throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "AI feedback is temporarily unavailable; your saved practice feedback remains available." });
+      }
     }),
   }),
   learning: router({

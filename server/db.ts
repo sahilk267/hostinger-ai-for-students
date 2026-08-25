@@ -1,6 +1,6 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, learningProgress, users } from "../drizzle/schema";
+import { InsertUser, explorerAttempts, explorerProfiles, learningProgress, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -134,5 +134,62 @@ export async function deleteUserAccount(userId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
   await db.delete(users).where(eq(users.id, userId));
+}
+
+export async function listExplorerProfilesForUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(explorerProfiles).where(and(eq(explorerProfiles.userId, userId), isNull(explorerProfiles.deletedAt)));
+}
+
+export async function createExplorerProfile(input: {
+  userId: number;
+  displayName: string;
+  ageBand: "5-7" | "8-10" | "11-13" | "14-17";
+  language: string;
+  consentVersion: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const now = new Date();
+  const [created] = await db.insert(explorerProfiles).values({ ...input, consentAt: now });
+  return { id: Number(created.insertId), ...input, consentAt: now };
+}
+
+export async function saveExplorerAttempt(input: {
+  userId: number;
+  profileId: number;
+  missionId: string;
+  attemptNumber: number;
+  difficulty: string;
+  language: string;
+  accessibilityMode: string;
+  evidenceJson: string;
+  observationJson: string;
+  startedAt: Date;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const profile = await db.select().from(explorerProfiles).where(and(eq(explorerProfiles.id, input.profileId), eq(explorerProfiles.userId, input.userId), isNull(explorerProfiles.deletedAt))).limit(1);
+  if (!profile[0]) throw new Error("Explorer profile not found");
+  const [created] = await db.insert(explorerAttempts).values({
+    profileId: input.profileId,
+    missionId: input.missionId,
+    attemptNumber: input.attemptNumber,
+    difficulty: input.difficulty,
+    language: input.language,
+    accessibilityMode: input.accessibilityMode,
+    evidenceJson: input.evidenceJson,
+    observationJson: input.observationJson,
+    startedAt: input.startedAt,
+    completedAt: new Date(),
+  });
+  return { id: Number(created.insertId), missionId: input.missionId, completedAt: new Date() };
+}
+
+export async function softDeleteExplorerProfile(userId: number, profileId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.update(explorerProfiles).set({ deletedAt: new Date() }).where(and(eq(explorerProfiles.id, profileId), eq(explorerProfiles.userId, userId)));
 }
 

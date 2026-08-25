@@ -14,6 +14,8 @@ import TopicsPage from "./pages/TopicsPage";
 import ContactPage from "./pages/ContactPage";
 import MissionPage from "./pages/MissionPage";
 import JourneyPage from "./pages/JourneyPage";
+import ExplorerPage from "./pages/ExplorerPage";
+import ExplorerReportPage from "./pages/ExplorerReportPage";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -22,6 +24,8 @@ function Router() {
       <Route path="/play" component={GamePage} />
       <Route path="/mission" component={MissionPage} />
       <Route path="/journey" component={JourneyPage} />
+      <Route path="/explorer" component={ExplorerPage} />
+      <Route path="/explorer/report" component={ExplorerReportPage} />
       <Route path="/progress" component={ProgressPage} />
       <Route path="/certificate" component={CertificatePage} />
       <Route path="/account" component={AccountPage} />

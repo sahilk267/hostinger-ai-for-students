@@ -414,3 +414,16 @@
 - [x] Define unit, integration, accessibility, fairness, safety, content and human-evidence test gates.
 - [x] Define launch metrics, ethical success criteria, failure thresholds and go/no-go gates.
 - [x] Deliver the complete implementation blueprint and recommended phased build order.
+
+## AI Explorer Lab implementation execution
+
+- [x] Freeze governance copy, age-band contracts, consent boundaries and prohibited-output rules.
+- [x] Author six pilot missions for 5–7, 8–10, 11–13 and 14–17 with reviewed objectives and evidence contracts.
+- [x] Build the deterministic mission state machine, evidence validation, rubric feedback and revision loop.
+- [x] Add safe guest storage and parent-controlled authenticated profile persistence without breaking existing progress.
+- [ ] Add Explorer Portfolio, parent report, skill stamps and privacy-safe revocable share cards.
+- [x] Add constrained AI feedback only after deterministic fallback and output safety validation are complete.
+- [ ] Run human pilot review and revise content only from real evidence.
+- [ ] Integrate approved Explorer missions into the 30-day Journey without breaking existing users.
+- [ ] Complete automated, accessibility, fairness, privacy, content and deployment validation.
+- [ ] Save release checkpoint and push the validated implementation to the Hostinger repository.

@@ -42,3 +42,41 @@ export const learningProgress = mysqlTable("learningProgress", {
 
 export type LearningProgress = typeof learningProgress.$inferSelect;
 export type InsertLearningProgress = typeof learningProgress.$inferInsert;
+
+export const explorerProfiles = mysqlTable("explorerProfiles", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  displayName: varchar("displayName", { length: 80 }).notNull(),
+  ageBand: mysqlEnum("ageBand", ["5-7", "8-10", "11-13", "14-17"]).notNull(),
+  language: varchar("language", { length: 32 }).default("en").notNull(),
+  consentVersion: varchar("consentVersion", { length: 32 }).notNull(),
+  consentAt: timestamp("consentAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  deletedAt: timestamp("deletedAt"),
+}, (table) => ({
+  userDisplayNameUnique: uniqueIndex("explorerProfiles_user_displayName_unique").on(table.userId, table.displayName),
+}));
+
+export type ExplorerProfile = typeof explorerProfiles.$inferSelect;
+export type InsertExplorerProfile = typeof explorerProfiles.$inferInsert;
+
+export const explorerAttempts = mysqlTable("explorerAttempts", {
+  id: int("id").autoincrement().primaryKey(),
+  profileId: int("profileId").notNull().references(() => explorerProfiles.id, { onDelete: "cascade" }),
+  missionId: varchar("missionId", { length: 80 }).notNull(),
+  attemptNumber: int("attemptNumber").default(1).notNull(),
+  difficulty: varchar("difficulty", { length: 24 }).default("standard").notNull(),
+  language: varchar("language", { length: 32 }).default("en").notNull(),
+  accessibilityMode: varchar("accessibilityMode", { length: 64 }).default("standard").notNull(),
+  evidenceJson: text("evidenceJson").notNull(),
+  observationJson: text("observationJson").notNull(),
+  startedAt: timestamp("startedAt").notNull(),
+  completedAt: timestamp("completedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  profileMissionUnique: uniqueIndex("explorerAttempts_profile_mission_unique").on(table.profileId, table.missionId, table.attemptNumber),
+}));
+
+export type ExplorerAttempt = typeof explorerAttempts.$inferSelect;
+export type InsertExplorerAttempt = typeof explorerAttempts.$inferInsert;

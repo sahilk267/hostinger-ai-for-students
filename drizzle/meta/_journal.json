@@ -15,6 +15,13 @@
       "when": 1787515357456,
       "tag": "0001_burly_romulus",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1787691092279,
+      "tag": "0002_sad_kitty_pryde",
+      "breakpoints": true
     }
   ]
 }
