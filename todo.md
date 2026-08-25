@@ -360,3 +360,14 @@
 - [x] Add repeat-use hooks through saved missions, progress and shareable outcomes without fake social proof.
 - [x] Rework homepage hierarchy and calls to action around the new product loop.
 - [x] Validate the new experience on mobile and desktop with automated tests and a production build.
+
+## 30-day AI Skill Journey
+
+- [x] Audit the current games, progress dashboard, certificate and share-card flows for reuse.
+- [x] Define 30 daily milestones with a coherent skill arc and real-world outcomes.
+- [x] Enforce one milestone per day with a clear next-day unlock rule and timezone-safe date handling.
+- [x] Add a journey dashboard showing today’s mission, future locked days, completed proof and return cue.
+- [x] Add proud-feeling milestone cards/certificates that are truthful, personal and easy to share.
+- [x] Add streak/reward feedback without fake rankings, fake testimonials or inflated claims.
+- [x] Add regression tests for day-one access, next-day lock, completion and share output.
+- [x] Verify the journey on desktop and mobile, save a checkpoint and push the update to Hostinger GitHub.

@@ -62,7 +62,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function Header() {
   const [open, setOpen] = useState(false);
-  const navItems = ["Learn AI", "Study with AI", "Prompts", "Tools", "Career"];
+  const navItems = ["Learn AI", "Study with AI", "30-day Journey", "Prompts", "Tools", "Career"];
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -129,7 +129,7 @@ export default function Home() {
               <p className="hero-lede">A clear, useful place for students and curious learners to understand AI, build better habits and get unstuck—without handing over the work that makes learning matter.</p>
               <div className="hero-actions">
                 <a href="/mission" className="button button--primary">Solve a real task <ArrowUpRight size={16} /></a>
-                <a href="#prompts" className="text-link">Browse prompts <ChevronRight size={16} /></a><a href="/topics" className="text-link">Explore 120 topics <ChevronRight size={16} /></a>
+                <a href="#prompts" className="text-link">Browse prompts <ChevronRight size={16} /></a><a href="/journey" className="text-link">Start 30-day journey <ChevronRight size={16} /></a>
               </div>
               <div className="hero-note"><span className="note-pin" /> No hype. No shortcuts. Just useful next steps.</div>
             </div>
@@ -140,7 +140,7 @@ export default function Home() {
               </div>
               <div className="toolkit-stack" aria-label="Quick learning paths">
                 <div className="stack-heading"><span>Today's toolkit</span><Sparkles size={15} /></div>
-                {toolkit.map(({ icon: Icon, label, copy, color }, index) => <a href={index === 1 ? "/play" : "#learn-ai"} className={`toolkit-row toolkit-row--${color}`} key={label}><span className="toolkit-icon"><Icon size={17} /></span><span><strong>{label}</strong><small>{copy}</small></span><ArrowUpRight size={16} /></a>)}
+                {toolkit.map(({ icon: Icon, label, copy, color }, index) => <a href={index === 1 ? "/journey" : "#learn-ai"} className={`toolkit-row toolkit-row--${color}`} key={label}><span className="toolkit-icon"><Icon size={17} /></span><span><strong>{label}</strong><small>{copy}</small></span><ArrowUpRight size={16} /></a>)}
               </div>
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function Home() {
                 ["01", "I want to understand AI", "Plain-language lessons for the curious beginner", "Learn the essentials"],
                 ["02", "I want to study better", "Prompts and workflows that protect your thinking", "Explore study tools"],
                 ["03", "I want to get career-ready", "Practical help for CVs, interviews and new skills", "Build your edge"],
-              ].map(([num, title, copy, cta]) => <a className="path-row" href={num === "02" ? "/play" : "#prompts"} key={num}><span className="path-number">{num}</span><span className="path-content"><strong>{title}</strong><small>{copy}</small></span><span className="path-cta">{cta} <ArrowUpRight size={15} /></span></a>)}
+              ].map(([num, title, copy, cta]) => <a className="path-row" href={num === "02" ? "/journey" : "#prompts"} key={num}><span className="path-number">{num}</span><span className="path-content"><strong>{title}</strong><small>{copy}</small></span><span className="path-cta">{cta} <ArrowUpRight size={15} /></span></a>)}
             </div>
           </div>
         </section>
