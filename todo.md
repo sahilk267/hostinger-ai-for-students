@@ -454,5 +454,5 @@
 - [ ] Move reading-based multiple-choice questions to the final stage and make typing optional.
 - [x] Add language switching, audio/read-aloud affordances and icon-led instructions where appropriate.
 - [ ] Update evidence and parent-report wording to describe observed practice, not IQ, mindset or destiny.
-- [ ] Test comprehension, locale fallback, answer fairness, keyboard/mobile accessibility and responsive layouts.
-- [ ] Save a checkpoint and push the redesigned Explorer source after validation.
+- [x] Test comprehension, locale fallback, answer fairness, keyboard/mobile accessibility and responsive layouts.
+- [x] Save a checkpoint and push the redesigned Explorer source after validation.

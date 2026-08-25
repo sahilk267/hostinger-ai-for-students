@@ -277,7 +277,7 @@ export default function ExplorerPage() {
 
         {!ageBand ? (
           <section className="explorer-setup" aria-labelledby="explorer-setup-heading">
-            <div className="explorer-section-heading"><span className="mission-section-label">STEP 01 / SET UP</span><h2 id="explorer-setup-heading">Who is exploring today?</h2><p>Choose an age band so the story, reading load and task length fit the learner. Age is used for design—not to rank ability.</p></div>
+            <div className="explorer-section-heading"><span className="mission-section-label">STEP 01 / SET UP</span><h2 id="explorer-setup-heading">{copy.setupTitle}</h2><p>{copy.setupHint} Age is used for design—not to rank ability.</p></div>
             <div className="explorer-age-grid">
               {EXPLORER_AGE_BANDS.map((band) => (
                 <button className="explorer-age-card" type="button" key={band.id} onClick={() => chooseAgeBand(band.id)}>
@@ -289,7 +289,7 @@ export default function ExplorerPage() {
           </section>
         ) : !mission ? (
           <section className="explorer-lab" aria-labelledby="explorer-missions-heading">
-            <div className="explorer-lab-top"><div><span className="mission-section-label">STEP 02 / CHOOSE A MISSION</span><h2 id="explorer-missions-heading">Six ways to notice how you learn.</h2></div><button type="button" className="explorer-change-band" onClick={() => setAgeBand(null)}>Change age band</button></div>
+            <div className="explorer-lab-top"><div><span className="mission-section-label">STEP 02 / CHOOSE A MISSION</span><h2 id="explorer-missions-heading">{copy.missionPickerTitle}</h2></div><button type="button" className="explorer-change-band" onClick={() => setAgeBand(null)}>Change age band</button></div>
             <div className="explorer-progress-strip"><div><strong>{completedCount} / 6</strong><span>missions completed</span></div><div className="explorer-progress-track"><span style={{ width: `${(completedCount / 6) * 100}%` }} /></div><p>Complete several different missions before treating any pattern as meaningful.</p></div>
             {isAuthenticated && !profileId ? <div className="explorer-account-save"><div><span className="mission-section-label">OPTIONAL / PARENT SAVE</span><strong>Keep this lab across devices.</strong><p>Create one parent-controlled profile for this age band. Your child can still play as a guest.</p></div><div className="explorer-account-fields"><label><span>Child display name</span><input value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="A nickname, not a full name" maxLength={80} /></label><label className="explorer-consent-check"><input type="checkbox" checked={consentConfirmed} onChange={(event) => setConsentConfirmed(event.target.checked)} /><span>I am the parent/guardian and consent to saving this learning profile.</span></label><button type="button" className="explorer-save-profile" onClick={saveProfile} disabled={createProfile.isPending}>Save parent profile <ArrowRight size={15} /></button></div></div> : !isAuthenticated ? <div className="explorer-guest-save"><span>Playing as a guest? Evidence stays on this device.</span><LocalAuthDialog label="Sign in to save this lab" className="text-link" /></div> : <div className="explorer-guest-save"><Check size={15} /> Parent profile connected; completed evidence can sync.</div>}
             <div className="explorer-mission-grid">

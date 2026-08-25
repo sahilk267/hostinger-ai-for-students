@@ -20,6 +20,9 @@ export const explorerFieldPlaceholders: Record<ExplorerLocale, Record<string, st
 
 export const explorerCopy: Record<ExplorerLocale, {
   chooseLanguage: string;
+  setupTitle: string;
+  setupHint: string;
+  missionPickerTitle: string;
   playFirst: string;
   playFirstHint: string;
   listen: string;
@@ -35,6 +38,10 @@ export const explorerCopy: Record<ExplorerLocale, {
 }> = {
   hinglish: {
     chooseLanguage: "Language choose karo",
+    setupTitle: "Aaj kaun explore karega?",
+    setupHint: "Age band choose karo. Isse game ka size aur reading load learner ke liye fit rahega.",
+    missionPickerTitle: "Apna mission choose karo",
+
     playFirst: "Pehle khelo, baad mein batao",
     playFirstHint: "Yahan reading ya typing zaroori nahi. Picture-style options mein se apna move choose karo.",
     listen: "Suno",
@@ -50,6 +57,10 @@ export const explorerCopy: Record<ExplorerLocale, {
   },
   hi: {
     chooseLanguage: "भाषा चुनें",
+    setupTitle: "आज कौन explore करेगा?",
+    setupHint: "उम्र का समूह चुनें। इससे खेल और पढ़ने की मात्रा बच्चे के लिए सही रहेगी।",
+    missionPickerTitle: "अपना मिशन चुनें",
+
     playFirst: "पहले खेलें, बाद में बताएं",
     playFirstHint: "यहाँ पढ़ना या टाइप करना ज़रूरी नहीं है। चित्र-जैसे विकल्पों में से अपना कदम चुनें।",
     listen: "सुनें",
@@ -65,6 +76,10 @@ export const explorerCopy: Record<ExplorerLocale, {
   },
   en: {
     chooseLanguage: "Choose language",
+    setupTitle: "Who is exploring today?",
+    setupHint: "Choose an age band so the game size and reading load fit the learner.",
+    missionPickerTitle: "Choose a mission",
+
     playFirst: "Play first, explain later",
     playFirstHint: "Reading and typing are not required here. Choose a picture-style move first.",
     listen: "Listen",
