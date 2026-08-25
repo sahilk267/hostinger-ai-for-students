@@ -435,3 +435,24 @@
 - [x] Add automated contracts for report privacy, public share safety, protected procedures and Journey compatibility.
 - [x] Run TypeScript, targeted tests, full tests with external-gate status, production build and desktop/mobile visual QA.
 - [x] Push validated source to the Hostinger repository and document remaining human/production gates.
+
+## Pilot execution phase
+
+- [ ] Audit the existing facilitator checklist and pilot entry points for missing age-band, consent and observation instructions.
+- [ ] Add a privacy-safe structured pilot feedback form or capture surface without storing child identity or raw sensitive evidence.
+- [ ] Add review-status tracking so mission changes remain evidence-linked and independently approvable.
+- [ ] Add automated contracts for consent copy, feedback boundaries and no-diagnosis/no-career-prediction language.
+- [ ] Run targeted and full validation plus desktop/mobile QA for the pilot workflow.
+- [ ] Document the human pilot gate and prepare the minimum anonymized feedback template for the user.
+
+## Play-first multilingual Explorer redesign
+
+- [x] Audit the current Explorer screens for reading, English and typing dependencies.
+- [x] Define four age-band interaction contracts and accessible visual/audio/choice rules.
+- [x] Add India-first Hinglish, Hindi and English locale content with worldwide English fallback.
+- [ ] Build visual memory, logic, pattern, observation, planning and flexible-thinking games before Q&A.
+- [ ] Move reading-based multiple-choice questions to the final stage and make typing optional.
+- [x] Add language switching, audio/read-aloud affordances and icon-led instructions where appropriate.
+- [ ] Update evidence and parent-report wording to describe observed practice, not IQ, mindset or destiny.
+- [ ] Test comprehension, locale fallback, answer fairness, keyboard/mobile accessibility and responsive layouts.
+- [ ] Save a checkpoint and push the redesigned Explorer source after validation.

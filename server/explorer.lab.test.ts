@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { EXPLORER_AGE_BANDS, EXPLORER_PILOT_MISSIONS, EXPLORER_PROHIBITED_OUTPUTS } from "../client/src/data/explorerLab";
+import { EXPLORER_LOCALES, explorerCopy, quickPlayOptions } from "../client/src/data/explorerI18n";
 
 const pageSource = readFileSync(resolve(process.cwd(), "client/src/pages/ExplorerPage.tsx"), "utf8");
 const routerSource = readFileSync(resolve(process.cwd(), "client/src/App.tsx"), "utf8");
@@ -65,6 +66,20 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(shareSource).toContain("window.location.pathname.split(\"/\")");
     expect(shareSource).toContain("no name, age, raw answer or prediction");
     expect(shareSource).not.toContain("evidenceJson");
+  });
+
+  it("supports India-first Hinglish, Hindi and worldwide English with play-first options", () => {
+    expect(EXPLORER_LOCALES.map((item) => item.id)).toEqual(["hinglish", "hi", "en"]);
+    expect(explorerCopy.hinglish.playFirst).toContain("Pehle khelo");
+    expect(explorerCopy.hinglish.optionalWriting).toContain("optional");
+    for (const kind of ["choice-observatory", "source-hunt", "build-studio", "explain-it", "strategy-switch", "reflect-improve"]) {
+      expect(quickPlayOptions[kind]).toHaveLength(3);
+      expect(quickPlayOptions[kind].every((option) => option.label.hinglish && option.label.hi && option.label.en)).toBe(true);
+    }
+    expect(pageSource).toContain("STEP 03 / PLAY FIRST");
+    expect(pageSource).toContain("copy.optionalWriting");
+    expect(pageSource).toContain("speakExplorerText");
+    expect(pageSource).toContain("chooseReason");
   });
 
   it("exposes the safety boundary and does not create a career-prediction route", () => {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, ClipboardCheck, LockKeyhole, Share2, Sparkles, Trophy } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ClipboardCheck, Ear, LockKeyhole, Share2, Sparkles, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import AuthControls from "@/components/AuthControls";
 import LocalAuthDialog from "@/components/LocalAuthDialog";
@@ -13,6 +13,7 @@ import {
   type ExplorerEvidenceField,
   type ExplorerMission,
 } from "@/data/explorerLab";
+import { EXPLORER_LOCALES, explorerCopy, explorerFieldLabels, explorerFieldPlaceholders, getExplorerLocale, quickPlayOptions, speakExplorerText, type ExplorerLocale } from "@/data/explorerI18n";
 
 const STORAGE_KEY = "aifs-explorer-pilot-v1";
 const ATTEMPT_KEY = "aifs-explorer-attempt-counts-v1";
@@ -68,6 +69,11 @@ const copyShareText = async (mission: ExplorerMission) => {
 };
 
 export default function ExplorerPage() {
+  const [locale, setLocale] = useState<ExplorerLocale>(() => {
+    const stored = localStorage.getItem("aifs-explorer-locale");
+    return stored === "hinglish" || stored === "hi" || stored === "en" ? stored : getExplorerLocale();
+  });
+  const copy = explorerCopy[locale];
   const [ageBand, setAgeBand] = useState<ExplorerAgeBand | null>(() => {
     const stored = localStorage.getItem("aifs-explorer-age-band");
     return stored === "5-7" || stored === "8-10" || stored === "11-13" || stored === "14-17" ? stored : null;
@@ -79,6 +85,9 @@ export default function ExplorerPage() {
   const [confirmedWork, setConfirmedWork] = useState(false);
   const [confirmedReview, setConfirmedReview] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [playChoice, setPlayChoice] = useState<string | null>(null);
+  const [playReason, setPlayReason] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [profileId, setProfileId] = useState<number | null>(null);
   const [profileName, setProfileName] = useState("");
   const [consentConfirmed, setConsentConfirmed] = useState(false);
@@ -95,6 +104,8 @@ export default function ExplorerPage() {
     [ageBand],
   );
   const mission = missions.find((item) => item.id === selectedMissionId) ?? null;
+  const playOptions = mission ? (quickPlayOptions[mission.kind] ?? quickPlayOptions["choice-observatory"]) : [];
+  const playDone = Boolean(playChoice && playReason);
   const completedCount = missions.filter((item) => records[item.id]).length;
   const selectedRecord = mission ? records[mission.id] : undefined;
   const accountProfile = profileQuery.data?.find((item) => item.ageBand === ageBand);
@@ -120,15 +131,52 @@ export default function ExplorerPage() {
     if (!mission) return;
     const saved = records[mission.id];
     setEvidence(saved?.evidence ?? {});
+    setPlayChoice(saved?.evidence?.choice ?? null);
+    setPlayReason(saved?.evidence?.reason ?? null);
     setConfirmedWork(Boolean(saved));
     setConfirmedReview(Boolean(saved));
     setShowFeedback(Boolean(saved));
   }, [mission?.id, records]);
 
+  const chooseLocale = (nextLocale: ExplorerLocale) => {
+    setLocale(nextLocale);
+    localStorage.setItem("aifs-explorer-locale", nextLocale);
+  };
+
+  const readAloud = (text: string) => {
+    setIsSpeaking(true);
+    speakExplorerText(text, locale);
+    window.setTimeout(() => setIsSpeaking(false), 2200);
+  };
+
+  const choosePlay = (option: { icon: string; label: Record<ExplorerLocale, string>; evidence: Record<ExplorerLocale, string> }) => {
+    setPlayChoice(option.label[locale]);
+    setEvidence((previous) => ({
+      ...previous,
+      choice: option.evidence[locale],
+      artifact: previous.artifact || option.evidence[locale],
+      reflection: previous.reflection || copy.reasonOptions[2],
+      revision: previous.revision || option.evidence[locale],
+    }));
+    setConfirmedWork(false);
+    setConfirmedReview(false);
+    setShowFeedback(false);
+  };
+
+  const chooseReason = (reason: string) => {
+    setPlayReason(reason);
+    setEvidence((previous) => ({ ...previous, reason }));
+    setConfirmedWork(false);
+    setConfirmedReview(false);
+    setShowFeedback(false);
+  };
+
   const chooseAgeBand = (nextBand: ExplorerAgeBand) => {
     setAgeBand(nextBand);
     localStorage.setItem("aifs-explorer-age-band", nextBand);
     setSelectedMissionId(null);
+    setPlayChoice(null);
+    setPlayReason(null);
   };
 
   const updateEvidence = (field: ExplorerEvidenceField, value: string) => {
@@ -142,7 +190,7 @@ export default function ExplorerPage() {
       toast.error("Add a display name and confirm parent consent before saving");
       return;
     }
-    createProfile.mutate({ displayName: profileName.trim(), ageBand, language: "en", consentVersion: "explorer-consent-v1" }, {
+    createProfile.mutate({ displayName: profileName.trim(), ageBand, language: locale, consentVersion: "explorer-consent-v1" }, {
       onSuccess: (profile) => {
         setProfileId(profile.id);
         toast.success("Explorer profile saved to your account");
@@ -156,6 +204,10 @@ export default function ExplorerPage() {
     if (!mission) return;
     const missing = mission.evidenceFields.filter((field) => !evidence[field]?.trim());
     const totalCharacters = Object.values(evidence).join(" ").trim().length;
+    if (!playDone) {
+      toast.error(copy.chooseMove + " and one reason before completing");
+      return;
+    }
     if (missing.length > 0) {
       toast.error("Show your work in every required field before completing this mission");
       return;
@@ -179,7 +231,7 @@ export default function ExplorerPage() {
     setRecords(nextRecords);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(nextRecords));
     if (profileId) {
-      saveAttempt.mutate({ profileId, missionId: mission.id, attemptNumber, difficulty: "standard", language: "en", accessibilityMode: "standard", evidenceJson: JSON.stringify(evidence), observationJson: JSON.stringify({ skill: mission.skill, rubric: mission.rubric }), startedAt: new Date() });
+      saveAttempt.mutate({ profileId, missionId: mission.id, attemptNumber, difficulty: "standard", language: locale, accessibilityMode: "standard", evidenceJson: JSON.stringify(evidence), observationJson: JSON.stringify({ skill: mission.skill, rubric: mission.rubric }), startedAt: new Date() });
       if (aiFeedbackRequested) {
         feedbackMutation.mutate({ ageBand: mission.ageBand, skill: mission.skill, objective: mission.objective, rubric: mission.rubric, evidenceJson: JSON.stringify(evidence) }, { onSuccess: setAiFeedback, onError: () => toast.error("AI coaching is unavailable; showing the practice feedback instead") });
       }
@@ -202,7 +254,7 @@ export default function ExplorerPage() {
   };
 
   return (
-    <div className="explorer-page">
+    <div className="explorer-page" lang={locale === "hi" ? "hi-IN" : locale === "hinglish" ? "en-IN" : "en"}>
       <header className="explorer-header">
         <a className="mission-brand" href="/"><img src={assetUrls.mark} alt="" /><span><strong>AI</strong> for <em>Students</em></span></a>
         <a className="mission-back" href="/"><ArrowLeft size={15} /> Back to the desk</a>
@@ -216,6 +268,11 @@ export default function ExplorerPage() {
             <p>Short, playful missions help learners make choices, explain thinking, revise ideas and build evidence of growth. This is an observation of practice—not a diagnosis or a prediction of who you will become.</p>
           </div>
           <div className="explorer-hero-note"><LockKeyhole size={18} /><strong>Private by default</strong><span>Your pilot evidence stays in this browser unless you choose to save or share it.</span></div>
+        </section>
+
+        <section className="explorer-language-bar" aria-label={copy.chooseLanguage}>
+          <span>{copy.chooseLanguage}</span>
+          <div>{EXPLORER_LOCALES.map((item) => <button key={item.id} type="button" aria-pressed={locale === item.id} className={locale === item.id ? "is-active" : ""} onClick={() => chooseLocale(item.id)}><strong>{item.label}</strong><small>{item.note}</small></button>)}</div>
         </section>
 
         {!ageBand ? (
@@ -247,6 +304,11 @@ export default function ExplorerPage() {
         ) : (
           <section className="explorer-mission-view" aria-labelledby="explorer-mission-heading">
             <div className="explorer-mission-view-head"><button type="button" className="explorer-inline-back" onClick={() => setSelectedMissionId(null)}><ArrowLeft size={15} /> All missions</button><span>{mission.ageBand} years · {mission.arc}</span></div>
+            <div className="explorer-play-first" aria-labelledby="explorer-play-heading">
+              <div className="explorer-play-copy"><span className="mission-section-label">STEP 03 / PLAY FIRST</span><h3 id="explorer-play-heading">{copy.playFirst}</h3><p>{copy.playFirstHint}</p><button type="button" className="explorer-listen" onClick={() => readAloud(`${mission.scenario}. ${mission.task}`)}><Ear size={16} /> {isSpeaking ? copy.listening : copy.listen}</button></div>
+              <div className="explorer-play-options"><span>{copy.chooseMove}</span><div>{playOptions.map((option) => <button key={option.label.en} type="button" className={playChoice === option.label[locale] ? "is-selected" : ""} onClick={() => choosePlay(option)}><b>{option.icon}</b><span>{option.label[locale]}</span></button>)}</div></div>
+              <div className="explorer-reason-options"><span>{copy.choiceSaved} · {copy.optionalWriting}</span><div>{copy.reasonOptions.map((reason) => <button key={reason} type="button" className={playReason === reason ? "is-selected" : ""} onClick={() => chooseReason(reason)}>{reason}</button>)}</div></div>
+            </div>
             <div className="explorer-mission-layout">
               <article className="explorer-challenge-card">
                 <span className="mission-section-label">{mission.kind.replaceAll("-", " ")}</span><h2 id="explorer-mission-heading">{mission.title}</h2><p className="explorer-objective"><strong>Practice goal:</strong> {mission.objective}</p><div className="explorer-scenario"><span>THE SCENARIO</span><p>{mission.scenario}</p><strong>Your challenge: {mission.task}</strong></div>
@@ -255,7 +317,7 @@ export default function ExplorerPage() {
               <div className="explorer-evidence-card">
                 <div className="explorer-evidence-head"><div><span className="mission-section-label">STEP 03 / SHOW YOUR WORK</span><h3>{selectedRecord ? "Your evidence is saved." : "What did you actually do?"}</h3></div>{selectedRecord && <Trophy size={22} />}</div>
                 <p className="explorer-evidence-intro">There is no perfect answer. Use your own words, a short description, a drawing title or a parent-supported explanation. Do not include private school, health or family details.</p>
-                <div className="explorer-fields">{mission.evidenceFields.map((field) => <label key={field}><span>{fieldLabels[field]} <b>*</b></span><textarea value={evidence[field] ?? ""} onChange={(event) => updateEvidence(field, event.target.value)} placeholder={fieldPlaceholders[field]} disabled={Boolean(selectedRecord)} /></label>)}</div>
+                <div className="explorer-fields"><p className="explorer-optional-note">{copy.answerLater} · {copy.optionalWriting}. Play choices already count as a first observation; use the fields below only if the learner wants to add more detail.</p>{mission.evidenceFields.map((field) => <label key={field}><span>{explorerFieldLabels[locale][field]} <b>*</b></span><textarea value={evidence[field] ?? ""} onChange={(event) => updateEvidence(field, event.target.value)} placeholder={explorerFieldPlaceholders[locale][field]} disabled={Boolean(selectedRecord)} /></label>)}</div>
                 <div className="explorer-confirmations"><label><input type="checkbox" checked={confirmedWork} onChange={(event) => setConfirmedWork(event.target.checked)} disabled={Boolean(selectedRecord)} /><span>I did the task, not just read the instructions.</span></label><label><input type="checkbox" checked={confirmedReview} onChange={(event) => setConfirmedReview(event.target.checked)} disabled={Boolean(selectedRecord)} /><span>I looked at my result and can explain one choice.</span></label>{isAuthenticated && profileId && <label><input type="checkbox" checked={aiFeedbackRequested} onChange={(event) => setAiFeedbackRequested(event.target.checked)} disabled={Boolean(selectedRecord)} /><span>Give me optional AI coaching on this attempt. It will not create a label or prediction.</span></label>}</div>
                 {showFeedback && <div className="explorer-feedback"><span><Check size={16} /> {aiFeedback ? "OPTIONAL AI COACHING" : "PRACTICE FEEDBACK"}</span><strong>{aiFeedback?.encouragement ?? mission.feedback.starter}</strong><p>{aiFeedback?.nextExperiment ?? mission.feedback.nextStep}</p>{aiFeedback && <p><strong>Reflect:</strong> {aiFeedback.reflectionQuestion}</p>}<small>{aiFeedback?.limitation ?? `Observed skill: ${mission.skill} · This is not a diagnosis or future prediction.`}</small></div>}
                 <div className="explorer-evidence-actions">{selectedRecord ? <><button type="button" className="explorer-reset" onClick={resetMission}>Try again</button><button type="button" className="explorer-share" onClick={() => copyShareText(mission)}><Share2 size={15} /> Share milestone</button></> : <button type="button" className="explorer-complete" onClick={completeMission}>Save evidence & complete <Check size={16} /></button>}</div>
