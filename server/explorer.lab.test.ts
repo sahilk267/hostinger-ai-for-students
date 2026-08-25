@@ -10,6 +10,7 @@ const routerSource = readFileSync(resolve(process.cwd(), "client/src/App.tsx"), 
 const serverRouterSource = readFileSync(resolve(process.cwd(), "server/routers.ts"), "utf8");
 const reportSource = readFileSync(resolve(process.cwd(), "client/src/pages/ExplorerReportPage.tsx"), "utf8");
 const shareSource = readFileSync(resolve(process.cwd(), "client/src/pages/ExplorerSharePage.tsx"), "utf8");
+const pilotReviewSource = readFileSync(resolve(process.cwd(), "client/src/pages/PilotReviewPage.tsx"), "utf8");
 
 describe("AI Explorer Lab pilot contract", () => {
   it("covers four age bands with six missions each", () => {
@@ -103,6 +104,19 @@ describe("AI Explorer Lab pilot contract", () => {
       expect(hindi.scenario.length).toBeGreaterThan(10);
     }
     expect(pageSource).toContain("getExplorerMissionCopy");
+  });
+
+  it("provides a privacy-safe anonymized facilitator review surface", () => {
+    expect(routerSource).toContain('path="/explorer/pilot-review"');
+    expect(pilotReviewSource).toContain('aifs-explorer-pilot-feedback-v1');
+    expect(pilotReviewSource).toContain("no identifying information or raw child evidence");
+    expect(pilotReviewSource).toContain("Do not include names or copied answers.");
+    expect(pilotReviewSource).toContain("Local-only notes");
+    expect(pilotReviewSource).toContain("moduleCounts");
+    expect(pilotReviewSource).toContain("facilitator approval pending");
+    expect(pilotReviewSource).toContain("required");
+    expect(pilotReviewSource.toLowerCase()).toContain("iq estimate");
+    expect(pilotReviewSource.toLowerCase()).toContain("not a diagnosis");
   });
 
   it("exposes the safety boundary and does not create a career-prediction route", () => {

@@ -22,3 +22,7 @@ The desktop `/explorer` view keeps the private-by-default notice, locale control
 ## Journey anchor integration QA
 
 The desktop `/journey` view shows Day 1 ready with the existing one-mission-today state and the new Explorer anchor is implemented within the action card. The `/explorer?mission=plan-rescue` entry remains readable and preserves private-by-default messaging and locale controls; the pilot mission is selected after an age band is chosen. No visual overflow was observed in the captured desktop flow.
+
+## Facilitator pilot-review route QA
+
+The desktop `/explorer/pilot-review` view clearly presents the pilot-only purpose, local-only storage boundary and structured session form. At 375px, the hero, privacy notice and form start remain readable with no horizontal overflow; the form stacks into a single column. The route is intentionally not evidence of child ability and remains a facilitator capture tool pending real anonymized sessions.

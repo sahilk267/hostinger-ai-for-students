@@ -438,12 +438,12 @@
 
 ## Pilot execution phase
 
-- [ ] Audit the existing facilitator checklist and pilot entry points for missing age-band, consent and observation instructions.
-- [ ] Add a privacy-safe structured pilot feedback form or capture surface without storing child identity or raw sensitive evidence.
-- [ ] Add review-status tracking so mission changes remain evidence-linked and independently approvable.
-- [ ] Add automated contracts for consent copy, feedback boundaries and no-diagnosis/no-career-prediction language.
-- [ ] Run targeted and full validation plus desktop/mobile QA for the pilot workflow.
-- [ ] Document the human pilot gate and prepare the minimum anonymized feedback template for the user.
+- [x] Audit the existing facilitator checklist and pilot entry points for missing age-band, consent and observation instructions.
+- [x] Add a privacy-safe structured pilot feedback form or capture surface without storing child identity or raw sensitive evidence.
+- [x] Add review-status tracking so mission changes remain evidence-linked; independent approval remains pending.
+- [x] Add automated contracts for consent copy, feedback boundaries and no-diagnosis/no-career-prediction language.
+- [x] Run targeted validation plus desktop/mobile QA for the pilot workflow; full suite remains blocked by the external Hostinger Mail API 403 gate.
+- [x] Document the human pilot gate and prepare the minimum anonymized feedback template for the user.
 
 ## Play-first multilingual Explorer redesign
 

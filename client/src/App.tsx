@@ -17,6 +17,7 @@ import JourneyPage from "./pages/JourneyPage";
 import ExplorerPage from "./pages/ExplorerPage";
 import ExplorerReportPage from "./pages/ExplorerReportPage";
 import ExplorerSharePage from "./pages/ExplorerSharePage";
+import PilotReviewPage from "./pages/PilotReviewPage";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -28,6 +29,7 @@ function Router() {
       <Route path="/explorer" component={ExplorerPage} />
       <Route path="/explorer/report" component={ExplorerReportPage} />
       <Route path="/explorer/share/:token" component={ExplorerSharePage} />
+      <Route path="/explorer/pilot-review" component={PilotReviewPage} />
       <Route path="/progress" component={ProgressPage} />
       <Route path="/certificate" component={CertificatePage} />
       <Route path="/account" component={AccountPage} />

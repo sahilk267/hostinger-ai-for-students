@@ -953,3 +953,46 @@ h1 span, h2 em { color: var(--evergreen); font-style: italic; font-weight: 500; 
 .explorer-visual-cards button strong { font-size:.9rem; }
 .explorer-visual-status { display:flex; align-items:center; gap:.4rem; min-height:1.2rem; margin:.75rem 0 0; font-size:.78rem; font-weight:800; }
 @media (max-width:520px) { .explorer-visual-game-head { display:block; } .explorer-visual-cards { grid-template-columns:1fr; } .explorer-visual-cards button { min-height:3.8rem; flex-direction:row; align-items:center; } }
+
+/* Explorer pilot review workspace */
+.pilot-review-page { min-height: 100vh; color: var(--ink); background: var(--paper); }
+.pilot-review-main { max-width: 1180px; margin: 0 auto; padding: 64px 40px 90px; }
+.pilot-review-hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 50px; align-items: end; padding: 20px 0 54px; border-bottom: 1px solid var(--line); }
+.pilot-review-hero h1 { margin: 17px 0 20px; max-width: 700px; font: 500 clamp(50px, 7vw, 92px)/.92 "Fraunces", serif; letter-spacing: -.055em; }
+.pilot-review-hero h1 em { color: var(--evergreen); font-style: italic; }
+.pilot-review-hero p { max-width: 650px; color: #655f55; font-size: 16px; line-height: 1.65; }
+.pilot-review-privacy { display: flex; gap: 13px; align-items: flex-start; padding: 22px; background: var(--sage); border-left: 4px solid var(--saffron); }
+.pilot-review-privacy strong, .pilot-review-privacy span { display: block; }
+.pilot-review-privacy strong { margin-bottom: 5px; font: 600 20px/1.1 "Fraunces", serif; }
+.pilot-review-privacy span { color: #536252; font-size: 12px; line-height: 1.55; }
+.pilot-review-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(250px, .8fr); gap: 24px; padding-top: 34px; }
+.pilot-review-form, .pilot-review-summary { padding: 28px; border: 1px solid var(--line); background: #fcfaf3; }
+.pilot-review-form { display: grid; gap: 19px; }
+.pilot-review-section-label { color: var(--evergreen); font-size: 10px; font-weight: 800; letter-spacing: .14em; }
+.pilot-review-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.pilot-review-form label { display: grid; gap: 7px; color: #4c594f; font-size: 12px; font-weight: 800; letter-spacing: .03em; }
+.pilot-review-form label span { color: #887d6e; font-size: 11px; font-weight: 500; letter-spacing: 0; }
+.pilot-review-form input, .pilot-review-form select, .pilot-review-form textarea { width: 100%; border: 1px solid #d7d0c1; border-radius: 0; padding: 12px; color: var(--ink); background: #fffdf7; font: 500 13px/1.4 "DM Sans", sans-serif; }
+.pilot-review-form textarea { min-height: 88px; resize: vertical; }
+.pilot-review-form input:focus-visible, .pilot-review-form select:focus-visible, .pilot-review-form textarea:focus-visible { outline: 2px solid var(--saffron); outline-offset: 2px; }
+.pilot-review-check { display: flex !important; grid-template-columns: auto 1fr; align-items: start; gap: 9px !important; font-weight: 600 !important; line-height: 1.45; }
+.pilot-review-check input { width: auto; margin-top: 2px; }
+.pilot-review-form .mission-button:disabled { cursor: not-allowed; opacity: .45; }
+.pilot-review-success { display: flex; align-items: center; gap: 7px; margin: 0; color: var(--evergreen); font-size: 12px; font-weight: 700; }
+.pilot-review-count { display: flex; align-items: baseline; gap: 10px; margin: 24px 0; }
+.pilot-review-count strong { color: var(--evergreen); font: 600 58px/.9 "Fraunces", serif; }
+.pilot-review-count span { color: #746b5e; font-size: 12px; }
+.pilot-review-empty { display: flex; gap: 9px; align-items: flex-start; color: #6e675c; font-size: 13px; line-height: 1.5; }
+.pilot-review-totals { display: grid; gap: 10px; }
+.pilot-review-totals div { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 9px; border-bottom: 1px solid var(--line); color: #6e675c; font-size: 12px; }
+.pilot-review-totals strong { color: var(--evergreen); }
+.pilot-review-boundary { margin-top: 34px; padding: 16px; background: #f4e8d2; border-left: 3px solid var(--saffron); }
+.pilot-review-boundary strong { color: #875427; font-size: 12px; }
+.pilot-review-boundary p { margin: 6px 0 0; color: #6f5d48; font-size: 12px; line-height: 1.55; }
+@media (max-width: 800px) { .pilot-review-main { padding: 48px 20px 70px; } .pilot-review-hero, .pilot-review-grid { grid-template-columns: 1fr; gap: 24px; } }
+@media (max-width: 560px) { .pilot-review-fields { grid-template-columns: 1fr; } .pilot-review-form, .pilot-review-summary { padding: 20px; } }
+.pilot-review-module-status { display: grid; gap: 9px; margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--line); }
+.pilot-review-module-status > strong { color: var(--evergreen); font-size: 12px; }
+.pilot-review-module-status > div { display: grid; gap: 2px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.pilot-review-module-status span { color: #625e56; font-size: 12px; font-weight: 700; }
+.pilot-review-module-status small { color: #8a7e70; font-size: 10px; line-height: 1.35; }
