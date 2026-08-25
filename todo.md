@@ -380,3 +380,12 @@
 - [x] Preserve one-per-local-day and sequential next-day unlock rules after evidence submission.
 - [x] Add tests for empty submission rejection, valid completion, completion persistence and locked-day behavior.
 - [x] Re-verify desktop/mobile UX, save a checkpoint and push the correction to Hostinger GitHub.
+
+## Research-backed product improvement study
+
+- [x] Define comparison criteria for usefulness, learning value, retention, shareability, trust and monetization.
+- [x] Research comparable AI learning products and document their strongest repeat-use mechanics.
+- [x] Research learning-science evidence for practice, feedback, mastery and daily progression.
+- [x] Research student needs, responsible-AI expectations and safe sharing constraints.
+- [x] Synthesize a prioritized product strategy for AI for Students with quick wins, major bets and anti-patterns.
+- [x] Deliver a concise research brief with source links and a recommended next build decision.
