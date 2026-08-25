@@ -71,7 +71,7 @@ function Header() {
           <span className="brand-type"><strong>AI</strong> for <em>Students</em></span>
         </a>
         <nav className={`desktop-nav ${open ? "is-open" : ""}`} aria-label="Primary navigation">
-          {navItems.map((item) => <a key={item} href={`#${item.toLowerCase().replaceAll(" ", "-")}`}>{item}</a>)}
+          {navItems.map((item) => <a key={item} href={item === "30-day Journey" ? "/journey" : `#${item.toLowerCase().replaceAll(" ", "-")}`}>{item}</a>)}
         </nav>
         <div className="header-actions">
           <a className="header-link" href="/progress">Your progress <ArrowUpRight size={14} /></a>
