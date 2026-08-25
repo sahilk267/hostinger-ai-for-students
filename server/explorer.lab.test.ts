@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { EXPLORER_AGE_BANDS, EXPLORER_PILOT_MISSIONS, EXPLORER_PROHIBITED_OUTPUTS } from "../client/src/data/explorerLab";
-import { EXPLORER_LOCALES, explorerCopy, quickPlayOptions } from "../client/src/data/explorerI18n";
+import { EXPLORER_LOCALES, explorerCopy, quickPlayOptions, visualModeCards, visualModeForKind, visualModeCopy } from "../client/src/data/explorerI18n";
 
 const pageSource = readFileSync(resolve(process.cwd(), "client/src/pages/ExplorerPage.tsx"), "utf8");
 const routerSource = readFileSync(resolve(process.cwd(), "client/src/App.tsx"), "utf8");
@@ -83,10 +83,20 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(pageSource).toContain("const playDone = Boolean(playChoice && playReason)");
     expect(pageSource).toContain("if (!playDone)");
     expect(pageSource).toContain("choice: option.evidence[locale]");
+    expect(pageSource).toContain("const visualDone = visualSelections.length >= visualMinimum");
+    expect(pageSource).toContain("if (!visualDone)");
+    expect(pageSource).toContain("visualSelections.join(\"|\")");
+    for (const kind of ["choice-observatory", "source-hunt", "build-studio", "explain-it", "strategy-switch", "reflect-improve"]) {
+      expect(visualModeForKind[kind]).toBeTruthy();
+      expect(visualModeCards[visualModeForKind[kind]]).toHaveLength(3);
+      expect(visualModeCopy[visualModeForKind[kind]].hinglish.instruction.length).toBeGreaterThan(10);
+    }
   });
 
   it("exposes the safety boundary and does not create a career-prediction route", () => {
     expect(pageSource).toContain("not a diagnosis or a prediction");
+    expect(reportSource).toContain("not a psychological assessment, school grade, IQ score or prediction of a future career");
+    expect(reportSource).toContain("conversation starter");
     expect(pageSource).toContain("Private by default");
     expect(routerSource).toContain('path="/explorer"');
     for (const prohibited of EXPLORER_PROHIBITED_OUTPUTS) expect(prohibited.length).toBeGreaterThan(0);

@@ -143,3 +143,56 @@ export function speakExplorerText(text: string, locale: ExplorerLocale): void {
   utterance.lang = locale === "hi" ? "hi-IN" : locale === "hinglish" ? "en-IN" : "en-US";
   window.speechSynthesis.speak(utterance);
 }
+
+export type ExplorerVisualMode = "sequence" | "clue-pick" | "idea-build" | "audience-match" | "rule-switch" | "change-spot";
+
+export const visualModeCopy: Record<ExplorerVisualMode, Record<ExplorerLocale, { label: string; instruction: string; done: string }>> = {
+  sequence: {
+    hinglish: { label: "Step order game", instruction: "Pehle kaunsa step? Do cards ko sahi order mein choose karo.", done: "Plan ke do steps choose ho gaye." },
+    hi: { label: "क्रम खेल", instruction: "पहले कौन सा कदम? दो कार्ड सही क्रम में चुनें।", done: "योजना के दो कदम चुन लिए गए।" },
+    en: { label: "Step order game", instruction: "Which step comes first? Choose two cards in order.", done: "Two planning steps selected." },
+  },
+  "clue-pick": {
+    hinglish: { label: "Clue hunt", instruction: "Do clues choose karo jo claim ko check karne mein help karein.", done: "Do useful clues choose ho gaye." },
+    hi: { label: "संकेत खोज", instruction: "दो संकेत चुनें जो दावे की जाँच में मदद करें।", done: "दो उपयोगी संकेत चुन लिए गए।" },
+    en: { label: "Clue hunt", instruction: "Choose two clues that help you check the claim.", done: "Two useful clues selected." },
+  },
+  "idea-build": {
+    hinglish: { label: "Idea builder", instruction: "Do pieces choose karke ek useful idea banao.", done: "Idea ke do pieces combine ho gaye." },
+    hi: { label: "विचार बनाएं", instruction: "दो हिस्से चुनकर एक उपयोगी विचार बनाएं।", done: "विचार के दो हिस्से मिल गए।" },
+    en: { label: "Idea builder", instruction: "Choose two pieces to build one useful idea.", done: "Two idea pieces combined." },
+  },
+  "audience-match": {
+    hinglish: { label: "Audience match", instruction: "Jiske liye explain karna hai, us audience ko choose karo.", done: "Audience choose ho gayi." },
+    hi: { label: "दर्शक चुनें", instruction: "जिसके लिए समझाना है, उस दर्शक को चुनें।", done: "दर्शक चुन लिया गया।" },
+    en: { label: "Audience match", instruction: "Choose the audience you are explaining to.", done: "Audience selected." },
+  },
+  "rule-switch": {
+    hinglish: { label: "Rule switch", instruction: "Naya rule aane par doosra move choose karo.", done: "New rule ke baad move choose ho gaya." },
+    hi: { label: "नियम बदलें", instruction: "नया नियम आने पर दूसरा कदम चुनें।", done: "नए नियम के बाद कदम चुन लिया।" },
+    en: { label: "Rule switch", instruction: "When the rule changes, choose a different move.", done: "A move was chosen after the new rule." },
+  },
+  "change-spot": {
+    hinglish: { label: "Change spot", instruction: "Do tiles mein se jo change hua hai usko choose karo.", done: "Change spot mil gaya." },
+    hi: { label: "बदलाव खोजें", instruction: "दो टाइल में जो बदला है उसे चुनें।", done: "बदलाव मिल गया।" },
+    en: { label: "Change spot", instruction: "Choose the tile that changed.", done: "The change was spotted." },
+  },
+};
+
+export const visualModeForKind: Record<string, ExplorerVisualMode> = {
+  "choice-observatory": "sequence",
+  "source-hunt": "clue-pick",
+  "build-studio": "idea-build",
+  "explain-it": "audience-match",
+  "strategy-switch": "rule-switch",
+  "reflect-improve": "change-spot",
+};
+
+export const visualModeCards: Record<ExplorerVisualMode, string[]> = {
+  sequence: ["👀 Notice", "🧭 Plan", "✅ Check"],
+  "clue-pick": ["🔎 Source", "📅 Date", "💬 Opinion"],
+  "idea-build": ["💡 Idea", "🛠️ Useful", "🎨 Style"],
+  "audience-match": ["🧒 Friend", "👩‍🏫 Teacher", "🌍 Public"],
+  "rule-switch": ["🔁 New rule", "🧠 Same move", "🧭 New move"],
+  "change-spot": ["🟦 Before", "🟨 Changed", "🟩 Same"],
+};

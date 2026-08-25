@@ -13,12 +13,13 @@ import {
   type ExplorerEvidenceField,
   type ExplorerMission,
 } from "@/data/explorerLab";
-import { EXPLORER_LOCALES, explorerCopy, explorerFieldLabels, explorerFieldPlaceholders, getExplorerLocale, quickPlayOptions, speakExplorerText, type ExplorerLocale } from "@/data/explorerI18n";
+import { EXPLORER_LOCALES, explorerCopy, explorerFieldLabels, explorerFieldPlaceholders, getExplorerLocale, quickPlayOptions, speakExplorerText, visualModeCards, visualModeCopy, visualModeForKind, type ExplorerLocale, type ExplorerVisualMode } from "@/data/explorerI18n";
 
 const STORAGE_KEY = "aifs-explorer-pilot-v1";
 const ATTEMPT_KEY = "aifs-explorer-attempt-counts-v1";
 
-type ExplorerRecord = Record<string, { completedAt: string; evidence: Partial<Record<ExplorerEvidenceField, string>> }>;
+type ExplorerEvidence = Partial<Record<ExplorerEvidenceField, string>> & { visualSelections?: string };
+type ExplorerRecord = Record<string, { completedAt: string; evidence: ExplorerEvidence }>;
 
 const fieldLabels: Record<ExplorerEvidenceField, string> = {
   choice: "What did you choose or decide?",
@@ -87,6 +88,7 @@ export default function ExplorerPage() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [playChoice, setPlayChoice] = useState<string | null>(null);
   const [playReason, setPlayReason] = useState<string | null>(null);
+  const [visualSelections, setVisualSelections] = useState<string[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [profileId, setProfileId] = useState<number | null>(null);
   const [profileName, setProfileName] = useState("");
@@ -106,6 +108,10 @@ export default function ExplorerPage() {
   const mission = missions.find((item) => item.id === selectedMissionId) ?? null;
   const playOptions = mission ? (quickPlayOptions[mission.kind] ?? quickPlayOptions["choice-observatory"]) : [];
   const playDone = Boolean(playChoice && playReason);
+  const visualMode: ExplorerVisualMode = mission ? (visualModeForKind[mission.kind] ?? "sequence") : "sequence";
+  const visualCardLabels = visualModeCards[visualMode];
+  const visualMinimum = visualMode === "sequence" || visualMode === "clue-pick" || visualMode === "idea-build" ? 2 : 1;
+  const visualDone = visualSelections.length >= visualMinimum;
   const completedCount = missions.filter((item) => records[item.id]).length;
   const selectedRecord = mission ? records[mission.id] : undefined;
   const accountProfile = profileQuery.data?.find((item) => item.ageBand === ageBand);
@@ -133,6 +139,7 @@ export default function ExplorerPage() {
     setEvidence(saved?.evidence ?? {});
     setPlayChoice(saved?.evidence?.choice ?? null);
     setPlayReason(saved?.evidence?.reason ?? null);
+    setVisualSelections(saved?.evidence?.visualSelections ? saved.evidence.visualSelections.split("|") : []);
     setConfirmedWork(Boolean(saved));
     setConfirmedReview(Boolean(saved));
     setShowFeedback(Boolean(saved));
@@ -163,6 +170,11 @@ export default function ExplorerPage() {
     setShowFeedback(false);
   };
 
+  const chooseVisualCard = (card: string) => {
+    setVisualSelections((previous) => previous.includes(card) ? previous.filter((item) => item !== card) : [...previous, card].slice(-visualMinimum));
+    setShowFeedback(false);
+  };
+
   const chooseReason = (reason: string) => {
     setPlayReason(reason);
     setEvidence((previous) => ({ ...previous, reason }));
@@ -177,6 +189,7 @@ export default function ExplorerPage() {
     setSelectedMissionId(null);
     setPlayChoice(null);
     setPlayReason(null);
+    setVisualSelections([]);
   };
 
   const updateEvidence = (field: ExplorerEvidenceField, value: string) => {
@@ -204,6 +217,10 @@ export default function ExplorerPage() {
     if (!mission) return;
     const missing = mission.evidenceFields.filter((field) => !evidence[field]?.trim());
     const totalCharacters = Object.values(evidence).join(" ").trim().length;
+    if (!visualDone) {
+      toast.error(visualModeCopy[visualMode][locale].instruction);
+      return;
+    }
     if (!playDone) {
       toast.error(copy.chooseMove + " and one reason before completing");
       return;
@@ -224,7 +241,7 @@ export default function ExplorerPage() {
     const nextAttemptCounts = { ...attemptCounts, [mission.id]: attemptNumber };
     const nextRecords = {
       ...records,
-      [mission.id]: { completedAt: new Date().toISOString(), evidence },
+      [mission.id]: { completedAt: new Date().toISOString(), evidence: { ...evidence, visualSelections: visualSelections.join("|") } },
     };
     setAttemptCounts(nextAttemptCounts);
     localStorage.setItem(ATTEMPT_KEY, JSON.stringify(nextAttemptCounts));
@@ -304,6 +321,7 @@ export default function ExplorerPage() {
         ) : (
           <section className="explorer-mission-view" aria-labelledby="explorer-mission-heading">
             <div className="explorer-mission-view-head"><button type="button" className="explorer-inline-back" onClick={() => setSelectedMissionId(null)}><ArrowLeft size={15} /> All missions</button><span>{mission.ageBand} years · {mission.arc}</span></div>
+            <div className="explorer-visual-game" aria-labelledby="explorer-visual-heading"><div className="explorer-visual-game-head"><span className="mission-section-label">PLAY MODE · {visualModeCopy[visualMode][locale].label}</span><h3 id="explorer-visual-heading">{visualModeCopy[visualMode][locale].instruction}</h3></div><div className="explorer-visual-cards">{visualCardLabels.map((card) => <button key={card} type="button" className={visualSelections.includes(card) ? "is-selected" : ""} onClick={() => chooseVisualCard(card)} aria-pressed={visualSelections.includes(card)}><span>{card.split(" ")[0]}</span><strong>{card.substring(card.indexOf(" ") + 1)}</strong></button>)}</div><p className="explorer-visual-status">{visualDone ? <><Check size={15} /> {visualModeCopy[visualMode][locale].done}</> : `${visualSelections.length} / ${visualMinimum}`}</p></div>
             <div className="explorer-play-first" aria-labelledby="explorer-play-heading">
               <div className="explorer-play-copy"><span className="mission-section-label">STEP 03 / PLAY FIRST</span><h3 id="explorer-play-heading">{copy.playFirst}</h3><p>{copy.playFirstHint}</p><button type="button" className="explorer-listen" onClick={() => readAloud(`${mission.scenario}. ${mission.task}`)}><Ear size={16} /> {isSpeaking ? copy.listening : copy.listen}</button></div>
               <div className="explorer-play-options"><span>{copy.chooseMove}</span><div>{playOptions.map((option) => <button key={option.label.en} type="button" className={playChoice === option.label[locale] ? "is-selected" : ""} onClick={() => choosePlay(option)}><b>{option.icon}</b><span>{option.label[locale]}</span></button>)}</div></div>

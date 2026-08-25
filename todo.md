@@ -450,9 +450,9 @@
 - [x] Audit the current Explorer screens for reading, English and typing dependencies.
 - [x] Define four age-band interaction contracts and accessible visual/audio/choice rules.
 - [x] Add India-first Hinglish, Hindi and English locale content with worldwide English fallback.
-- [ ] Build visual memory, logic, pattern, observation, planning and flexible-thinking games before Q&A.
-- [ ] Move reading-based multiple-choice questions to the final stage and make typing optional.
+- [x] Build visual memory, logic, pattern, observation, planning and flexible-thinking games before Q&A.
+- [x] Move reading-based multiple-choice questions to the final stage and make typing optional.
 - [x] Add language switching, audio/read-aloud affordances and icon-led instructions where appropriate.
-- [ ] Update evidence and parent-report wording to describe observed practice, not IQ, mindset or destiny.
+- [x] Update evidence and parent-report wording to describe observed practice, not IQ, mindset or destiny.
 - [x] Test comprehension, locale fallback, answer fairness, keyboard/mobile accessibility and responsive layouts.
 - [x] Save a checkpoint and push the redesigned Explorer source after validation.

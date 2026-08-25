@@ -937,3 +937,16 @@ h1 span, h2 em { color: var(--evergreen); font-style: italic; font-weight: 500; 
   .explorer-play-options button { min-height:3.2rem; }
   .explorer-play-options button b { display:inline; margin-right:.4rem; }
 }
+
+/* Explorer Lab visual mini-game layer */
+.explorer-visual-game { margin-bottom:1rem; padding:1.15rem; background:#f0b33f; color:#183d35; border:1px solid rgba(24,61,53,.2); }
+.explorer-visual-game-head { display:flex; align-items:baseline; justify-content:space-between; gap:1rem; }
+.explorer-visual-game-head h3 { max-width:620px; margin:.35rem 0 0; font-family:var(--font-display, Georgia, serif); font-size:1.35rem; line-height:1.12; font-weight:600; }
+.explorer-visual-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:.7rem; margin-top:1rem; }
+.explorer-visual-cards button { min-height:5rem; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:.25rem; padding:.85rem; border:1px solid rgba(24,61,53,.3); background:rgba(255,250,240,.65); color:#183d35; text-align:left; cursor:pointer; transition:transform .16s var(--ease-out), background .16s var(--ease-out), box-shadow .16s var(--ease-out); }
+.explorer-visual-cards button:hover,.explorer-visual-cards button.is-selected { transform:translateY(-2px); background:#fffaf0; box-shadow:4px 4px 0 rgba(24,61,53,.2); }
+.explorer-visual-cards button.is-selected { outline:3px solid #183d35; outline-offset:-3px; }
+.explorer-visual-cards button span { font-size:1.45rem; }
+.explorer-visual-cards button strong { font-size:.9rem; }
+.explorer-visual-status { display:flex; align-items:center; gap:.4rem; min-height:1.2rem; margin:.75rem 0 0; font-size:.78rem; font-weight:800; }
+@media (max-width:520px) { .explorer-visual-game-head { display:block; } .explorer-visual-cards { grid-template-columns:1fr; } .explorer-visual-cards button { min-height:3.8rem; flex-direction:row; align-items:center; } }
