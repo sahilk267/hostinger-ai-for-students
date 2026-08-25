@@ -128,7 +128,7 @@ export default function Home() {
               <h1>Learn the tool.<br /><span>Keep the thinking.</span></h1>
               <p className="hero-lede">A clear, useful place for students and curious learners to understand AI, build better habits and get unstuck—without handing over the work that makes learning matter.</p>
               <div className="hero-actions">
-                <a href="/play" className="button button--primary">Open the study toolkit <ArrowUpRight size={16} /></a>
+                <a href="/mission" className="button button--primary">Solve a real task <ArrowUpRight size={16} /></a>
                 <a href="#prompts" className="text-link">Browse prompts <ChevronRight size={16} /></a><a href="/topics" className="text-link">Explore 120 topics <ChevronRight size={16} /></a>
               </div>
               <div className="hero-note"><span className="note-pin" /> No hype. No shortcuts. Just useful next steps.</div>
@@ -163,9 +163,11 @@ export default function Home() {
         <section className="feature-section" id="study-with-ai">
           <div className="container feature-layout">
             <div className="feature-image-wrap"><img src={studyImage} alt="Study notes and flashcards arranged on a desk" /><span className="image-stamp">TRY THIS</span></div>
-            <div className="feature-copy"><SectionLabel>STUDY WITH AI</SectionLabel><h2>Use AI as a<br /><em>thinking partner.</em></h2><p>Good study support does not give you an answer and disappear. It helps you ask a sharper question, spot a gap and practice until the idea is yours.</p><div className="check-list"><span><Check size={15} /> Explain a concept in your own words</span><span><Check size={15} /> Turn notes into active recall</span><span><Check size={15} /> Get feedback without losing your voice</span></div><a href="/play" className="button button--ink">Play a study case <ArrowUpRight size={16} /></a></div>
+            <div className="feature-copy"><SectionLabel>STUDY WITH AI</SectionLabel><h2>Use AI as a<br /><em>thinking partner.</em></h2><p>Good study support does not give you an answer and disappear. It helps you ask a sharper question, spot a gap and practice until the idea is yours.</p><div className="check-list"><span><Check size={15} /> Explain a concept in your own words</span><span><Check size={15} /> Turn notes into active recall</span><span><Check size={15} /> Get feedback without losing your voice</span></div><a href="/mission" className="button button--ink">Start a 5-minute mission <ArrowUpRight size={16} /></a></div>
           </div>
         </section>
+
+        <section className="mission-teaser-section" id="mission-studio"><div className="container mission-teaser"><div className="mission-teaser-copy"><SectionLabel>NEW / MISSION STUDIO</SectionLabel><h2>Don’t just read about AI.<br /><em>Use it on something real.</em></h2><p>Bring an assignment, confusing topic, CV problem or decision. In five minutes, turn it into a clear workflow with a review habit built in.</p><a href="/mission" className="button button--primary">Try your first mission <ArrowUpRight size={16} /></a></div><div className="mission-teaser-board"><div className="teaser-board-top"><span>LIVE WORKFLOW</span><span>01 — 03</span></div><div className="teaser-step is-done"><span>✓</span><strong>Describe the real task</strong><small>in your own words</small></div><div className="teaser-step"><span>02</span><strong>Build a useful starting point</strong><small>without giving away your judgment</small></div><div className="teaser-step"><span>03</span><strong>Review before you trust it</strong><small>with three questions that matter</small></div><div className="teaser-board-note">Your output is yours to copy, use and improve.</div></div></div></section>
 
         <section className="prompt-section" id="prompts">
           <div className="container">

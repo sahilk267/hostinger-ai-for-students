@@ -342,3 +342,21 @@
 - [x] Expand the prompt library with useful, non-repetitive categories and examples across study, research, writing, coding, career and responsible AI.
 - [x] Add regression coverage for the expanded prompt count, category labels and discoverability.
 - [x] Verify responsive rendering and push the validated prompt expansion to the Hostinger source repository.
+
+## Product attraction and repeat-use redesign
+
+- [x] Audit the current homepage and learner flow for weak differentiation, low immediate utility and weak return reasons.
+- [x] Define a sharper product promise and one repeatable core loop that is more compelling than static prompts and quizzes.
+- [x] Add a prominent instant-value experience for visitors, with a concrete outcome in the first session.
+- [x] Add motivation, progress feedback and sharing hooks without fabricating testimonials or engagement claims.
+- [x] Improve homepage entry points and copy so the product feels useful, distinctive and worth returning to.
+- [x] Add regression tests and verify the redesigned flow on desktop and mobile.
+
+## Product attraction redesign — latest request
+
+- [x] Replace the basic content-first impression with a clear real-world utility promise.
+- [x] Design a “bring your task, leave with an outcome” interactive core loop for first-time visitors.
+- [x] Add an engaging first-session experience with meaningful feedback, not another static quiz.
+- [x] Add repeat-use hooks through saved missions, progress and shareable outcomes without fake social proof.
+- [x] Rework homepage hierarchy and calls to action around the new product loop.
+- [x] Validate the new experience on mobile and desktop with automated tests and a production build.

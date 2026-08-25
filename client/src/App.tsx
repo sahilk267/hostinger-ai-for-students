@@ -12,12 +12,14 @@ import NotFound from "./pages/NotFound";
 import AccountPage from "./pages/AccountPage";
 import TopicsPage from "./pages/TopicsPage";
 import ContactPage from "./pages/ContactPage";
+import MissionPage from "./pages/MissionPage";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/play" component={GamePage} />
+      <Route path="/mission" component={MissionPage} />
       <Route path="/progress" component={ProgressPage} />
       <Route path="/certificate" component={CertificatePage} />
       <Route path="/account" component={AccountPage} />

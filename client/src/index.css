@@ -603,3 +603,73 @@ h1 span, h2 em { color: var(--evergreen); font-style: italic; font-weight: 500; 
 
 .prompt-count { margin: -24px 0 26px; color: #766e62; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 @media (max-width: 640px) { .prompt-count { margin: -18px 0 22px; font-size: 10px; } }
+
+/* Mission Studio: the platform's real-task utility loop. */
+.mission-page { min-height: 100vh; background: var(--paper); color: var(--ink); }
+.mission-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; max-width: 1240px; margin: 0 auto; padding: 24px 28px; border-bottom: 1px solid var(--line); }
+.mission-brand { display: inline-flex; align-items: center; gap: 10px; font: 18px "Fraunces", serif; letter-spacing: -.04em; }
+.mission-brand img { width: 34px; height: 34px; object-fit: contain; }
+.mission-brand em { font-style: italic; }
+.mission-back { display: inline-flex; align-items: center; gap: 7px; color: var(--evergreen); font-size: 12px; font-weight: 700; }
+.mission-main { max-width: 1180px; margin: 0 auto; padding: 74px 28px 110px; }
+.mission-hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 80px; align-items: end; padding-bottom: 60px; }
+.mission-kicker { display: inline-flex; align-items: center; gap: 8px; color: var(--evergreen); font-size: 10px; font-weight: 800; letter-spacing: .13em; }
+.mission-hero h1 { max-width: 760px; margin-top: 22px; font-size: clamp(48px, 7vw, 86px); line-height: .92; }
+.mission-hero h1 em, .mission-teaser h2 em, .mission-share h2 em { color: var(--evergreen); font-style: italic; font-weight: 500; }
+.mission-hero > div > p { max-width: 600px; margin-top: 27px; color: #625e56; font-size: 17px; line-height: 1.65; }
+.mission-proof { display: grid; grid-template-columns: 36px 1fr; gap: 3px 12px; padding: 22px; background: var(--sage); border-left: 5px solid var(--saffron); }
+.mission-proof span { grid-row: span 2; color: #a96e18; font: 600 22px "Fraunces", serif; }
+.mission-proof strong { color: var(--evergreen); font: 600 19px "Fraunces", serif; }
+.mission-proof small { color: #667066; font-size: 11px; }
+.mission-studio { display: grid; grid-template-columns: .75fr 1.25fr; gap: 18px; align-items: stretch; }
+.mission-sidebar { padding: 25px; background: var(--evergreen); color: var(--paper-light); }
+.mission-section-label { display: block; color: var(--saffron); font-size: 10px; font-weight: 800; letter-spacing: .14em; }
+.mission-option { position: relative; display: grid; gap: 5px; width: 100%; margin-top: 17px; padding: 16px 28px 16px 0; text-align: left; color: var(--paper-light); border: 0; border-top: 1px solid rgba(245,240,230,.25); background: transparent; cursor: pointer; }
+.mission-option:hover, .mission-option.is-selected { color: var(--saffron); }
+.mission-option strong { color: inherit; font: 600 20px/1.05 "Fraunces", serif; }
+.mission-option small { max-width: 230px; color: #b6c7bd; font-size: 11px; line-height: 1.45; }
+.mission-option > span { font-size: 9px; font-weight: 800; letter-spacing: .11em; }
+.mission-option > svg { position: absolute; top: 20px; right: 0; }
+.mission-side-note { display: flex; gap: 9px; margin-top: 35px; padding-top: 18px; color: #b6c7bd; border-top: 1px solid rgba(245,240,230,.25); font-size: 11px; line-height: 1.5; }
+.mission-workspace { padding: 30px 34px; background: var(--paper-light); border: 1px solid var(--line); box-shadow: 10px 10px 0 var(--saffron); }
+.mission-workspace-top, .teaser-board-top { display: flex; justify-content: space-between; color: #8b806f; font-size: 10px; font-weight: 800; letter-spacing: .12em; }
+.mission-workspace h2 { max-width: 540px; margin-top: 25px; font-size: clamp(32px, 4vw, 51px); line-height: .98; }
+.mission-question { max-width: 580px; margin: 17px 0 24px; color: #625e56; font-size: 14px; line-height: 1.6; }
+.mission-workspace textarea { display: block; width: 100%; min-height: 140px; padding: 15px; resize: vertical; color: var(--ink); background: var(--paper); border: 1px solid var(--line); outline: 0; font: 15px/1.55 "DM Sans", sans-serif; }
+.mission-workspace textarea:focus { border-color: var(--evergreen); box-shadow: 3px 3px 0 var(--saffron); }
+.mission-workspace-footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 22px; }
+.mission-workspace-footer small { color: #938777; font-size: 10px; }
+.mission-button, .mission-share-button { display: inline-flex; align-items: center; gap: 9px; padding: 13px 17px; color: var(--ink); background: var(--saffron); border: 0; font-size: 12px; font-weight: 800; cursor: pointer; transition: transform .16s var(--ease-out), box-shadow .18s var(--ease-out); }
+.mission-button:hover, .mission-share-button:hover { transform: translateY(-2px); box-shadow: 4px 4px 0 rgba(24,61,53,.2); }
+.mission-button:disabled { cursor: default; opacity: .7; transform: none; box-shadow: none; }
+.mission-output { position: relative; padding: 20px 20px 58px; color: #4f4b43; background: var(--paper); border-left: 4px solid var(--evergreen); }
+.mission-output p { margin: 0; white-space: pre-wrap; font: 14px/1.62 "DM Sans", sans-serif; }
+.mission-copy { position: absolute; right: 14px; bottom: 13px; display: inline-flex; align-items: center; gap: 7px; padding: 7px 0; color: var(--evergreen); border: 0; background: transparent; font-size: 11px; font-weight: 800; cursor: pointer; }
+.mission-review { margin-top: 25px; border-top: 1px solid var(--line); }
+.mission-review-heading { display: flex; justify-content: space-between; gap: 12px; padding: 15px 0 7px; color: var(--evergreen); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.mission-review-heading small { color: #83796b; font-size: 10px; font-weight: 500; letter-spacing: 0; }
+.mission-check { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.mission-check span { color: #b27a25; font: 600 15px "Fraunces", serif; }
+.mission-check p { margin: 0; color: #625e56; font-size: 13px; }
+.mission-reset { display: inline-flex; align-items: center; gap: 7px; padding: 8px 0; color: var(--evergreen); border: 0; background: transparent; font-size: 11px; font-weight: 800; cursor: pointer; }
+.mission-share { display: grid; grid-template-columns: 1fr 1fr auto; gap: 35px; align-items: end; margin-top: 105px; padding-top: 32px; border-top: 1px solid var(--line); }
+.mission-share h2 { margin-top: 18px; font-size: clamp(34px, 4vw, 55px); line-height: .98; }
+.mission-share p { max-width: 360px; margin: 0; color: #625e56; font-size: 14px; line-height: 1.65; }
+.mission-share-button { color: var(--paper-light); background: var(--evergreen); white-space: nowrap; }
+.mission-footer { display: flex; justify-content: space-between; padding: 24px 28px 32px; color: #b8b0a3; background: var(--ink); font-size: 11px; }
+.mission-teaser-section { padding: 115px 0; color: var(--paper-light); background: var(--evergreen); }
+.mission-teaser { display: grid; grid-template-columns: 1fr .9fr; gap: 100px; align-items: center; }
+.mission-teaser .section-label { color: var(--saffron); }
+.mission-teaser h2 { max-width: 580px; margin-top: 22px; font-size: clamp(40px, 5vw, 66px); line-height: .97; }
+.mission-teaser h2 em { color: var(--saffron); }
+.mission-teaser-copy p { max-width: 480px; margin: 24px 0 28px; color: #b6c7bd; font-size: 15px; line-height: 1.65; }
+.mission-teaser-board { padding: 23px; color: var(--paper-light); background: rgba(245,240,230,.08); border: 1px solid rgba(245,240,230,.27); }
+.teaser-board-top { color: var(--saffron); }
+.teaser-step { display: grid; grid-template-columns: 30px 1fr; gap: 3px 12px; padding: 18px 0; border-bottom: 1px solid rgba(245,240,230,.2); }
+.teaser-step span { grid-row: span 2; color: var(--saffron); font: 600 18px "Fraunces", serif; }
+.teaser-step strong { font: 600 18px "Fraunces", serif; }
+.teaser-step small { color: #b6c7bd; font-size: 11px; }
+.teaser-step.is-done strong { color: var(--saffron); }
+.teaser-board-note { padding-top: 17px; color: #b6c7bd; font-size: 11px; }
+@media (max-width: 820px) { .mission-header { padding-inline: 20px; } .mission-main { padding: 55px 20px 80px; } .mission-hero, .mission-studio, .mission-teaser, .mission-share { grid-template-columns: 1fr; gap: 38px; } .mission-hero { padding-bottom: 42px; } .mission-share { margin-top: 75px; gap: 22px; } .mission-share-button { justify-self: start; } .mission-teaser-section { padding: 80px 0; } .mission-teaser { padding-inline: 20px; } }
+@media (max-width: 560px) { .mission-header { align-items: flex-start; flex-wrap: wrap; } .mission-back { order: 3; width: 100%; } .mission-workspace { padding: 23px 19px; box-shadow: 6px 6px 0 var(--saffron); } .mission-review-heading { display: grid; } .mission-workspace-footer { align-items: flex-start; flex-direction: column; } .mission-button, .mission-share-button { width: 100%; justify-content: center; } .mission-footer { flex-direction: column; gap: 8px; } }
