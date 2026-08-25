@@ -726,3 +726,14 @@ h1 span, h2 em { color: var(--evergreen); font-style: italic; font-weight: 500; 
 .journey-note strong { color: var(--evergreen); font: 600 20px "Fraunces", serif; white-space: nowrap; }
 @media (max-width: 820px) { .journey-header { padding-inline: 20px; } .journey-main { padding: 55px 20px 80px; } .journey-hero, .journey-layout { grid-template-columns: 1fr; gap: 34px; } .journey-hero { padding-bottom: 40px; } .journey-note { align-items: flex-start; flex-direction: column; gap: 8px; } }
 @media (max-width: 560px) { .journey-header { flex-wrap: wrap; align-items: flex-start; } .journey-header .mission-back { order: 3; width: 100%; } .journey-map, .journey-detail { padding: 22px 18px; } .journey-detail { box-shadow: 6px 6px 0 var(--saffron); } .journey-arc > div:first-child { display: block; } .journey-arc small { display: block; margin-top: 4px; } .journey-days { gap: 4px; justify-content: space-between; } .journey-day { width: 29px; height: 29px; } .journey-detail-top { display: grid; } .journey-action-card > p { font-size: 19px; } .journey-share-card strong { font-size: 18px; } }
+
+.journey-exercise { display: grid; gap: 10px; }
+.journey-exercise > label:first-child { display: grid; gap: 5px; color: var(--evergreen); font-size: 10px; font-weight: 800; letter-spacing: .11em; }
+.journey-exercise > label:first-child span { color: #7b8177; font-size: 11px; font-weight: 500; letter-spacing: 0; }
+.journey-exercise textarea { min-height: 116px; width: 100%; padding: 12px; resize: vertical; color: var(--ink); background: rgba(255,255,255,.42); border: 1px solid rgba(24,61,53,.25); outline: none; font: 14px/1.5 "DM Sans", sans-serif; }
+.journey-exercise textarea:focus { border-color: var(--evergreen); box-shadow: 0 0 0 3px rgba(24,61,53,.1); }
+.journey-exercise > small { color: #808477; font-size: 10px; }
+.journey-check { display: flex; gap: 8px; align-items: flex-start; color: #536156; font-size: 11px; line-height: 1.4; cursor: pointer; }
+.journey-check input { margin-top: 2px; accent-color: var(--evergreen); }
+.journey-form-error { margin: 2px 0 0; color: #a4522d; font-size: 11px; line-height: 1.4; }
+.journey-completed-note { display: flex; align-items: center; gap: 9px; color: var(--evergreen); font-size: 13px; font-weight: 700; }

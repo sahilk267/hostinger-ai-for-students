@@ -22,6 +22,10 @@ describe("30-day AI Skill Journey", () => {
     expect(page).toContain("Opens tomorrow");
     expect(page).toContain("Milestone earned");
     expect(page).toContain("Share milestone");
+    expect(page).toContain("SHOW YOUR WORK");
+    expect(page).toContain("minimum characters");
+    expect(page).toContain("Complete both checks before claiming today’s milestone.");
+    expect(page).not.toContain("Mark today complete");
     expect(page).toContain("30-Day AI Skill Journey");
   });
 

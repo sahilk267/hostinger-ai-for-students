@@ -371,3 +371,12 @@
 - [x] Add streak/reward feedback without fake rankings, fake testimonials or inflated claims.
 - [x] Add regression tests for day-one access, next-day lock, completion and share output.
 - [x] Verify the journey on desktop and mobile, save a checkpoint and push the update to Hostinger GitHub.
+
+## Journey completion integrity fix
+
+- [x] Remove one-click milestone completion that awards progress without learner work.
+- [x] Add a real exercise input and/or required checklist for every daily milestone.
+- [x] Validate minimum meaningful evidence before awarding completion and share card.
+- [x] Preserve one-per-local-day and sequential next-day unlock rules after evidence submission.
+- [x] Add tests for empty submission rejection, valid completion, completion persistence and locked-day behavior.
+- [x] Re-verify desktop/mobile UX, save a checkpoint and push the correction to Hostinger GitHub.
