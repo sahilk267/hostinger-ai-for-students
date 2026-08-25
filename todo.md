@@ -328,3 +328,17 @@
 - [x] Repair logo and favicon loading and add a production-safe fallback.
 - [x] Diagnose and correct the Umami 400 configuration without disabling useful analytics silently.
 - [x] Add regression coverage and validate the repaired production build and live URLs.
+
+## Prompt library expansion
+
+- [x] Audit the current homepage prompt cards, prompt data and browse-prompts route.
+- [x] Expand the prompt library with useful, non-repetitive categories and examples across study, research, writing, coding, career and responsible AI.
+- [x] Add regression coverage for the expanded prompt count, category labels and discoverability.
+- [x] Verify responsive rendering and push the validated prompt expansion to the Hostinger source repository.
+
+## Prompt library expansion — 2026-08-25
+
+- [x] Audit the current homepage prompt cards, prompt data and browse-prompts route.
+- [x] Expand the prompt library with useful, non-repetitive categories and examples across study, research, writing, coding, career and responsible AI.
+- [x] Add regression coverage for the expanded prompt count, category labels and discoverability.
+- [x] Verify responsive rendering and push the validated prompt expansion to the Hostinger source repository.

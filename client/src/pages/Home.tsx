@@ -25,27 +25,24 @@ const careerImage = assetUrls.career;
 const markImage = assetUrls.mark;
 
 const prompts = [
-  {
-    id: "explain",
-    label: "STUDY PROMPT 01",
-    title: "Make a difficult idea feel simple",
-    body: "Explain [topic] like I am learning it for the first time. Use one everyday analogy, then give me three examples and a five-question quiz. Do not skip the reasoning.",
-    tag: "Understand",
-  },
-  {
-    id: "revise",
-    label: "STUDY PROMPT 02",
-    title: "Turn notes into a revision plan",
-    body: "Turn these notes into a focused revision plan. Identify the five ideas I must understand, the gaps I should revisit, and a short practice activity for each one.",
-    tag: "Revise",
-  },
-  {
-    id: "feedback",
-    label: "STUDY PROMPT 03",
-    title: "Get feedback without losing your voice",
-    body: "Review my draft for clarity and structure. Point out what is confusing, ask me questions that would improve it, and suggest edits without rewriting it completely.",
-    tag: "Improve",
-  },
+  { id: "explain", label: "STUDY / 01", title: "Make a difficult idea feel simple", body: "Explain [topic] like I am learning it for the first time. Use one everyday analogy, three examples and a five-question quiz. Show the reasoning.", tag: "Understand" },
+  { id: "revise", label: "STUDY / 02", title: "Turn notes into a revision plan", body: "Turn these notes into a focused revision plan. Identify five key ideas, gaps to revisit and one active-recall activity for each.", tag: "Revise" },
+  { id: "feedback", label: "STUDY / 03", title: "Get feedback without losing your voice", body: "Review my draft for clarity and structure. Point out confusing parts, ask improvement questions and suggest edits without rewriting it completely.", tag: "Improve" },
+  { id: "quiz", label: "STUDY / 04", title: "Practice before you look at answers", body: "Create eight questions about [topic], one at a time. Wait for my answer, give a hint before the solution and explain the mistake without shaming me.", tag: "Practice" },
+  { id: "socratic", label: "STUDY / 05", title: "Use a Socratic study partner", body: "Help me understand [concept] by asking one question at a time. Do not give the answer immediately; use my responses to choose the next question.", tag: "Think" },
+  { id: "essay", label: "WRITING / 06", title: "Build an argument map", body: "Turn this essay question into a claim, three supporting reasons, evidence I need and one fair counterargument. Flag anything that still needs research.", tag: "Structure" },
+  { id: "voice", label: "WRITING / 07", title: "Polish the draft, keep the author", body: "Improve grammar and clarity in this draft while preserving my tone and ideas. Show the meaningful changes and explain any change that alters emphasis.", tag: "Edit" },
+  { id: "sources", label: "RESEARCH / 08", title: "Separate claims from evidence", body: "Break this passage into factual claims, opinions and assumptions. For each factual claim, tell me what source or check would be needed before I rely on it.", tag: "Check" },
+  { id: "research-plan", label: "RESEARCH / 09", title: "Start a source-led research plan", body: "Create a research plan for [question]. Suggest search terms, source types, inclusion criteria and a table for recording claim, evidence and confidence.", tag: "Investigate" },
+  { id: "compare", label: "RESEARCH / 10", title: "Compare two sources fairly", body: "Compare these sources by claim, evidence, date, expertise and limitations. Do not choose a winner based only on confident language.", tag: "Compare" },
+  { id: "debug", label: "CODING / 11", title: "Debug with hypotheses first", body: "Help me debug this code. First restate the expected behavior, list the three most likely causes and propose the smallest test for each before suggesting a fix.", tag: "Debug" },
+  { id: "review", label: "CODING / 12", title: "Review code for risk", body: "Review this code for correctness, input validation, privacy and maintainability. Rank findings by severity and show a minimal safe improvement for each.", tag: "Review" },
+  { id: "career-cv", label: "CAREER / 13", title: "Turn experience into evidence", body: "Convert these responsibilities into achievement-focused CV bullets using action, task, result and evidence. Do not invent numbers; mark missing details as questions.", tag: "CV" },
+  { id: "interview", label: "CAREER / 14", title: "Practice a realistic interview", body: "Interview me for [role] one question at a time. Ask follow-ups, wait for my answer, then give feedback on clarity, evidence and relevance.", tag: "Prepare" },
+  { id: "brief", label: "CREATION / 15", title: "Turn an idea into a useful brief", body: "Turn this idea into a creative brief with audience, purpose, key message, constraints, references and a definition of success. Ask before assuming.", tag: "Create" },
+  { id: "workflow", label: "WORKFLOW / 16", title: "Design a repeatable AI workflow", body: "Design a safe workflow for [task] with input, prompt, review checkpoint, human decision and final output. Highlight where private data should not be pasted.", tag: "Workflow" },
+  { id: "privacy", label: "SAFETY / 17", title: "Check privacy before sharing", body: "Review this text for personal, confidential or identifying information. Classify each risk and suggest a redacted version without weakening the task.", tag: "Privacy" },
+  { id: "decision", label: "SAFETY / 18", title: "Keep the human in the decision", body: "Help me compare these options by criteria, uncertainty and trade-offs. Do not make the final decision for me; finish with questions I should answer.", tag: "Judgment" },
 ];
 
 const toolkit = [
@@ -173,9 +170,9 @@ export default function Home() {
         <section className="prompt-section" id="prompts">
           <div className="container">
             <div className="section-heading-row"><div><SectionLabel>THE PROMPT SHELF</SectionLabel><h2>Start with a better<br /><em>first draft.</em></h2></div><div className="search-box"><Search size={17} /><input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search the shelf" aria-label="Search prompts" /></div></div>
-            <div className="prompt-grid">{filteredPrompts.map((prompt, index) => <article className={`prompt-card ${activePrompt === index ? "is-active" : ""}`} key={prompt.id} onMouseEnter={() => setActivePrompt(index)}><div className="prompt-card-top"><span>{prompt.label}</span><span className="prompt-tag">{prompt.tag}</span></div><h3>{prompt.title}</h3><p>“{prompt.body}”</p><div className="prompt-card-footer"><CopyPrompt text={prompt.body} /><span className="prompt-index">0{index + 1}</span></div></article>)}</div>
+            <div className="prompt-count" aria-live="polite">Showing {filteredPrompts.length} of {prompts.length} prompts</div><div className="prompt-grid">{filteredPrompts.map((prompt, index) => <article className={`prompt-card ${activePrompt === index ? "is-active" : ""}`} key={prompt.id} onMouseEnter={() => setActivePrompt(index)}><div className="prompt-card-top"><span>{prompt.label}</span><span className="prompt-tag">{prompt.tag}</span></div><h3>{prompt.title}</h3><p>“{prompt.body}”</p><div className="prompt-card-footer"><CopyPrompt text={prompt.body} /><span className="prompt-index">0{index + 1}</span></div></article>)}</div>
             {filteredPrompts.length === 0 && <div className="empty-state"><CircleHelp size={21} /><span>No prompt found yet. Try “study”, “revise” or “feedback”.</span></div>}
-            <div className="shelf-footer"><span>More prompts, organized by the task in front of you.</span><a className="text-link" href="#tools">Open the full library <ArrowUpRight size={15} /></a></div>
+            <div className="shelf-footer"><span>18 practical prompts across study, research, writing, coding, career and responsible AI.</span><a className="text-link" href="/topics">Open the full library <ArrowUpRight size={15} /></a></div>
           </div>
         </section>
 
