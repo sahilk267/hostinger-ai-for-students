@@ -389,3 +389,28 @@
 - [x] Research student needs, responsible-AI expectations and safe sharing constraints.
 - [x] Synthesize a prioritized product strategy for AI for Students with quick wins, major bets and anti-patterns.
 - [x] Deliver a concise research brief with source links and a recommended next build decision.
+
+## Child strengths and age-appropriate AI game research
+
+- [x] Define age bands for 5–17 and the observable skills each band can reasonably practice.
+- [x] Research evidence for game-based learning, formative assessment, executive function and strengths-based feedback.
+- [x] Research limits of inferring mindset, aptitude, personality or future career from gameplay.
+- [x] Research child privacy, parental consent, data minimization, retention and safe sharing requirements.
+- [x] Design a non-diagnostic, uncertainty-aware parent report model with human-review boundaries.
+- [x] Recommend an age-banded game and assessment architecture with a safe pilot plan.
+- [x] Deliver a deep research brief with citations, risks, product opportunities and go/no-go decision.
+
+## AI Explorer Lab implementation blueprint
+
+- [x] Freeze the product promise as strengths-in-practice guidance, not diagnosis or deterministic career prediction.
+- [x] Define the four age bands, competency taxonomy and measurable outcomes.
+- [x] Specify the game catalog, six-mission pilot and 30-day Journey integration.
+- [x] Specify artifact evidence, rubrics, adaptive difficulty and repeated-signal rules.
+- [x] Define child/parent account, consent, privacy, deletion, retention and sharing architecture.
+- [x] Define the parent report, child portfolio, skill stamps and Explorer Card contracts.
+- [x] Define deterministic feedback first, optional constrained AI feedback later and human-review controls.
+- [x] Define database/API/frontend migration steps with no conflict against existing games, auth or progress.
+- [x] Define Hostinger deployment, environment, storage and rollback requirements.
+- [x] Define unit, integration, accessibility, fairness, safety, content and human-evidence test gates.
+- [x] Define launch metrics, ethical success criteria, failure thresholds and go/no-go gates.
+- [x] Deliver the complete implementation blueprint and recommended phased build order.
