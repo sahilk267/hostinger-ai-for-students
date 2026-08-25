@@ -427,3 +427,11 @@
 - [ ] Integrate approved Explorer missions into the 30-day Journey without breaking existing users.
 - [ ] Complete automated, accessibility, fairness, privacy, content and deployment validation.
 - [ ] Save release checkpoint and push the validated implementation to the Hostinger repository.
+
+## Explorer implementation and test pass
+
+- [x] Audit current Explorer code, migration, routes and release risks.
+- [x] Harden retry numbering, parent ownership, share expiry/revocation and AI feedback fallback.
+- [x] Add automated contracts for report privacy, public share safety, protected procedures and Journey compatibility.
+- [x] Run TypeScript, targeted tests, full tests with external-gate status, production build and desktop/mobile visual QA.
+- [ ] Push validated source to the Hostinger repository and document remaining human/production gates.

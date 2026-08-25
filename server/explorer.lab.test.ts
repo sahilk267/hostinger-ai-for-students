@@ -35,6 +35,8 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(pageSource).toContain("Give me optional AI coaching on this attempt");
     expect(pageSource).toContain("showing the practice feedback instead");
     expect(pageSource).toContain("const missing = mission.evidenceFields.filter");
+    expect(pageSource).toContain("const attemptNumber = Math.min(20");
+    expect(pageSource).toContain("aifs-explorer-attempt-counts-v1");
   });
 
   it("exposes protected parent profile procedures without changing the existing learning router", () => {
@@ -60,7 +62,7 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(reportSource).toContain("Raw responses, age details and personal information stay out of the share text.");
     expect(reportSource).toContain("not a fixed label or prediction");
     expect(reportSource).not.toContain("evidenceJson");
-    expect(shareSource).toContain("/explorer/share/");
+    expect(shareSource).toContain("window.location.pathname.split(\"/\")");
     expect(shareSource).toContain("no name, age, raw answer or prediction");
     expect(shareSource).not.toContain("evidenceJson");
   });

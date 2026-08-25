@@ -15,6 +15,7 @@ import {
 } from "@/data/explorerLab";
 
 const STORAGE_KEY = "aifs-explorer-pilot-v1";
+const ATTEMPT_KEY = "aifs-explorer-attempt-counts-v1";
 
 type ExplorerRecord = Record<string, { completedAt: string; evidence: Partial<Record<ExplorerEvidenceField, string>> }>;
 
@@ -32,6 +33,15 @@ const fieldPlaceholders: Record<ExplorerEvidenceField, string> = {
   artifact: "Describe the work you made. Do not paste private school details…",
   reflection: "One thing I noticed was…",
   revision: "My second try changed… because…",
+};
+
+const readAttemptCounts = (): Record<string, number> => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(ATTEMPT_KEY) || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
 };
 
 const readRecords = (): ExplorerRecord => {
@@ -64,6 +74,7 @@ export default function ExplorerPage() {
   });
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
   const [records, setRecords] = useState<ExplorerRecord>(() => readRecords());
+  const [attemptCounts, setAttemptCounts] = useState<Record<string, number>>(() => readAttemptCounts());
   const [evidence, setEvidence] = useState<Partial<Record<ExplorerEvidenceField, string>>>({});
   const [confirmedWork, setConfirmedWork] = useState(false);
   const [confirmedReview, setConfirmedReview] = useState(false);
@@ -157,14 +168,18 @@ export default function ExplorerPage() {
       toast.error("Confirm that you did the task and reviewed your result");
       return;
     }
+    const attemptNumber = Math.min(20, (attemptCounts[mission.id] ?? 0) + 1);
+    const nextAttemptCounts = { ...attemptCounts, [mission.id]: attemptNumber };
     const nextRecords = {
       ...records,
       [mission.id]: { completedAt: new Date().toISOString(), evidence },
     };
+    setAttemptCounts(nextAttemptCounts);
+    localStorage.setItem(ATTEMPT_KEY, JSON.stringify(nextAttemptCounts));
     setRecords(nextRecords);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(nextRecords));
     if (profileId) {
-      saveAttempt.mutate({ profileId, missionId: mission.id, attemptNumber: 1, difficulty: "standard", language: "en", accessibilityMode: "standard", evidenceJson: JSON.stringify(evidence), observationJson: JSON.stringify({ skill: mission.skill, rubric: mission.rubric }), startedAt: new Date() });
+      saveAttempt.mutate({ profileId, missionId: mission.id, attemptNumber, difficulty: "standard", language: "en", accessibilityMode: "standard", evidenceJson: JSON.stringify(evidence), observationJson: JSON.stringify({ skill: mission.skill, rubric: mission.rubric }), startedAt: new Date() });
       if (aiFeedbackRequested) {
         feedbackMutation.mutate({ ageBand: mission.ageBand, skill: mission.skill, objective: mission.objective, rubric: mission.rubric, evidenceJson: JSON.stringify(evidence) }, { onSuccess: setAiFeedback, onError: () => toast.error("AI coaching is unavailable; showing the practice feedback instead") });
       }
