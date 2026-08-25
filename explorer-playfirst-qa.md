@@ -18,3 +18,7 @@ The interaction labels and control copy are localized, while the 24 pilot missio
 ## Visual-mode and mission-translation pass
 
 The desktop `/explorer` view keeps the private-by-default notice, locale controls and setup card readable. The 375px view preserves the heading hierarchy, privacy notice and language selector without horizontal overflow. Mission detail visual-mode cards and localized mission copy were validated by source contracts and production build; live child comprehension and audio behavior remain human review gates.
+
+## Journey anchor integration QA
+
+The desktop `/journey` view shows Day 1 ready with the existing one-mission-today state and the new Explorer anchor is implemented within the action card. The `/explorer?mission=plan-rescue` entry remains readable and preserves private-by-default messaging and locale controls; the pilot mission is selected after an age band is chosen. No visual overflow was observed in the captured desktop flow.

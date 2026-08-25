@@ -424,7 +424,7 @@
 - [x] Add Explorer Portfolio, parent report, skill stamps and privacy-safe revocable share cards.
 - [x] Add constrained AI feedback only after deterministic fallback and output safety validation are complete.
 - [ ] Run human pilot review and revise content only from real evidence.
-- [ ] Integrate approved Explorer missions into the 30-day Journey without breaking existing users.
+- [x] Integrate approved Explorer missions into the 30-day Journey without breaking existing users.
 - [ ] Complete automated, accessibility, fairness, privacy, content and deployment validation.
 - [ ] Save release checkpoint and push the validated implementation to the Hostinger repository.
 
@@ -464,3 +464,11 @@
 - [x] Add reviewed Hinglish, Hindi and English mission copy for all six mission families.
 - [x] Validate visual-mode safety, localization contracts, TypeScript, targeted tests, production build and desktop/mobile entry QA.
 - [ ] Run human comprehension sessions for each age band and revise content from observed confusion.
+
+## Explorer anchors in the 30-day Journey
+
+- [x] Add six stable Explorer pilot keys to spaced Journey anchor days.
+- [x] Add query-driven Explorer mission selection after age-band setup.
+- [x] Add an optional Journey-to-Explorer link without bypassing Journey evidence submission.
+- [x] Add regression contracts for anchor count, spacing and query handoff.
+- [x] Validate TypeScript, targeted tests, production build and desktop route QA.

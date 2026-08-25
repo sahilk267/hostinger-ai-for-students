@@ -29,6 +29,15 @@ describe("30-day AI Skill Journey", () => {
     expect(page).toContain("30-Day AI Skill Journey");
   });
 
+  it("anchors six spaced Journey days to the six Explorer pilot families", () => {
+    const anchors = dailyJourney.filter((day) => day.explorerPilotKey);
+    expect(anchors).toHaveLength(6);
+    expect(anchors.map((day) => day.day)).toEqual([1, 6, 11, 16, 21, 26]);
+    expect(new Set(anchors.map((day) => day.explorerPilotKey)).size).toBe(6);
+    expect(page).toContain('href={`/explorer?mission=${active.explorerPilotKey}`}');
+    expect(readFileSync(resolve(import.meta.dirname, "../client/src/pages/ExplorerPage.tsx"), "utf8")).toContain("requestedPilotKey");
+  });
+
   it("is promoted from the homepage and registered as a route", () => {
     expect(app).toContain('<Route path="/journey" component={JourneyPage} />');
     expect(home).toContain('href="/journey"');

@@ -81,6 +81,7 @@ export default function ExplorerPage() {
     return stored === "5-7" || stored === "8-10" || stored === "11-13" || stored === "14-17" ? stored : null;
   });
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
+  const [requestedPilotKey] = useState(() => typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("mission") : null);
   const [records, setRecords] = useState<ExplorerRecord>(() => readRecords());
   const [attemptCounts, setAttemptCounts] = useState<Record<string, number>>(() => readAttemptCounts());
   const [evidence, setEvidence] = useState<Partial<Record<ExplorerEvidenceField, string>>>({});
@@ -106,6 +107,11 @@ export default function ExplorerPage() {
     () => (ageBand ? EXPLORER_PILOT_MISSIONS.filter((item) => item.ageBand === ageBand) : []),
     [ageBand],
   );
+  useEffect(() => {
+    if (!ageBand || !requestedPilotKey || selectedMissionId) return;
+    const requestedMission = missions.find((item) => item.pilotKey === requestedPilotKey);
+    if (requestedMission) setSelectedMissionId(requestedMission.id);
+  }, [ageBand, missions, requestedPilotKey, selectedMissionId]);
   const mission = missions.find((item) => item.id === selectedMissionId) ?? null;
   const missionCopy = mission ? getExplorerMissionCopy(mission, locale) : null;
   const playOptions = mission ? (quickPlayOptions[mission.kind] ?? quickPlayOptions["choice-observatory"]) : [];
