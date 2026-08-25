@@ -456,3 +456,11 @@
 - [x] Update evidence and parent-report wording to describe observed practice, not IQ, mindset or destiny.
 - [x] Test comprehension, locale fallback, answer fairness, keyboard/mobile accessibility and responsive layouts.
 - [x] Save a checkpoint and push the redesigned Explorer source after validation.
+
+## Explorer visual-mode and mission-language slice
+
+- [x] Map all six mission kinds to distinct visual interaction modes with minimum interactions.
+- [x] Persist visual selections with each completed Explorer attempt.
+- [x] Add reviewed Hinglish, Hindi and English mission copy for all six mission families.
+- [x] Validate visual-mode safety, localization contracts, TypeScript, targeted tests, production build and desktop/mobile entry QA.
+- [ ] Run human comprehension sessions for each age band and revise content from observed confusion.

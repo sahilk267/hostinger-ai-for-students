@@ -14,6 +14,7 @@ import {
   type ExplorerMission,
 } from "@/data/explorerLab";
 import { EXPLORER_LOCALES, explorerCopy, explorerFieldLabels, explorerFieldPlaceholders, getExplorerLocale, quickPlayOptions, speakExplorerText, visualModeCards, visualModeCopy, visualModeForKind, type ExplorerLocale, type ExplorerVisualMode } from "@/data/explorerI18n";
+import { getExplorerMissionCopy } from "@/data/explorerMissionI18n";
 
 const STORAGE_KEY = "aifs-explorer-pilot-v1";
 const ATTEMPT_KEY = "aifs-explorer-attempt-counts-v1";
@@ -106,6 +107,7 @@ export default function ExplorerPage() {
     [ageBand],
   );
   const mission = missions.find((item) => item.id === selectedMissionId) ?? null;
+  const missionCopy = mission ? getExplorerMissionCopy(mission, locale) : null;
   const playOptions = mission ? (quickPlayOptions[mission.kind] ?? quickPlayOptions["choice-observatory"]) : [];
   const playDone = Boolean(playChoice && playReason);
   const visualMode: ExplorerVisualMode = mission ? (visualModeForKind[mission.kind] ?? "sequence") : "sequence";
@@ -323,13 +325,13 @@ export default function ExplorerPage() {
             <div className="explorer-mission-view-head"><button type="button" className="explorer-inline-back" onClick={() => setSelectedMissionId(null)}><ArrowLeft size={15} /> All missions</button><span>{mission.ageBand} years · {mission.arc}</span></div>
             <div className="explorer-visual-game" aria-labelledby="explorer-visual-heading"><div className="explorer-visual-game-head"><span className="mission-section-label">PLAY MODE · {visualModeCopy[visualMode][locale].label}</span><h3 id="explorer-visual-heading">{visualModeCopy[visualMode][locale].instruction}</h3></div><div className="explorer-visual-cards">{visualCardLabels.map((card) => <button key={card} type="button" className={visualSelections.includes(card) ? "is-selected" : ""} onClick={() => chooseVisualCard(card)} aria-pressed={visualSelections.includes(card)}><span>{card.split(" ")[0]}</span><strong>{card.substring(card.indexOf(" ") + 1)}</strong></button>)}</div><p className="explorer-visual-status">{visualDone ? <><Check size={15} /> {visualModeCopy[visualMode][locale].done}</> : `${visualSelections.length} / ${visualMinimum}`}</p></div>
             <div className="explorer-play-first" aria-labelledby="explorer-play-heading">
-              <div className="explorer-play-copy"><span className="mission-section-label">STEP 03 / PLAY FIRST</span><h3 id="explorer-play-heading">{copy.playFirst}</h3><p>{copy.playFirstHint}</p><button type="button" className="explorer-listen" onClick={() => readAloud(`${mission.scenario}. ${mission.task}`)}><Ear size={16} /> {isSpeaking ? copy.listening : copy.listen}</button></div>
+              <div className="explorer-play-copy"><span className="mission-section-label">STEP 03 / PLAY FIRST</span><h3 id="explorer-play-heading">{copy.playFirst}</h3><p>{copy.playFirstHint}</p><button type="button" className="explorer-listen" onClick={() => readAloud(`${missionCopy?.scenario ?? mission.scenario}. ${missionCopy?.task ?? mission.task}`)}><Ear size={16} /> {isSpeaking ? copy.listening : copy.listen}</button></div>
               <div className="explorer-play-options"><span>{copy.chooseMove}</span><div>{playOptions.map((option) => <button key={option.label.en} type="button" className={playChoice === option.label[locale] ? "is-selected" : ""} onClick={() => choosePlay(option)}><b>{option.icon}</b><span>{option.label[locale]}</span></button>)}</div></div>
               <div className="explorer-reason-options"><span>{copy.choiceSaved} · {copy.optionalWriting}</span><div>{copy.reasonOptions.map((reason) => <button key={reason} type="button" className={playReason === reason ? "is-selected" : ""} onClick={() => chooseReason(reason)}>{reason}</button>)}</div></div>
             </div>
             <div className="explorer-mission-layout">
               <article className="explorer-challenge-card">
-                <span className="mission-section-label">{mission.kind.replaceAll("-", " ")}</span><h2 id="explorer-mission-heading">{mission.title}</h2><p className="explorer-objective"><strong>Practice goal:</strong> {mission.objective}</p><div className="explorer-scenario"><span>THE SCENARIO</span><p>{mission.scenario}</p><strong>Your challenge: {mission.task}</strong></div>
+                <span className="mission-section-label">{mission.kind.replaceAll("-", " ")}</span><h2 id="explorer-mission-heading">{missionCopy?.title ?? mission.title}</h2><p className="explorer-objective"><strong>Practice goal:</strong> {missionCopy?.objective ?? mission.objective}</p><div className="explorer-scenario"><span>THE SCENARIO</span><p>{missionCopy?.scenario ?? mission.scenario}</p><strong>Your challenge: {missionCopy?.task ?? mission.task}</strong></div>
                 <div className="explorer-rubric"><span className="mission-section-label">LOOK FOR THESE MOVES</span>{mission.rubric.map((line, index) => <div key={line}><span>0{index + 1}</span><p>{line}</p></div>)}</div>
               </article>
               <div className="explorer-evidence-card">

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { EXPLORER_AGE_BANDS, EXPLORER_PILOT_MISSIONS, EXPLORER_PROHIBITED_OUTPUTS } from "../client/src/data/explorerLab";
 import { EXPLORER_LOCALES, explorerCopy, quickPlayOptions, visualModeCards, visualModeForKind, visualModeCopy } from "../client/src/data/explorerI18n";
+import { getExplorerMissionCopy } from "../client/src/data/explorerMissionI18n";
 
 const pageSource = readFileSync(resolve(process.cwd(), "client/src/pages/ExplorerPage.tsx"), "utf8");
 const routerSource = readFileSync(resolve(process.cwd(), "client/src/App.tsx"), "utf8");
@@ -91,6 +92,17 @@ describe("AI Explorer Lab pilot contract", () => {
       expect(visualModeCards[visualModeForKind[kind]]).toHaveLength(3);
       expect(visualModeCopy[visualModeForKind[kind]].hinglish.instruction.length).toBeGreaterThan(10);
     }
+  });
+
+  it("localizes all six mission families before optional written evidence", () => {
+    for (const mission of EXPLORER_PILOT_MISSIONS.filter((item) => item.ageBand === "5-7")) {
+      const hinglish = getExplorerMissionCopy(mission, "hinglish");
+      const hindi = getExplorerMissionCopy(mission, "hi");
+      expect(hinglish.title.length).toBeGreaterThan(4);
+      expect(hinglish.task.length).toBeGreaterThan(10);
+      expect(hindi.scenario.length).toBeGreaterThan(10);
+    }
+    expect(pageSource).toContain("getExplorerMissionCopy");
   });
 
   it("exposes the safety boundary and does not create a career-prediction route", () => {
