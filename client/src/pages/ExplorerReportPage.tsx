@@ -6,6 +6,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { assetUrls } from "@/lib/assets";
 import { EXPLORER_AGE_BANDS, EXPLORER_PILOT_MISSIONS, type ExplorerAgeBand } from "@/data/explorerLab";
+import { EXPLORER_LOCALES, explorerCopy, type ExplorerLocale } from "@/data/explorerI18n";
 
 const STORAGE_KEY = "aifs-explorer-pilot-v1";
 const AGE_KEY = "aifs-explorer-age-band";
@@ -23,6 +24,11 @@ function readLocal<T>(key: string, fallback: T): T {
 
 export default function ExplorerReportPage() {
   const ageBand = readLocal<string>(AGE_KEY, "") as ExplorerAgeBand;
+  const [locale, setLocale] = useState<ExplorerLocale>(() => {
+    const stored = localStorage.getItem("aifs-explorer-locale");
+    return stored === "hinglish" || stored === "hi" || stored === "en" ? stored : "hinglish";
+  });
+  const copy = explorerCopy[locale];
   const { isAuthenticated } = useAuth();
   const profilesQuery = trpc.explorer.profiles.useQuery(undefined, { enabled: isAuthenticated });
   const createShare = trpc.explorer.createShare.useMutation();
@@ -54,7 +60,7 @@ export default function ExplorerReportPage() {
     } catch { toast.error("Sharing was cancelled or unavailable"); }
   };
 
-  return <div className="explorer-page"><header className="explorer-header"><a className="mission-brand" href="/"><img src={assetUrls.mark} alt="" /><span><strong>AI</strong> for <em>Students</em></span></a><a className="mission-back" href="/explorer"><ArrowLeft size={15} /> Back to Explorer Lab</a><AuthControls /></header><main className="explorer-report-main"><section className="explorer-report-hero"><div><span className="mission-kicker"><Sparkles size={14} /> PARENT VIEW · PRIVATE BY DEFAULT</span><h1>A snapshot of<br /><em>practice in motion.</em></h1><p>This view describes what the learner practiced in the Explorer Lab. It is not a psychological assessment, school grade, IQ score or prediction of a future career.</p></div><div className="explorer-report-lock"><LockKeyhole size={18} /><strong>Handle with care</strong><span>Use this as a conversation starter. Notice effort, ask what felt interesting and offer the next experiment without comparing children.</span></div></section>
+  return <div className="explorer-page" lang={locale === "hi" ? "hi-IN" : locale === "hinglish" ? "en-IN" : "en"}><header className="explorer-header"><a className="mission-brand" href="/"><img src={assetUrls.mark} alt="" /><span><strong>AI</strong> for <em>Students</em></span></a><a className="mission-back" href="/explorer"><ArrowLeft size={15} /> Back to Explorer Lab</a><AuthControls /></header><main className="explorer-report-main"><section className="explorer-language-bar" aria-label={copy.chooseLanguage}><span>{copy.chooseLanguage}</span><div>{EXPLORER_LOCALES.map((item) => <button key={item.id} type="button" aria-pressed={locale === item.id} className={locale === item.id ? "is-active" : ""} onClick={() => { setLocale(item.id); localStorage.setItem("aifs-explorer-locale", item.id); }}><strong>{item.label}</strong><small>{item.note}</small></button>)}</div></section><section className="explorer-report-hero"><div><span className="mission-kicker"><Sparkles size={14} /> PARENT VIEW · PRIVATE BY DEFAULT</span><h1>A snapshot of<br /><em>practice in motion.</em></h1><p>This view describes what the learner practiced in the Explorer Lab. It is not a psychological assessment, school grade, IQ score or prediction of a future career.</p></div><div className="explorer-report-lock"><LockKeyhole size={18} /><strong>Handle with care</strong><span>Use this as a conversation starter. Notice effort, ask what felt interesting and offer the next experiment without comparing children.</span></div></section>
     {completed.length < 3 ? <section className="explorer-report-empty"><Trophy size={24} /><h2>Complete three varied missions first.</h2><p>A single activity is not enough to describe a recurring practice signal. Complete at least three different missions, then return here with the learner and discuss what they noticed.</p><a className="explorer-report-primary" href="/explorer">Continue exploring <ArrowLeft size={15} /></a></section> : <>
       <section className="explorer-report-summary"><div className="explorer-report-summary-head"><div><span className="mission-section-label">EARLY PRACTICE SNAPSHOT</span><h2>{completed.length} missions, {skillSignals.length} practice areas.</h2></div><span className="explorer-report-badge"><Trophy size={17} /> {ageBand} years</span></div><p>These are observations from completed evidence. They become more useful when repeated in a different context and discussed with the learner.</p><div className="explorer-report-signals">{skillSignals.map(([skill, count], index) => <div key={skill}><span>0{index + 1}</span><strong>{skill}</strong><small>{count} evidenced {count === 1 ? "mission" : "missions"}</small></div>)}</div></section>
       <section className="explorer-report-next"><div><span className="mission-section-label">NEXT CONVERSATION</span><h2>Ask, don’t label.</h2><p>“Which mission felt most like you?” “What would you try differently next time?” “Where could we practice this skill in real life?”</p></div><div className="explorer-next-list"><span><b>01</b> Celebrate the learner’s explanation, not just the result.</span><span><b>02</b> Offer a new context before deciding a pattern is real.</span><span><b>03</b> Let the learner disagree with the snapshot.</span></div></section>

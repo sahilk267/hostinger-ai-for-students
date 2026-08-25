@@ -80,6 +80,9 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(pageSource).toContain("copy.optionalWriting");
     expect(pageSource).toContain("speakExplorerText");
     expect(pageSource).toContain("chooseReason");
+    expect(pageSource).toContain("const playDone = Boolean(playChoice && playReason)");
+    expect(pageSource).toContain("if (!playDone)");
+    expect(pageSource).toContain("choice: option.evidence[locale]");
   });
 
   it("exposes the safety boundary and does not create a career-prediction route", () => {
