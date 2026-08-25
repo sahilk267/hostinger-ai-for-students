@@ -7,6 +7,7 @@ const pageSource = readFileSync(resolve(process.cwd(), "client/src/pages/Explore
 const routerSource = readFileSync(resolve(process.cwd(), "client/src/App.tsx"), "utf8");
 const serverRouterSource = readFileSync(resolve(process.cwd(), "server/routers.ts"), "utf8");
 const reportSource = readFileSync(resolve(process.cwd(), "client/src/pages/ExplorerReportPage.tsx"), "utf8");
+const shareSource = readFileSync(resolve(process.cwd(), "client/src/pages/ExplorerSharePage.tsx"), "utf8");
 
 describe("AI Explorer Lab pilot contract", () => {
   it("covers four age bands with six missions each", () => {
@@ -41,6 +42,10 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(serverRouterSource).toContain("createProfile: protectedProcedure");
     expect(serverRouterSource).toContain("saveAttempt: protectedProcedure");
     expect(serverRouterSource).toContain("feedback: protectedProcedure");
+    expect(serverRouterSource).toContain("createShare: protectedProcedure");
+    expect(serverRouterSource).toContain("revokeShare: protectedProcedure");
+    expect(serverRouterSource).toContain("getShare: publicProcedure");
+    expect(serverRouterSource).toContain("expiresInDays");
     expect(serverRouterSource).toContain("response_format");
     expect(serverRouterSource).toContain("Never diagnose, score IQ");
     expect(serverRouterSource).toContain("SERVICE_UNAVAILABLE");
@@ -55,6 +60,9 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(reportSource).toContain("Raw responses, age details and personal information stay out of the share text.");
     expect(reportSource).toContain("not a fixed label or prediction");
     expect(reportSource).not.toContain("evidenceJson");
+    expect(shareSource).toContain("/explorer/share/");
+    expect(shareSource).toContain("no name, age, raw answer or prediction");
+    expect(shareSource).not.toContain("evidenceJson");
   });
 
   it("exposes the safety boundary and does not create a career-prediction route", () => {

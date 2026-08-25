@@ -81,6 +81,9 @@ export const appRouter = router({
       startedAt: z.date(),
     })).mutation(({ ctx, input }) => db.saveExplorerAttempt({ userId: ctx.user.id, ...input })),
     deleteProfile: protectedProcedure.input(z.object({ profileId: z.number().int().positive() })).mutation(async ({ ctx, input }) => { await db.softDeleteExplorerProfile(ctx.user.id, input.profileId); return { success: true as const }; }),
+    createShare: protectedProcedure.input(z.object({ profileId: z.number().int().positive(), completedCount: z.number().int().min(3).max(24), skills: z.array(z.enum(["planning", "evidence", "creativity", "explanation", "flexibility", "reflection"])).min(1).max(3), expiresInDays: z.union([z.literal(1), z.literal(7), z.literal(30)]).default(7) })).mutation(({ ctx, input }) => db.createExplorerShare({ userId: ctx.user.id, profileId: input.profileId, summaryJson: JSON.stringify({ completedCount: input.completedCount, skills: input.skills }), expiresAt: new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000) })),
+    revokeShare: protectedProcedure.input(z.object({ shareId: z.number().int().positive() })).mutation(({ ctx, input }) => db.revokeExplorerShare(ctx.user.id, input.shareId)),
+    getShare: publicProcedure.input(z.object({ token: z.string().regex(/^[A-Za-z0-9_-]{32,80}$/) })).query(({ input }) => db.getExplorerShareByToken(input.token)),
     feedback: protectedProcedure.input(z.object({
       ageBand: z.enum(["5-7", "8-10", "11-13", "14-17"]),
       skill: z.enum(["planning", "evidence", "creativity", "explanation", "flexibility", "reflection"]),

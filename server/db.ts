@@ -1,7 +1,9 @@
 import { and, eq, isNull } from "drizzle-orm";
+import { createHash, randomBytes } from "node:crypto";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, explorerAttempts, explorerProfiles, learningProgress, users } from "../drizzle/schema";
+import { InsertUser, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
+import { gt } from "drizzle-orm";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -185,6 +187,34 @@ export async function saveExplorerAttempt(input: {
     completedAt: new Date(),
   });
   return { id: Number(created.insertId), missionId: input.missionId, completedAt: new Date() };
+}
+
+export async function createExplorerShare(input: { userId: number; profileId: number; summaryJson: string; expiresAt: Date }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const profile = await db.select().from(explorerProfiles).where(and(eq(explorerProfiles.id, input.profileId), eq(explorerProfiles.userId, input.userId), isNull(explorerProfiles.deletedAt))).limit(1);
+  if (!profile[0]) throw new Error("Explorer profile not found");
+  const token = randomBytes(24).toString("base64url");
+  const tokenHash = createHash("sha256").update(token).digest("hex");
+  const [created] = await db.insert(explorerShares).values({ profileId: input.profileId, tokenHash, summaryJson: input.summaryJson, expiresAt: input.expiresAt });
+  return { id: Number(created.insertId), token, expiresAt: input.expiresAt };
+}
+
+export async function getExplorerShareByToken(token: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const tokenHash = createHash("sha256").update(token).digest("hex");
+  const rows = await db.select({ id: explorerShares.id, summaryJson: explorerShares.summaryJson, expiresAt: explorerShares.expiresAt }).from(explorerShares).where(and(eq(explorerShares.tokenHash, tokenHash), isNull(explorerShares.revokedAt), gt(explorerShares.expiresAt, new Date()))).limit(1);
+  return rows[0];
+}
+
+export async function revokeExplorerShare(userId: number, shareId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const owned = await db.select({ id: explorerShares.id }).from(explorerShares).innerJoin(explorerProfiles, eq(explorerShares.profileId, explorerProfiles.id)).where(and(eq(explorerShares.id, shareId), eq(explorerProfiles.userId, userId), isNull(explorerProfiles.deletedAt))).limit(1);
+  if (!owned[0]) throw new Error("Explorer share not found");
+  await db.update(explorerShares).set({ revokedAt: new Date() }).where(eq(explorerShares.id, shareId));
+  return { success: true as const };
 }
 
 export async function softDeleteExplorerProfile(userId: number, profileId: number) {

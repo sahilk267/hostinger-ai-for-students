@@ -80,3 +80,16 @@ export const explorerAttempts = mysqlTable("explorerAttempts", {
 
 export type ExplorerAttempt = typeof explorerAttempts.$inferSelect;
 export type InsertExplorerAttempt = typeof explorerAttempts.$inferInsert;
+
+export const explorerShares = mysqlTable("explorerShares", {
+  id: int("id").autoincrement().primaryKey(),
+  profileId: int("profileId").notNull().references(() => explorerProfiles.id, { onDelete: "cascade" }),
+  tokenHash: varchar("tokenHash", { length: 128 }).notNull().unique(),
+  summaryJson: text("summaryJson").notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  revokedAt: timestamp("revokedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ExplorerShare = typeof explorerShares.$inferSelect;
+export type InsertExplorerShare = typeof explorerShares.$inferInsert;

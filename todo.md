@@ -421,7 +421,7 @@
 - [x] Author six pilot missions for 5–7, 8–10, 11–13 and 14–17 with reviewed objectives and evidence contracts.
 - [x] Build the deterministic mission state machine, evidence validation, rubric feedback and revision loop.
 - [x] Add safe guest storage and parent-controlled authenticated profile persistence without breaking existing progress.
-- [ ] Add Explorer Portfolio, parent report, skill stamps and privacy-safe revocable share cards.
+- [x] Add Explorer Portfolio, parent report, skill stamps and privacy-safe revocable share cards.
 - [x] Add constrained AI feedback only after deterministic fallback and output safety validation are complete.
 - [ ] Run human pilot review and revise content only from real evidence.
 - [ ] Integrate approved Explorer missions into the 30-day Journey without breaking existing users.
