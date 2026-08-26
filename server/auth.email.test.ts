@@ -96,6 +96,24 @@ describe("auth email-code procedure", () => {
     expect(mergeGuestProgressForUser).toHaveBeenCalledWith(7, expect.objectContaining({ gameId: "prompt-detective", bestScore: 24 }));
   });
 
+  it("reports the account-load branch when the database returns no user row", async () => {
+    const requestContext = createContext();
+    const requestCaller = appRouter.createCaller(requestContext);
+    await requestCaller.auth.requestEmailCode({ email: "missing-account@example.com" });
+    const challengeCookie = (requestContext.res as { cookie: ReturnType<typeof vi.fn> }).cookie.mock.calls.at(-1)?.[1] as string;
+    const sentCode = sendAuthenticationCode.mock.calls.at(-1)?.[0].code as string;
+    getUserByOpenId.mockResolvedValueOnce(undefined);
+
+    await expect(appRouter.createCaller({
+      req: { cookies: { ai_students_email_challenge: challengeCookie }, protocol: "https", headers: {} } as never,
+      res: { cookie: vi.fn(), clearCookie: vi.fn() } as never,
+      user: null,
+    }).auth.verifyEmailCode({ email: "missing-account@example.com", code: sentCode })).rejects.toMatchObject({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Account could not be loaded",
+    });
+  });
+
   it("rejects malformed codes before verification", async () => {
     const caller = appRouter.createCaller(createContext());
     await expect(caller.auth.verifyEmailCode({ email: "learner@example.com", code: "123" })).rejects.toThrow();

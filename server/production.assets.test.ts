@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { formatHostingerPreflight, inspectHostingerEnv } from "@shared/hostingerPreflight";
+import { buildDatabaseUrl } from "./_core/env";
 
 const root = resolve(import.meta.dirname, "..");
 const read = (file: string) => readFileSync(resolve(root, file), "utf8");
@@ -25,6 +26,20 @@ describe("production asset and analytics contracts", () => {
     expect(placeholder.placeholders).toEqual(expect.arrayContaining(["JWT_SECRET", "HOSTINGER_MAIL_API_TOKEN"]));
     expect(formatHostingerPreflight(placeholder)).not.toContain("secret-value");
 
+    const splitValid = inspectHostingerEnv({
+      DATABASE_HOST: "127.0.0.1",
+      DATABASE_PORT: "3306",
+      DATABASE_USER: "aifs_user",
+      DATABASE_PASSWORD: "long-random-db-secret",
+      DATABASE_NAME: "aifs_db",
+      JWT_SECRET: "long-random-session-secret",
+      HOSTINGER_MAIL_API_TOKEN: "long-random-mail-token",
+      AUTH_MAIL_FROM: "auth@aiforstudents.in",
+      BUILT_IN_FORGE_API_URL: "https://forge.example",
+      BUILT_IN_FORGE_API_KEY: "long-random-forge-key",
+    });
+    expect(splitValid.ok).toBe(true);
+
     const valid = inspectHostingerEnv({
       DATABASE_URL: "mysql://user:long-random-db-secret@host/db",
       JWT_SECRET: "long-random-session-secret",
@@ -38,6 +53,18 @@ describe("production asset and analytics contracts", () => {
 
     const invalidSender = inspectHostingerEnv({ ...valid, AUTH_MAIL_FROM: "wrong@example.com" } as unknown as Record<string, string | undefined>);
     expect(invalidSender.invalid).toContain("AUTH_MAIL_FROM");
+  });
+
+  it("resolves Hostinger split database fields when DATABASE_URL is not supplied", () => {
+    expect(buildDatabaseUrl({ DATABASE_URL: "mysql://explicit.example/db" })).toBe("mysql://explicit.example/db");
+    expect(buildDatabaseUrl({
+      DATABASE_HOST: "127.0.0.1",
+      DATABASE_PORT: "3306",
+      DATABASE_USER: "aifs_user",
+      DATABASE_PASSWORD: "p@ss word",
+      DATABASE_NAME: "aifs_db",
+    })).toBe("mysql://aifs_user:p%40ss%20word@127.0.0.1:3306/aifs_db");
+    expect(buildDatabaseUrl({ DB_HOST: "127.0.0.1", DB_USER: "aifs_user", DB_PASSWORD: "secret" })).toBe("");
   });
 
   it("uses deploy-safe CDN assets in the homepage and game hub", () => {
@@ -57,7 +84,7 @@ describe("production asset and analytics contracts", () => {
     const envSource = read("server/_core/env.ts");
     for (const key of ["DATABASE_URL", "JWT_SECRET", "HOSTINGER_MAIL_API_TOKEN", "AUTH_MAIL_FROM", "BUILT_IN_FORGE_API_URL", "BUILT_IN_FORGE_API_KEY"]) {
       expect(handoff).toContain(key);
-      expect(envSource).toContain(`process.env.${key}`);
+      expect(envSource).toContain(key === "DATABASE_URL" ? "env.DATABASE_URL" : `process.env.${key}`);
     }
   });
 
@@ -71,7 +98,7 @@ describe("production asset and analytics contracts", () => {
 
   it("keeps deployment status truthful about pending live gates", () => {
     const status = read("hostinger-deployment-status.md");
-    expect(status).toContain("48 tests pass");
+    expect(status).toContain("53 tests pass");
     expect(status).toContain("Hostinger staging app/domain");
     expect(status).toContain("Pending");
     expect(status).toContain("No live deployment, real OTP delivery, guest-progress migration, second-device test or human pilot result is claimed");

@@ -6,7 +6,8 @@ This document is a **name-only deployment handoff** for AI for Students. It inte
 
 | Variable | Purpose | Secret? | Hostinger action |
 |---|---|---:|---|
-| `DATABASE_URL` | MySQL connection string used by Drizzle and the server | Yes | Build it from the Hostinger database host, database name, user and replacement password inside the protected form. |
+| `DATABASE_URL` | MySQL connection string used by Drizzle and the server | Yes | Preferred form: build it from the Hostinger database host, database name, user and replacement password inside the protected form. |
+| `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME` | Optional split MySQL fields used when `DATABASE_URL` is not available in Hostinger’s Node.js form | Yes | Enter all five in the protected form; `DATABASE_PORT` defaults to `3306`. The runtime also accepts the shorter aliases `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`. Do not mix incomplete sets. |
 | `JWT_SECRET` | Signs local authentication sessions and cookies | Yes | Generate a new long random value for this deployment; do not reuse the password or commit it. |
 | `HOSTINGER_MAIL_API_TOKEN` | Auth-code mail adapter credential | Yes | Paste the Hostinger Mail API token only in the protected form. |
 | `AUTH_MAIL_FROM` | Sender address for local auth-code mail | No, but deployment-critical | Set to `auth@aiforstudents.in`. |
@@ -28,7 +29,7 @@ This document is a **name-only deployment handoff** for AI for Students. It inte
 
 ## Safe entry method
 
-In Hostinger hPanel, open the Node.js Web App environment-variable section and create each key with its value there. For `DATABASE_URL`, do not place the database password in a repository file. Use the URL form accepted by the selected MySQL driver, for example `mysql://USER:PASSWORD@HOST:3306/DATABASE`, but replace every placeholder inside Hostinger and do not save the completed URL in this repository.
+In Hostinger hPanel, open the Node.js Web App environment-variable section and create each key with its value there. For `DATABASE_URL`, do not place the database password in a repository file. Use the URL form accepted by the selected MySQL driver, for example `mysql://USER:PASSWORD@HOST:3306/DATABASE`, but replace every placeholder inside Hostinger and do not save the completed URL in this repository. If Hostinger provides only separate fields, use the complete `DATABASE_HOST`/`DATABASE_PORT`/`DATABASE_USER`/`DATABASE_PASSWORD`/`DATABASE_NAME` set instead; the server assembles the connection URL at runtime and never logs it.
 
 The database password previously shared in chat must be replaced before deployment. The replacement belongs only in Hostinger's protected environment form. If the password contains URL-reserved characters, encode them according to the connection-string rules or use Hostinger's documented database-variable format; do not simplify a password merely to avoid encoding.
 
@@ -39,7 +40,7 @@ The database password previously shared in chat must be replaced before deployme
 | Build | `pnpm check`, `pnpm test` and `pnpm build` pass from the exact source commit. |
 | Secret hygiene | No `.env` file, password, token, completed `DATABASE_URL` or OTP code is tracked by Git. |
 | Mail sender | `AUTH_MAIL_FROM` is exactly `auth@aiforstudents.in`; the Hostinger token is present only in protected configuration. |
-| Database | The selected Hostinger database exists, the replacement password works, and `DATABASE_URL` points to that database. |
+| Database | The selected Hostinger database exists, the replacement password works, and either `DATABASE_URL` or the complete split database set points to that database. |
 | Session security | `JWT_SECRET` is unique to the deployment and is not derived from the database password. |
 | Public configuration | All `VITE_*` values are non-secret and appropriate for the intended domain. |
 | Runtime | The Node.js entrypoint and start command use the platform-provided port rather than a hard-coded port. |

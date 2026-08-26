@@ -573,3 +573,12 @@
 - [x] Add regression coverage for a fresh valid code, normalized email, expiry boundary and resend behavior.
 - [x] Run TypeScript, full tests, production build and a safe auth-flow validation.
 - [x] Save a checkpoint and document any remaining user-owned production smoke test.
+
+## Hostinger post-OTP account-loading incident
+
+- [x] Trace `upsertUser` and `getUserByOpenId` for the verified local-email path without exposing database credentials.
+- [x] Compare the users table schema, migration state and Hostinger database expectations.
+- [x] Fix the minimal database/account lookup cause while preserving existing users and privacy.
+- [x] Add regression coverage for verified-user creation, lookup and missing-user failure behavior.
+- [x] Run TypeScript, full tests, production build and safe database-path validation.
+- [ ] Synchronize the fix to the authorized Hostinger repository and document the remaining staging migration step.

@@ -6,7 +6,7 @@
 
 The validated application source is ready for the next Hostinger deployment attempt. The current release has been synchronized to the authorized repository [`sahilk267/hostinger-ai-for-students`](https://github.com/sahilk267/hostinger-ai-for-students), and its `main` branch was verified to point to the validated commit containing the current release. The repository declares `pnpm@11.24.0`, matching the deployment correction already applied.
 
-Local release validation is green: TypeScript passes, the complete 13-file Vitest suite passes with 48 tests, and the production build completes successfully. The application includes the Explorer, 30-day Journey, twelve interactive learning modules, local OTP support, guest progress and the Hostinger environment handoff/preflight materials.
+Local release validation is green: TypeScript passes, the complete 13-file Vitest suite passes with 53 tests, and the production build completes successfully. The application includes the Explorer, 30-day Journey, twelve interactive learning modules, local OTP support, guest progress, the split-credential database fallback and the Hostinger environment handoff/preflight materials.
 
 ## Verified versus pending
 
@@ -14,7 +14,7 @@ Local release validation is green: TypeScript passes, the complete 13-file Vites
 |---|---|---|
 | Source synchronization | Verified | Target `main` points to the validated commit. |
 | Package manager | Verified | `packageManager` is `pnpm@11.24.0`. |
-| TypeScript, tests and build | Verified locally | 48 tests pass; production build completes. |
+| TypeScript, tests and build | Verified locally | 53 tests pass; production build completes. |
 | Secret-safe environment handoff | Verified | Name-only handoff and preflight validator are in the repository. |
 | Database password replacement | Pending | User must replace the password previously exposed in chat. |
 | Hostinger protected variables | Pending | User must enter values in hPanel; no values are stored here. |
@@ -27,6 +27,6 @@ Local release validation is green: TypeScript passes, the complete 13-file Vites
 
 ## Cutover sequence
 
-First, replace the exposed database password and enter the new `DATABASE_URL`, `JWT_SECRET`, mail variables and other approved values only in Hostinger's protected configuration. Next, deploy the synchronized `main` commit. Then run the health page, homepage, contact submission, local OTP request/verification, guest progress, authenticated session and logout checks over HTTPS. Finally, record pass/fail results and only then decide whether the domain is ready for normal traffic.
+First, replace the exposed database password and enter either the new `DATABASE_URL` or the complete split database variable set, plus `JWT_SECRET`, mail variables and other approved values, only in Hostinger's protected configuration. Apply the current Drizzle migrations against that same database before or during the deployment process. Next, deploy the synchronized `main` commit. Then run the health page, homepage, contact submission, local OTP request/verification, guest progress, authenticated session and logout checks over HTTPS. Finally, record pass/fail results and only then decide whether the domain is ready for normal traffic.
 
 No live deployment, real OTP delivery, guest-progress migration, second-device test or human pilot result is claimed by this record. Those checks remain intentionally open until the user configures staging and performs them.

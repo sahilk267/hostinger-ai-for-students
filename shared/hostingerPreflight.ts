@@ -34,7 +34,16 @@ export function inspectHostingerEnv(env: Record<string, string | undefined>): Ho
   const placeholders: string[] = [];
   const invalid: string[] = [];
 
+  const hasExplicitDatabaseUrl = Boolean(env.DATABASE_URL?.trim());
+  const hasSplitDatabase = Boolean(
+    (env.DATABASE_HOST ?? env.DB_HOST)?.trim() &&
+    (env.DATABASE_USER ?? env.DB_USER)?.trim() &&
+    (env.DATABASE_PASSWORD ?? env.DB_PASSWORD) !== undefined &&
+    (env.DATABASE_NAME ?? env.DB_NAME)?.trim(),
+  );
+
   for (const key of HOSTINGER_REQUIRED_ENV_KEYS) {
+    if (key === "DATABASE_URL" && (hasExplicitDatabaseUrl || hasSplitDatabase)) continue;
     const value = env[key]?.trim() ?? "";
     if (!value) {
       missing.push(key);
@@ -43,6 +52,11 @@ export function inspectHostingerEnv(env: Record<string, string | undefined>): Ho
     if (looksLikePlaceholder(value)) placeholders.push(key);
   }
 
+  const databaseSecrets = ["DATABASE_URL", "DATABASE_PASSWORD", "DB_PASSWORD", "JWT_SECRET", "HOSTINGER_MAIL_API_TOKEN"];
+  for (const key of databaseSecrets) {
+    const value = env[key]?.trim();
+    if (value && looksLikePlaceholder(value)) placeholders.push(key);
+  }
   if (env.AUTH_MAIL_FROM?.trim() && env.AUTH_MAIL_FROM.trim() !== "auth@aiforstudents.in") invalid.push("AUTH_MAIL_FROM");
 
   return { ok: missing.length === 0 && placeholders.length === 0 && invalid.length === 0, missing, placeholders, invalid };
