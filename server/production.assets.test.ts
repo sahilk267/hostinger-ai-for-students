@@ -69,6 +69,15 @@ describe("production asset and analytics contracts", () => {
     expect(handoff).not.toContain("DATABASE_URL=mysql://");
   });
 
+  it("keeps deployment status truthful about pending live gates", () => {
+    const status = read("hostinger-deployment-status.md");
+    expect(status).toContain("48 tests pass");
+    expect(status).toContain("Hostinger staging app/domain");
+    expect(status).toContain("Pending");
+    expect(status).toContain("No live deployment, real OTP delivery, guest-progress migration, second-device test or human pilot result is claimed");
+    expect(status).not.toContain("production deployment is complete");
+  });
+
   it("keeps the favicon deploy-safe and avoids an unconditional Umami request", () => {
     const html = read("client/index.html");
     const main = read("client/src/main.tsx");

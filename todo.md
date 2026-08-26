@@ -244,7 +244,7 @@
 - [x] Prepare the exact hPanel configuration and environment-variable handoff without committing secrets.
 - [ ] Configure the user-owned Hostinger staging app and domain after hPanel access is provided.
 - [ ] Run post-deployment health, frontend, OTP, guest-progress and authenticated-session checks.
-- [ ] Record the final deployment status and any remaining cutover gate.
+- [x] Record the final deployment status and any remaining cutover gate.
 
 ## Contact and business information
 
@@ -426,7 +426,7 @@
 - [ ] Run human pilot review and revise content only from real evidence.
 - [x] Integrate approved Explorer missions into the 30-day Journey without breaking existing users.
 - [ ] Complete automated, accessibility, fairness, privacy, content and deployment validation.
-- [ ] Save release checkpoint and push the validated implementation to the Hostinger repository.
+- [x] Save release checkpoint and push the validated implementation to the Hostinger repository.
 
 ## Explorer implementation and test pass
 
