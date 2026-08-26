@@ -1029,3 +1029,18 @@ h1 span, h2 em { color: var(--evergreen); font-style: italic; font-weight: 500; 
 .explorer-choice-select { display: grid; gap: .4rem; color: #f0b33f; font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .explorer-visual-status { margin: 0; color: rgba(255,250,240,.8); font-size: .76rem; }
 @media (max-width: 680px) { .explorer-answer-controls-head { display: grid; } .explorer-answer-controls .explorer-listen { justify-self: start; } }
+
+/* Flattened Explorer answer card */
+.explorer-answer-controls { margin: 0 0 1rem; padding: .8rem 0 1rem; background: transparent; color: #183d35; border-top: 1px solid rgba(24,61,53,.18); border-bottom: 1px solid rgba(24,61,53,.18); }
+.explorer-answer-controls-head { display: none; }
+.explorer-answer-controls .mission-section-label, .explorer-answer-controls > label > span, .explorer-answer-controls > div > span { color: #9a6719; }
+.explorer-answer-controls .explorer-visual-choice > span { color: #183d35; }
+.explorer-answer-controls .explorer-visual-selects { gap: .55rem; }
+.explorer-answer-controls .explorer-visual-selects label, .explorer-answer-controls .explorer-choice-select { color: #183d35; }
+.explorer-answer-controls .explorer-visual-selects select, .explorer-answer-controls .explorer-choice-select select { min-height: 2.65rem; padding: .58rem .7rem; border-color: rgba(24,61,53,.25); color: #183d35; background: #faf8f0; }
+.explorer-answer-controls .explorer-visual-selects select option, .explorer-answer-controls .explorer-choice-select select option { color: #183d35; background: #faf8f0; }
+.explorer-evidence-head-actions { display: flex; align-items: center; gap: .7rem; }
+.explorer-evidence-head-actions .explorer-listen { margin: 0; }
+.explorer-evidence-card .explorer-evidence-intro { margin-bottom: .8rem; }
+.explorer-fields .explorer-optional-note { margin-bottom: .65rem; }
+@media (max-width: 680px) { .explorer-evidence-head-actions { align-items: flex-start; flex-direction: column-reverse; gap: .45rem; } .explorer-evidence-head-actions .explorer-listen { align-self: flex-start; } }

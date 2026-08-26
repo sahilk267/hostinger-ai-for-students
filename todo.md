@@ -495,3 +495,12 @@
 - [x] Preserve evidence requirements, confirmation checks, local persistence and optional AI coaching.
 - [x] Add regression coverage for the single answer-panel structure and responsive order.
 - [x] Run TypeScript, tests, production build and desktop/mobile visual QA.
+
+## Explorer answer-panel flattening
+
+- [x] Remove the nested green answer-controls box and keep controls on the answer card surface.
+- [x] Remove duplicated play-first and “answer later” copy from the answer panel.
+- [x] Reduce answer-panel padding and vertical gaps while preserving readable grouping.
+- [x] Keep challenge-left/answer-right desktop layout and challenge-first mobile order.
+- [x] Add regression coverage for the flat answer-panel structure and concise copy.
+- [x] Run TypeScript, tests, production build and desktop/mobile visual QA.

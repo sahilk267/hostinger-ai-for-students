@@ -81,6 +81,7 @@ describe("AI Explorer Lab pilot contract", () => {
     const styleSource = readFileSync(resolve(process.cwd(), "client/src/index.css"), "utf8");
     expect(styleSource).toContain(".explorer-mission-layout { order: 1; }");
     expect(styleSource).toContain(".explorer-play-first { order: 3; }");
+    expect(styleSource).toContain(".explorer-answer-controls { margin: 0 0 1rem; padding: .8rem 0 1rem; background: transparent;");
     expect(getExplorerMissionCopy(EXPLORER_PILOT_MISSIONS.find((mission) => mission.pilotKey === "plan-rescue")!, "hinglish").title).toBe("Plan ko batao");
     expect(explorerCopy.hinglish.chooseCard).toContain("Card");
     expect(explorerCopy.hi.chooseCard).toContain("कार्ड");
@@ -96,6 +97,9 @@ describe("AI Explorer Lab pilot contract", () => {
     }
     expect(pageSource).toContain("STEP 02 / ANSWER");
     expect(pageSource).toContain("explorer-answer-controls");
+    expect(pageSource).toContain("explorer-evidence-head-actions");
+    expect(pageSource).toContain("copy.evidencePrompt");
+    expect(pageSource).not.toContain("Play choices already count as a first observation");
     expect(pageSource).not.toContain('className="explorer-visual-game"');
     expect(pageSource).not.toContain('className="explorer-play-first"');
     expect(pageSource).toContain("copy.optionalWriting");

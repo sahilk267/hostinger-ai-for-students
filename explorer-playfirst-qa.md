@@ -34,3 +34,7 @@ The mission detail flow now orders the challenge/evidence layout before the play
 ## Explorer two-panel consolidation QA
 
 The supplied desktop and tall mobile screenshots were inspected in ordered overlapping crops. They confirmed the redundant sequence: answer card, then a separate yellow visual-game block, then a separate green play-first block. The mission markup now renders one two-column structure: green challenge card on the left and one answer card on the right; on mobile the challenge card comes first and the answer card follows. Visual move, play move, reason, read-aloud and evidence controls are consolidated inside the answer card. Desktop and mobile Explorer entry routes still render cleanly after the change. TypeScript, 14 focused Explorer/Journey tests and production build passed.
+
+## Explorer flattened answer-panel QA
+
+The supplied screenshots confirmed the nested green answer-controls panel was visually separate from the white answer card and duplicated the lower play section. The latest markup removes that nested colored treatment: the answer card now has one restrained answer-controls area on its own surface, with the read-aloud button in the answer header, compact selects, a short proof instruction and the evidence fields below. The challenge card remains left/first. Updated desktop and mobile Explorer entry-route previews render cleanly. TypeScript, 14 focused Explorer/Journey tests and production build passed.
