@@ -1012,3 +1012,20 @@ h1 span, h2 em { color: var(--evergreen); font-style: italic; font-weight: 500; 
 .explorer-play-options select, .explorer-reason-options select { border-color: rgba(255,255,255,.35); color: #fffaf0; background: #235248; }
 .explorer-play-options select option, .explorer-reason-options select option { color: #183d35; background: #fffaf0; }
 @media (max-width: 520px) { .explorer-visual-selects { grid-template-columns: 1fr; } .explorer-visual-selects select, .explorer-play-options select, .explorer-reason-options select { min-height: 2.8rem; } }
+
+/* Explorer two-panel answer layout */
+.explorer-evidence-card { min-width: 0; }
+.explorer-answer-controls { display: grid; gap: 1rem; margin: -0.2rem 0 1.25rem; padding: 1rem; background: #18453d; color: #fffaf0; }
+.explorer-answer-controls-head { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+.explorer-answer-controls-head p { margin: .35rem 0 0; color: rgba(255,250,240,.78); font-size: .82rem; line-height: 1.45; }
+.explorer-answer-controls .mission-section-label, .explorer-answer-controls > label > span, .explorer-answer-controls > div > span { color: #f0b33f; }
+.explorer-answer-controls .explorer-listen { flex: 0 0 auto; }
+.explorer-visual-choice { display: grid; gap: .55rem; }
+.explorer-visual-choice > span { color: #fffaf0; font-size: .82rem; line-height: 1.4; }
+.explorer-answer-controls .explorer-visual-selects { margin-top: 0; }
+.explorer-answer-controls .explorer-visual-selects label { color: #f0b33f; }
+.explorer-answer-controls .explorer-visual-selects select, .explorer-answer-controls .explorer-choice-select select { border-color: rgba(255,255,255,.35); color: #fffaf0; background: #235248; }
+.explorer-answer-controls .explorer-visual-selects select option, .explorer-answer-controls .explorer-choice-select select option { color: #183d35; background: #fffaf0; }
+.explorer-choice-select { display: grid; gap: .4rem; color: #f0b33f; font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.explorer-visual-status { margin: 0; color: rgba(255,250,240,.8); font-size: .76rem; }
+@media (max-width: 680px) { .explorer-answer-controls-head { display: grid; } .explorer-answer-controls .explorer-listen { justify-self: start; } }

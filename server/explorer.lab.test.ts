@@ -94,7 +94,10 @@ describe("AI Explorer Lab pilot contract", () => {
       expect(quickPlayOptions[kind]).toHaveLength(3);
       expect(quickPlayOptions[kind].every((option) => option.label.hinglish && option.label.hi && option.label.en)).toBe(true);
     }
-    expect(pageSource).toContain("STEP 03 / PLAY FIRST");
+    expect(pageSource).toContain("STEP 02 / ANSWER");
+    expect(pageSource).toContain("explorer-answer-controls");
+    expect(pageSource).not.toContain('className="explorer-visual-game"');
+    expect(pageSource).not.toContain('className="explorer-play-first"');
     expect(pageSource).toContain("copy.optionalWriting");
     expect(pageSource).toContain("speakExplorerText");
     expect(pageSource).toContain("chooseReason");

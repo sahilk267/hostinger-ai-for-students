@@ -486,3 +486,12 @@
 
 - [x] Localize the new visual-move dropdown labels and placeholders for Hinglish, Hindi and English.
 - [x] Add regression coverage so the simplified controls do not introduce English-only labels in non-English modes.
+
+## Explorer two-panel consolidation
+
+- [x] Move visual move, play move, reason choice and read-aloud controls into the right-side answer panel.
+- [x] Remove the separate yellow visual-game block and green play-first block from the rendered mission flow.
+- [x] Keep the green challenge/question card on the left on desktop and first on mobile.
+- [x] Preserve evidence requirements, confirmation checks, local persistence and optional AI coaching.
+- [x] Add regression coverage for the single answer-panel structure and responsive order.
+- [x] Run TypeScript, tests, production build and desktop/mobile visual QA.

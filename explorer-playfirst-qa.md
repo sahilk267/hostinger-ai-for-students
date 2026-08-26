@@ -30,3 +30,7 @@ The desktop `/explorer/pilot-review` view clearly presents the pilot-only purpos
 ## Explorer simplicity and Hinglish correction QA
 
 The mission detail flow now orders the challenge/evidence layout before the play controls, so the scenario appears earlier on mobile instead of arriving after every option group. Visual choices, play choices and reasons use compact native selects with visible labels and keyboard focus. The reason select includes an explicit own-words option. The first pilot title now reads “Plan ko batao” and its task uses “Apna plan batao.” Desktop and mobile entry-route captures remain readable; TypeScript, 14 targeted Explorer/Journey tests and production build passed. Full-suite validation still has the unrelated live Hostinger Mail API Cloudflare 403 gate.
+
+## Explorer two-panel consolidation QA
+
+The supplied desktop and tall mobile screenshots were inspected in ordered overlapping crops. They confirmed the redundant sequence: answer card, then a separate yellow visual-game block, then a separate green play-first block. The mission markup now renders one two-column structure: green challenge card on the left and one answer card on the right; on mobile the challenge card comes first and the answer card follows. Visual move, play move, reason, read-aloud and evidence controls are consolidated inside the answer card. Desktop and mobile Explorer entry routes still render cleanly after the change. TypeScript, 14 focused Explorer/Journey tests and production build passed.
