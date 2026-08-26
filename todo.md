@@ -504,3 +504,12 @@
 - [x] Keep challenge-left/answer-right desktop layout and challenge-first mobile order.
 - [x] Add regression coverage for the flat answer-panel structure and concise copy.
 - [x] Run TypeScript, tests, production build and desktop/mobile visual QA.
+
+## Explorer answer form cleanup
+
+- [x] Remove the duplicate “Kya choose kiya?” textarea because the move dropdown already stores the choice.
+- [x] Remove the duplicate reason textarea because the reason dropdown/own-words choice already stores the reason.
+- [x] Keep one meaningful reflection/proof field and preserve the completion evidence threshold.
+- [x] Add a clearly visible border and focus treatment to every answer dropdown.
+- [x] Add regression coverage for the reduced field count and dropdown border contract.
+- [x] Run TypeScript, tests, production build and desktop/mobile visual QA.

@@ -38,3 +38,7 @@ The supplied desktop and tall mobile screenshots were inspected in ordered overl
 ## Explorer flattened answer-panel QA
 
 The supplied screenshots confirmed the nested green answer-controls panel was visually separate from the white answer card and duplicated the lower play section. The latest markup removes that nested colored treatment: the answer card now has one restrained answer-controls area on its own surface, with the read-aloud button in the answer header, compact selects, a short proof instruction and the evidence fields below. The challenge card remains left/first. Updated desktop and mobile Explorer entry-route previews render cleanly. TypeScript, 14 focused Explorer/Journey tests and production build passed.
+
+## Explorer answer form cleanup QA
+
+The duplicate choice and reason textareas were removed from the rendered evidence field list. Their values are still captured by the move and reason dropdowns and remain in the saved evidence object, while the remaining mission-specific proof fields continue to be required for completion. Dropdowns now have an explicit dark border, inset contrast and keyboard focus ring. Desktop and mobile Explorer entry previews remain clean after the change. TypeScript, 14 focused tests and production build passed.

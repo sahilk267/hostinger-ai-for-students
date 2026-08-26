@@ -37,7 +37,8 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(pageSource).toContain("I looked at my result and can explain one choice.");
     expect(pageSource).toContain("Give me optional AI coaching on this attempt");
     expect(pageSource).toContain("showing the practice feedback instead");
-    expect(pageSource).toContain("const missing = mission.evidenceFields.filter");
+    expect(pageSource).toContain("const visibleEvidenceFields = mission?.evidenceFields.filter((field) => field !== \"choice\" && field !== \"reason\") ?? []");
+    expect(pageSource).toContain("const missing = visibleEvidenceFields.filter((field) => !evidence[field]?.trim())");
     expect(pageSource).toContain("const attemptNumber = Math.min(20");
     expect(pageSource).toContain("aifs-explorer-attempt-counts-v1");
   });
