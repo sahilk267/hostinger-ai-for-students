@@ -258,8 +258,8 @@
 
 ## Hostinger environment configuration
 
-- [ ] Verify the current release’s required server and public environment keys.
-- [ ] Provide a safe Hostinger entry/import method that does not expose secrets in GitHub or chat.
+- [x] Verify the current release’s required server and public environment keys.
+- [x] Provide a safe Hostinger entry/import method that does not expose secrets in GitHub or chat.
 - [ ] Validate the configured key set before the user starts deployment.
 
 ## Database naming verification
@@ -273,8 +273,8 @@
 ## Hostinger database credential safety
 
 - [ ] Require replacement of the database password that was exposed in chat before deployment.
-- [ ] Prepare the DATABASE_URL template using the confirmed host, user and database name without storing the replacement password.
-- [ ] Guide the user to enter the replacement credential only in Hostinger’s protected environment-variable form.
+- [x] Prepare the DATABASE_URL template using the confirmed host, user and database name without storing the replacement password.
+- [x] Guide the user to enter the replacement credential only in Hostinger’s protected environment-variable form.
 
 ## Hostinger deployment monitoring
 

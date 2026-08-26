@@ -18,6 +18,15 @@ describe("production asset and analytics contracts", () => {
     expect(games).not.toContain("/manus-storage/");
   });
 
+  it("keeps the Hostinger handoff aligned with the server environment helper", () => {
+    const handoff = read("hostinger-env-handoff.md");
+    const envSource = read("server/_core/env.ts");
+    for (const key of ["DATABASE_URL", "JWT_SECRET", "HOSTINGER_MAIL_API_TOKEN", "AUTH_MAIL_FROM", "BUILT_IN_FORGE_API_URL", "BUILT_IN_FORGE_API_KEY"]) {
+      expect(handoff).toContain(key);
+      expect(envSource).toContain(`process.env.${key}`);
+    }
+  });
+
   it("keeps the Hostinger handoff secret-safe", () => {
     const handoff = read("hostinger-env-handoff.md");
     for (const key of ["DATABASE_URL", "JWT_SECRET", "HOSTINGER_MAIL_API_TOKEN", "AUTH_MAIL_FROM", "VITE_OAUTH_PORTAL_URL"]) expect(handoff).toContain(key);
