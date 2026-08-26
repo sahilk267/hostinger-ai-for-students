@@ -557,3 +557,10 @@
 - [x] Provide a safe Hostinger protected-form entry/import method without putting secrets in GitHub or chat.
 - [x] Add a secret-scan regression contract for the handoff documentation.
 - [x] Validate the documentation and save a release-readiness checkpoint.
+
+## Hostinger environment preflight validator
+
+- [x] Add a local validator for required environment-key presence and obvious placeholder values.
+- [x] Ensure validator output names only failing keys and never prints secret values.
+- [x] Add tests for missing keys, placeholders, valid configuration and secret-safe output.
+- [x] Run full validation and save a checkpoint.

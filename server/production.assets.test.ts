@@ -1,11 +1,45 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { formatHostingerPreflight, inspectHostingerEnv } from "@shared/hostingerPreflight";
 
 const root = resolve(import.meta.dirname, "..");
 const read = (file: string) => readFileSync(resolve(root, file), "utf8");
 
 describe("production asset and analytics contracts", () => {
+  it("validates Hostinger environment presence without exposing values", () => {
+    const missing = inspectHostingerEnv({});
+    expect(missing.ok).toBe(false);
+    expect(missing.missing).toContain("DATABASE_URL");
+    expect(formatHostingerPreflight(missing)).not.toContain("secret-value");
+
+    const placeholder = inspectHostingerEnv({
+      DATABASE_URL: "mysql://user:secret-value@host/db",
+      JWT_SECRET: "change-me",
+      HOSTINGER_MAIL_API_TOKEN: "your-token",
+      AUTH_MAIL_FROM: "auth@aiforstudents.in",
+      BUILT_IN_FORGE_API_URL: "https://forge.example",
+      BUILT_IN_FORGE_API_KEY: "live-api-key",
+    });
+    expect(placeholder.ok).toBe(false);
+    expect(placeholder.placeholders).toEqual(expect.arrayContaining(["JWT_SECRET", "HOSTINGER_MAIL_API_TOKEN"]));
+    expect(formatHostingerPreflight(placeholder)).not.toContain("secret-value");
+
+    const valid = inspectHostingerEnv({
+      DATABASE_URL: "mysql://user:long-random-db-secret@host/db",
+      JWT_SECRET: "long-random-session-secret",
+      HOSTINGER_MAIL_API_TOKEN: "long-random-mail-token",
+      AUTH_MAIL_FROM: "auth@aiforstudents.in",
+      BUILT_IN_FORGE_API_URL: "https://forge.example",
+      BUILT_IN_FORGE_API_KEY: "long-random-forge-key",
+    });
+    expect(valid.ok).toBe(true);
+    expect(formatHostingerPreflight(valid)).toBe("Hostinger environment preflight passed.");
+
+    const invalidSender = inspectHostingerEnv({ ...valid, AUTH_MAIL_FROM: "wrong@example.com" } as unknown as Record<string, string | undefined>);
+    expect(invalidSender.invalid).toContain("AUTH_MAIL_FROM");
+  });
+
   it("uses deploy-safe CDN assets in the homepage and game hub", () => {
     const home = read("client/src/pages/Home.tsx");
     const games = read("client/src/pages/GamePage.tsx");
