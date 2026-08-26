@@ -72,7 +72,9 @@ describe("AI Explorer Lab pilot contract", () => {
 
   it("supports simplified select controls and corrected Hinglish wording", () => {
     expect(pageSource).toContain("explorer-visual-selects");
-    expect(pageSource).toContain("First move");
+    expect(pageSource).toContain("copy.firstMove");
+    expect(pageSource).toContain("copy.nextMove");
+    expect(pageSource).toContain("copy.chooseCard");
     expect(pageSource).toContain("ownReasonLabel");
     expect(pageSource).toContain("<select aria-label={copy.chooseMove}");
     expect(pageSource).toContain("<select aria-label={copy.choiceSaved}");
@@ -80,6 +82,8 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(styleSource).toContain(".explorer-mission-layout { order: 1; }");
     expect(styleSource).toContain(".explorer-play-first { order: 3; }");
     expect(getExplorerMissionCopy(EXPLORER_PILOT_MISSIONS.find((mission) => mission.pilotKey === "plan-rescue")!, "hinglish").title).toBe("Plan ko batao");
+    expect(explorerCopy.hinglish.chooseCard).toContain("Card");
+    expect(explorerCopy.hi.chooseCard).toContain("कार्ड");
   });
 
   it("supports India-first Hinglish, Hindi and worldwide English with play-first options", () => {

@@ -35,6 +35,9 @@ export const explorerCopy: Record<ExplorerLocale, {
   complete: string;
   reportNotice: string;
   reasonOptions: string[];
+  firstMove: string;
+  nextMove: string;
+  chooseCard: string;
 }> = {
   hinglish: {
     chooseLanguage: "Language choose karo",
@@ -54,6 +57,9 @@ export const explorerCopy: Record<ExplorerLocale, {
     complete: "Proof save karo & mission complete",
     reportNotice: "Ye practice signal hai, IQ ya future prediction nahi.",
     reasonOptions: ["Mujhe ye safe laga", "Mujhe ye smart laga", "Maine clue dekha", "Maine naya way try kiya"],
+    firstMove: "Pehla move",
+    nextMove: "Agla move",
+    chooseCard: "Card choose karo…",
   },
   hi: {
     chooseLanguage: "भाषा चुनें",
@@ -73,6 +79,9 @@ export const explorerCopy: Record<ExplorerLocale, {
     complete: "प्रमाण सेव करें और मिशन पूरा करें",
     reportNotice: "यह अभ्यास का संकेत है, IQ या भविष्यवाणी नहीं।",
     reasonOptions: ["यह सुरक्षित लगा", "यह समझदारी लगा", "मैंने संकेत देखा", "मैंने नया तरीका आज़माया"],
+    firstMove: "पहला कदम",
+    nextMove: "अगला कदम",
+    chooseCard: "कार्ड चुनें…",
   },
   en: {
     chooseLanguage: "Choose language",
@@ -92,6 +101,9 @@ export const explorerCopy: Record<ExplorerLocale, {
     complete: "Save proof & complete mission",
     reportNotice: "This is a practice signal, not an IQ score or prediction.",
     reasonOptions: ["It felt safe", "It seemed useful", "I noticed a clue", "I tried a new way"],
+    firstMove: "First move",
+    nextMove: "Next move",
+    chooseCard: "Choose a card…",
   },
 };
 
