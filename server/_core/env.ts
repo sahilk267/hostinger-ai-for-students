@@ -1,3 +1,10 @@
+function normalizeDatabaseUrlValue(value: string) {
+  let normalized = value.trim();
+  if ((normalized.startsWith('"') && normalized.endsWith('"')) || (normalized.startsWith("'") && normalized.endsWith("'"))) normalized = normalized.slice(1, -1).trim();
+  normalized = normalized.replace(/^DATABASE_URL\s*=\s*/i, "").trim();
+  return normalized;
+}
+
 function isUsableDatabaseUrl(value: string) {
   try {
     const parsed = new URL(value);
@@ -16,7 +23,7 @@ const firstTrimmed = (env: Record<string, string | undefined>, keys: string[]) =
 };
 
 export function describeDatabaseConfig(env: Record<string, string | undefined>) {
-  const explicit = env.DATABASE_URL?.trim();
+  const explicit = env.DATABASE_URL ? normalizeDatabaseUrlValue(env.DATABASE_URL) : "";
   if (explicit) return { source: "DATABASE_URL", valid: isUsableDatabaseUrl(explicit), presentKeys: ["DATABASE_URL"] };
 
   const fields = {
@@ -32,7 +39,7 @@ export function describeDatabaseConfig(env: Record<string, string | undefined>) 
 }
 
 export function buildDatabaseUrl(env: Record<string, string | undefined>) {
-  const explicit = env.DATABASE_URL?.trim();
+  const explicit = env.DATABASE_URL ? normalizeDatabaseUrlValue(env.DATABASE_URL) : "";
   if (explicit && isUsableDatabaseUrl(explicit)) return explicit;
 
   const host = firstTrimmed(env, ["DATABASE_HOST", "DB_HOST", "MYSQL_HOST"])?.value;

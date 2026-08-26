@@ -76,6 +76,8 @@ describe("production asset and analytics contracts", () => {
       DATABASE_PASSWORD: "secret",
       DATABASE_NAME: "aifs_db",
     })).toBe("mysql://aifs_user:secret@127.0.0.1:3306/aifs_db");
+    expect(buildDatabaseUrl({ DATABASE_URL: "DATABASE_URL=mysql://aifs_user:secret@127.0.0.1:3306/aifs_db" })).toBe("mysql://aifs_user:secret@127.0.0.1:3306/aifs_db");
+    expect(buildDatabaseUrl({ DATABASE_URL: '"mysql://aifs_user:secret@127.0.0.1:3306/aifs_db"' })).toBe("mysql://aifs_user:secret@127.0.0.1:3306/aifs_db");
     expect(buildDatabaseUrl({
       DATABASE_HOST: "127.0.0.1",
       DATABASE_PORT: "3306",

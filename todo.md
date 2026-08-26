@@ -598,3 +598,12 @@
 - [x] Add a secret-safe diagnostic that reports only configuration state, never values.
 - [x] Test, checkpoint and synchronize the diagnostic release.
 - [ ] Guide the required Hostinger variable save/restart and final OTP smoke test.
+
+## Hostinger malformed full-URL follow-up
+
+- [x] Record that Hostinger reports `DATABASE_URL` present but invalid even after a full URL was entered, and that `OAUTH_SERVER_URL` is also absent.
+- [x] Audit whether Hostinger injects quotes, whitespace, a key prefix, or a different variable value than the visible hPanel field.
+- [x] Add compatibility normalization and a non-secret diagnostic for the transported DATABASE_URL value shape.
+- [x] Add explicit OAuth environment guidance without making Manus OAuth mandatory for local OTP.
+- [ ] Validate, checkpoint and synchronize the updated release.
+- [ ] Require database-password rotation because a credential was shared in chat, then guide save/redeploy and final smoke test.
