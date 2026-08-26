@@ -622,5 +622,5 @@
 - [x] Prepare a reviewed, ordered schema import for the blank database without credentials or user data.
 - [x] Add phpMyAdmin import and post-import verification guidance.
 - [x] Add regression coverage for migration-table and foreign-key contracts.
-- [ ] Run validation, checkpoint and synchronize the schema-guidance release.
+- [x] Run validation, checkpoint and synchronize the schema-guidance release.
 - [ ] Guide the user through import, restart and final OTP/progress smoke testing.
