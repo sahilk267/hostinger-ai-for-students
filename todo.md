@@ -119,7 +119,7 @@
 
 ## Quality-gate follow-up
 
-- [ ] Replace mechanically padded field-game scenarios with independently authored, reviewed content.
+- [x] Replace mechanically padded field-game scenarios with independently authored, reviewed content.
 - [x] Add dedicated topic and skill filter controls backed by distinct catalog metadata fields.
 - [x] Add automated count tests for both interactive labs and all field games.
 - [x] Run representative mobile visual, source-contract accessibility and replay regression verification for Safety, Fact Check, Prompt Detective and Source Hunt; broader live keyboard testing remains a human gate.
@@ -538,3 +538,15 @@
 - [x] Preserve randomized answer ordering and scoring by answer ID.
 - [x] Add regression checks for uniqueness, review coverage and absence of the padding template.
 - [x] Run the full test suite, TypeScript check, production build and representative game QA.
+
+## Autonomous localization quality pass
+
+- [x] Audit mission-body Hinglish, Hindi and English copy for duplicated, unnatural or non-localized learner-facing strings.
+- [x] Correct the highest-impact wording without changing mission IDs, evidence shape or privacy language.
+- [x] Add regression coverage for corrected copy and non-diagnostic parent-facing wording.
+- [x] Run TypeScript, full tests, production build and representative Explorer QA.
+
+## Field-game answer-set authorship correction
+
+- [x] Author distinct correct answers, distractors and explanations for every new field-game scenario instead of reusing the original five-case templates.
+- [x] Add regression checks that extended scenarios do not repeat the same answer set or explanation in a fixed cycle.

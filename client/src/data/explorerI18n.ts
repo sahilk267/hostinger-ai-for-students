@@ -38,6 +38,7 @@ export const explorerCopy: Record<ExplorerLocale, {
   firstMove: string;
   nextMove: string;
   chooseCard: string;
+  selectRequired: string;
 }> = {
   hinglish: {
     chooseLanguage: "Language choose karo",
@@ -60,6 +61,7 @@ export const explorerCopy: Record<ExplorerLocale, {
     firstMove: "Pehla move",
     nextMove: "Agla move",
     chooseCard: "Card choose karo…",
+    selectRequired: "Pehle required choices select karo.",
   },
   hi: {
     chooseLanguage: "भाषा चुनें",
@@ -82,6 +84,7 @@ export const explorerCopy: Record<ExplorerLocale, {
     firstMove: "पहला कदम",
     nextMove: "अगला कदम",
     chooseCard: "कार्ड चुनें…",
+    selectRequired: "पहले ज़रूरी विकल्प चुनें।",
   },
   en: {
     chooseLanguage: "Choose language",
@@ -104,6 +107,7 @@ export const explorerCopy: Record<ExplorerLocale, {
     firstMove: "First move",
     nextMove: "Next move",
     chooseCard: "Choose a card…",
+    selectRequired: "Choose the required options first.",
   },
 };
 

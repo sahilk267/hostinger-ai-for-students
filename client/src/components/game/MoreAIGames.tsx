@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check, RotateCcw, Sparkles, X } from "lucide-react";
 import { reviewedMeta } from "@/data/contentSchema";
-import { authoredFieldGamePrompts } from "@/data/fieldGameAuthored";
+import { authoredFieldGameAnswers, authoredFieldGamePrompts } from "@/data/fieldGameAuthored";
 import { completeGame, GameId, startGame } from "@/lib/learningProgress";
 import { trackLearningEvent } from "@/lib/analytics";
 import { createRoundSeed, orderChoices } from "@/lib/answerOrder";
@@ -61,8 +61,9 @@ const baseMoreGameCatalog: MoreGameDefinition[] = [
 export const moreGameCatalog: MoreGameDefinition[] = baseMoreGameCatalog.map((game) => {
   const authored = authoredFieldGamePrompts[game.id] ?? [];
   const authoredScenarios = authored.map(([prompt, skill], index) => {
-    const template = game.scenarios[index % game.scenarios.length];
-    return { ...choice(prompt, skill, template.choices[0].text, template.choices[0].explanation, template.choices.slice(1).map((item) => item.text)), ...reviewedMeta(game.id, index + game.scenarios.length, prompt, [skill]), reviewStatus: "reviewed" };
+    const answerSet = authoredFieldGameAnswers[game.id]?.[index];
+    if (!answerSet) throw new Error(`Missing authored answer set for ${game.id} scenario ${index + 1}`);
+    return { ...choice(prompt, skill, answerSet.correct, answerSet.explanation, [answerSet.wrongA, answerSet.wrongB]), ...reviewedMeta(game.id, index + game.scenarios.length, prompt, [skill]), reviewStatus: "reviewed" };
   });
   const reviewedBaseScenarios = game.scenarios.map((scenario, index) => ({ ...scenario, ...reviewedMeta(game.id, index, scenario.prompt, [scenario.skill]), reviewStatus: "reviewed" }));
   return { ...game, scenarios: [...reviewedBaseScenarios, ...authoredScenarios] };

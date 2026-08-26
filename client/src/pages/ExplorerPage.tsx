@@ -231,7 +231,7 @@ export default function ExplorerPage() {
       return;
     }
     if (missing.length > 0) {
-      toast.error("Show your work in every required field before completing this mission");
+      toast.error(copy.selectRequired);
       return;
     }
     const attemptNumber = Math.min(20, (attemptCounts[mission.id] ?? 0) + 1);
@@ -328,10 +328,10 @@ export default function ExplorerPage() {
                   <label className="explorer-choice-select"><span>{copy.chooseMove}</span><select aria-label={copy.chooseMove} value={playChoice ?? ""} onChange={(event) => { const option = playOptions.find((item) => item.label[locale] === event.target.value); if (option) choosePlay(option); }} disabled={Boolean(selectedRecord)}><option value="">{copy.chooseMove}…</option>{playOptions.map((option) => <option key={option.label.en} value={option.label[locale]}>{option.icon} {option.label[locale]}</option>)}</select></label>
                   <label className="explorer-choice-select"><span>{copy.choiceSaved} · {copy.optionalWriting}</span><select aria-label={copy.choiceSaved} value={playReason ?? ""} onChange={(event) => event.target.value && chooseReason(event.target.value)} disabled={Boolean(selectedRecord)}><option value="">{copy.choiceSaved}…</option>{copy.reasonOptions.map((reason) => <option key={reason} value={reason}>{reason}</option>)}<option value={ownReasonLabel[locale]}>{ownReasonLabel[locale]}</option></select></label>
                 </div>
-                <p className="explorer-evidence-intro">Your selections and confirmations are saved as the practice evidence. Do not include private school, health or family details.</p>
+                <p className="explorer-evidence-intro">{copy.evidencePrompt}. Do not include private school, health or family details.</p>
                 {isAuthenticated && profileId && <label className="explorer-coaching-toggle"><input type="checkbox" checked={aiFeedbackRequested} onChange={(event) => setAiFeedbackRequested(event.target.checked)} disabled={Boolean(selectedRecord)} /><span>Give me optional AI coaching on this attempt. It will not create a label or prediction.</span></label>}
                 {showFeedback && <div className="explorer-feedback"><span><Check size={16} /> {aiFeedback ? "OPTIONAL AI COACHING" : "PRACTICE FEEDBACK"}</span><strong>{aiFeedback?.encouragement ?? mission.feedback.starter}</strong><p>{aiFeedback?.nextExperiment ?? mission.feedback.nextStep}</p>{aiFeedback && <p><strong>Reflect:</strong> {aiFeedback.reflectionQuestion}</p>}<small>{aiFeedback?.limitation ?? `Observed skill: ${mission.skill} · This is not a diagnosis or future prediction.`}</small></div>}
-                <div className="explorer-evidence-actions">{selectedRecord ? <><button type="button" className="explorer-reset" onClick={resetMission}>Try again</button><button type="button" className="explorer-share" onClick={() => copyShareText(mission)}><Share2 size={15} /> Share milestone</button></> : <button type="button" className="explorer-complete" onClick={completeMission}>Save evidence & complete <Check size={16} /></button>}</div>
+                <div className="explorer-evidence-actions">{selectedRecord ? <><button type="button" className="explorer-reset" onClick={resetMission}>Try again</button><button type="button" className="explorer-share" onClick={() => copyShareText(mission)}><Share2 size={15} /> Share milestone</button></> : <button type="button" className="explorer-complete" onClick={completeMission}>Save progress & complete <Check size={16} /></button>}</div>
               </div>
             </div>
           </section>

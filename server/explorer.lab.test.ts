@@ -31,11 +31,12 @@ describe("AI Explorer Lab pilot contract", () => {
   });
 
   it("requires completed interactions and saved selections before completion", () => {
-    expect(pageSource).toContain("Save evidence & complete");
+    expect(pageSource).toContain("Save progress & complete");
     expect(pageSource).toContain("Give me optional AI coaching on this attempt");
     expect(pageSource).toContain("showing the practice feedback instead");
     expect(pageSource).toContain("const missing = ([\"choice\", \"reason\"] as ExplorerEvidenceField[]).filter((field) => !evidence[field]?.trim())");
-    expect(pageSource).toContain("Your selections and confirmations are saved as the practice evidence.");
+    expect(pageSource).toContain("copy.evidencePrompt");
+    expect(pageSource).toContain("copy.selectRequired");
     expect(pageSource).not.toContain("confirmedWork");
     expect(pageSource).not.toContain("confirmedReview");
     expect(pageSource).not.toContain('className="explorer-confirmations"');

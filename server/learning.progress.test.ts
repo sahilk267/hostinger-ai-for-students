@@ -86,6 +86,10 @@ describe("learning progress access", () => {
       expect(game.scenarios).toHaveLength(30);
       expect(reviewStatuses.every((status) => status === "reviewed")).toBe(true);
       expect(prompts.some((prompt) => prompt.includes("practice "))).toBe(false);
+      const extended = game.scenarios.slice(5);
+      const answerSignatures = extended.map((scenario) => `${scenario.choices.map((choice) => choice.text).join("|")}::${scenario.choices.find((choice) => choice.correct)?.explanation ?? ""}`);
+      expect(new Set(answerSignatures).size).toBe(extended.length);
+      expect(extended.every((scenario) => scenario.choices.filter((choice) => choice.correct).length === 1)).toBe(true);
     }
   });
 
