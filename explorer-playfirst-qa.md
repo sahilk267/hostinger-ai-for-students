@@ -42,3 +42,7 @@ The supplied screenshots confirmed the nested green answer-controls panel was vi
 ## Explorer answer form cleanup QA
 
 The duplicate choice and reason textareas were removed from the rendered evidence field list. Their values are still captured by the move and reason dropdowns and remain in the saved evidence object, while the remaining mission-specific proof fields continue to be required for completion. Dropdowns now have an explicit dark border, inset contrast and keyboard focus ring. Desktop and mobile Explorer entry previews remain clean after the change. TypeScript, 14 focused tests and production build passed.
+
+## Explorer minimal answer-panel QA
+
+Removed the repeated proof notice and the “Kya naya samajh aaya?” reflection textarea from the learner-facing answer form. The remaining answer flow is now limited to visual/play/reason selections, a short privacy-safe explanation, two explicit completion confirmations and the save action. The choice and reason values continue to be persisted as evidence; no typing is required to complete this pilot mission. Desktop and mobile Explorer previews render cleanly after the change. TypeScript, 14 focused tests and production build passed.

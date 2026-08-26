@@ -13,7 +13,7 @@ import {
   type ExplorerEvidenceField,
   type ExplorerMission,
 } from "@/data/explorerLab";
-import { EXPLORER_LOCALES, explorerCopy, explorerFieldLabels, explorerFieldPlaceholders, getExplorerLocale, quickPlayOptions, speakExplorerText, visualModeCards, visualModeCopy, visualModeForKind, type ExplorerLocale, type ExplorerVisualMode } from "@/data/explorerI18n";
+import { EXPLORER_LOCALES, explorerCopy, getExplorerLocale, quickPlayOptions, speakExplorerText, visualModeCards, visualModeCopy, visualModeForKind, type ExplorerLocale, type ExplorerVisualMode } from "@/data/explorerI18n";
 import { getExplorerMissionCopy } from "@/data/explorerMissionI18n";
 
 const STORAGE_KEY = "aifs-explorer-pilot-v1";
@@ -122,7 +122,6 @@ export default function ExplorerPage() {
   const visualDone = visualSelections.length >= visualMinimum;
   const completedCount = missions.filter((item) => records[item.id]).length;
   const selectedRecord = mission ? records[mission.id] : undefined;
-  const visibleEvidenceFields = mission?.evidenceFields.filter((field) => field !== "choice" && field !== "reason") ?? [];
   const accountProfile = profileQuery.data?.find((item) => item.ageBand === ageBand);
   const observedSkills = useMemo(() => {
     const counts = new Map<string, number>();
@@ -230,8 +229,7 @@ export default function ExplorerPage() {
 
   const completeMission = () => {
     if (!mission) return;
-    const missing = visibleEvidenceFields.filter((field) => !evidence[field]?.trim());
-    const totalCharacters = Object.values(evidence).join(" ").trim().length;
+    const missing = (["choice", "reason"] as ExplorerEvidenceField[]).filter((field) => !evidence[field]?.trim());
     if (!visualDone) {
       toast.error(visualModeCopy[visualMode][locale].instruction);
       return;
@@ -242,10 +240,6 @@ export default function ExplorerPage() {
     }
     if (missing.length > 0) {
       toast.error("Show your work in every required field before completing this mission");
-      return;
-    }
-    if (totalCharacters < 30) {
-      toast.error("Add a little more detail so the observation is meaningful");
       return;
     }
     if (!confirmedWork || !confirmedReview) {
@@ -348,8 +342,7 @@ export default function ExplorerPage() {
                   <label className="explorer-choice-select"><span>{copy.chooseMove}</span><select aria-label={copy.chooseMove} value={playChoice ?? ""} onChange={(event) => { const option = playOptions.find((item) => item.label[locale] === event.target.value); if (option) choosePlay(option); }} disabled={Boolean(selectedRecord)}><option value="">{copy.chooseMove}…</option>{playOptions.map((option) => <option key={option.label.en} value={option.label[locale]}>{option.icon} {option.label[locale]}</option>)}</select></label>
                   <label className="explorer-choice-select"><span>{copy.choiceSaved} · {copy.optionalWriting}</span><select aria-label={copy.choiceSaved} value={playReason ?? ""} onChange={(event) => event.target.value && chooseReason(event.target.value)} disabled={Boolean(selectedRecord)}><option value="">{copy.choiceSaved}…</option>{copy.reasonOptions.map((reason) => <option key={reason} value={reason}>{reason}</option>)}<option value={ownReasonLabel[locale]}>{ownReasonLabel[locale]}</option></select></label>
                 </div>
-                <p className="explorer-evidence-intro">There is no perfect answer. Use your own words, a short description, a drawing title or a parent-supported explanation. Do not include private school, health or family details.</p>
-                <div className="explorer-fields"><p className="explorer-optional-note">{copy.evidencePrompt} · {copy.optionalWriting}.</p>{visibleEvidenceFields.map((field) => <label key={field}><span>{explorerFieldLabels[locale][field]} <b>*</b></span><textarea value={evidence[field] ?? ""} onChange={(event) => updateEvidence(field, event.target.value)} placeholder={explorerFieldPlaceholders[locale][field]} disabled={Boolean(selectedRecord)} /></label>)}</div>
+                <p className="explorer-evidence-intro">Your selections and confirmations are saved as the practice evidence. Do not include private school, health or family details.</p>
                 <div className="explorer-confirmations"><label><input type="checkbox" checked={confirmedWork} onChange={(event) => setConfirmedWork(event.target.checked)} disabled={Boolean(selectedRecord)} /><span>I did the task, not just read the instructions.</span></label><label><input type="checkbox" checked={confirmedReview} onChange={(event) => setConfirmedReview(event.target.checked)} disabled={Boolean(selectedRecord)} /><span>I looked at my result and can explain one choice.</span></label>{isAuthenticated && profileId && <label><input type="checkbox" checked={aiFeedbackRequested} onChange={(event) => setAiFeedbackRequested(event.target.checked)} disabled={Boolean(selectedRecord)} /><span>Give me optional AI coaching on this attempt. It will not create a label or prediction.</span></label>}</div>
                 {showFeedback && <div className="explorer-feedback"><span><Check size={16} /> {aiFeedback ? "OPTIONAL AI COACHING" : "PRACTICE FEEDBACK"}</span><strong>{aiFeedback?.encouragement ?? mission.feedback.starter}</strong><p>{aiFeedback?.nextExperiment ?? mission.feedback.nextStep}</p>{aiFeedback && <p><strong>Reflect:</strong> {aiFeedback.reflectionQuestion}</p>}<small>{aiFeedback?.limitation ?? `Observed skill: ${mission.skill} · This is not a diagnosis or future prediction.`}</small></div>}
                 <div className="explorer-evidence-actions">{selectedRecord ? <><button type="button" className="explorer-reset" onClick={resetMission}>Try again</button><button type="button" className="explorer-share" onClick={() => copyShareText(mission)}><Share2 size={15} /> Share milestone</button></> : <button type="button" className="explorer-complete" onClick={completeMission}>Save evidence & complete <Check size={16} /></button>}</div>

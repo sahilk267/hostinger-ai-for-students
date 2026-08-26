@@ -32,13 +32,12 @@ describe("AI Explorer Lab pilot contract", () => {
 
   it("requires submitted work, reflection checks and minimum evidence before completion", () => {
     expect(pageSource).toContain("Save evidence & complete");
-    expect(pageSource).toContain("totalCharacters < 30");
     expect(pageSource).toContain("I did the task, not just read the instructions.");
     expect(pageSource).toContain("I looked at my result and can explain one choice.");
     expect(pageSource).toContain("Give me optional AI coaching on this attempt");
     expect(pageSource).toContain("showing the practice feedback instead");
-    expect(pageSource).toContain("const visibleEvidenceFields = mission?.evidenceFields.filter((field) => field !== \"choice\" && field !== \"reason\") ?? []");
-    expect(pageSource).toContain("const missing = visibleEvidenceFields.filter((field) => !evidence[field]?.trim())");
+    expect(pageSource).toContain("const missing = ([\"choice\", \"reason\"] as ExplorerEvidenceField[]).filter((field) => !evidence[field]?.trim())");
+    expect(pageSource).toContain("Your selections and confirmations are saved as the practice evidence.");
     expect(pageSource).toContain("const attemptNumber = Math.min(20");
     expect(pageSource).toContain("aifs-explorer-attempt-counts-v1");
   });
@@ -99,8 +98,9 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(pageSource).toContain("STEP 02 / ANSWER");
     expect(pageSource).toContain("explorer-answer-controls");
     expect(pageSource).toContain("explorer-evidence-head-actions");
-    expect(pageSource).toContain("copy.evidencePrompt");
     expect(pageSource).not.toContain("Play choices already count as a first observation");
+    expect(pageSource).not.toContain("Kya naya samajh aaya?");
+    expect(pageSource).not.toContain('className="explorer-fields"');
     expect(pageSource).not.toContain('className="explorer-visual-game"');
     expect(pageSource).not.toContain('className="explorer-play-first"');
     expect(pageSource).toContain("copy.optionalWriting");

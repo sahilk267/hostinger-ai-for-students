@@ -513,3 +513,11 @@
 - [x] Add a clearly visible border and focus treatment to every answer dropdown.
 - [x] Add regression coverage for the reduced field count and dropdown border contract.
 - [x] Run TypeScript, tests, production build and desktop/mobile visual QA.
+
+## Explorer minimal answer panel
+
+- [x] Remove the repeated proof notice from the evidence section.
+- [x] Remove the redundant “Kya naya samajh aaya?” reflection textarea from the pilot answer form.
+- [x] Keep dropdown selections and explicit completion confirmations as the saved evidence gate.
+- [x] Add regression coverage for the minimal answer form and privacy boundary.
+- [x] Run TypeScript, tests, production build and desktop/mobile visual QA.
