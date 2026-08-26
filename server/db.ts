@@ -3,7 +3,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
 import { ENV, describeDatabaseConfig } from './_core/env';
-import { gt } from "drizzle-orm";
+import { gt, desc } from "drizzle-orm";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -149,6 +149,12 @@ export async function listExplorerProfilesForUser(userId: number) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(explorerProfiles).where(and(eq(explorerProfiles.userId, userId), isNull(explorerProfiles.deletedAt)));
+}
+
+export async function listExplorerAttemptsForUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({ id: explorerAttempts.id, profileId: explorerAttempts.profileId, missionId: explorerAttempts.missionId, completedAt: explorerAttempts.completedAt, ageBand: explorerProfiles.ageBand }).from(explorerAttempts).innerJoin(explorerProfiles, eq(explorerAttempts.profileId, explorerProfiles.id)).where(and(eq(explorerProfiles.userId, userId), isNull(explorerProfiles.deletedAt))).orderBy(desc(explorerAttempts.completedAt));
 }
 
 export async function createExplorerProfile(input: {

@@ -63,6 +63,7 @@ export const appRouter = router({
   }),
   explorer: router({
     profiles: protectedProcedure.query(({ ctx }) => db.listExplorerProfilesForUser(ctx.user.id)),
+    attempts: protectedProcedure.query(({ ctx }) => db.listExplorerAttemptsForUser(ctx.user.id)),
     createProfile: protectedProcedure.input(z.object({
       displayName: z.string().trim().min(1).max(80),
       ageBand: z.enum(["5-7", "8-10", "11-13", "14-17"]),

@@ -655,3 +655,5 @@
 - [x] Add a visible fallback entry point for signed-in users with no profile.
 - [x] Add regression coverage and validate desktop/mobile behavior.
 - [x] Checkpoint, synchronize and guide redeployment for the popup fix.
+
+- [x] Add an authenticated Explorer evidence summary to the Progress dashboard, backed by the owner-scoped attempts query.
