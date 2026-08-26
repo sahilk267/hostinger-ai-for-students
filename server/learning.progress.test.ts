@@ -83,7 +83,9 @@ describe("learning progress access", () => {
       expect(new Set(prompts).size).toBe(prompts.length);
       const reviewStatuses = game.scenarios.map((scenario) => scenario.reviewStatus);
       expect(reviewStatuses.every(Boolean)).toBe(true);
-      expect(reviewStatuses.filter((status) => status === "needs-facilitator-review").length).toBeGreaterThan(0);
+      expect(game.scenarios).toHaveLength(30);
+      expect(reviewStatuses.every((status) => status === "reviewed")).toBe(true);
+      expect(prompts.some((prompt) => prompt.includes("practice "))).toBe(false);
     }
   });
 
@@ -97,7 +99,7 @@ describe("learning progress access", () => {
       expect(source).toContain("onClick={() => choose");
     }
     const fieldGameSource = readFileSync(resolve(process.cwd(), "client/src/components/game/MoreAIGames.tsx"), "utf8");
-    expect(fieldGameSource).toContain("PILOT CASE / FACILITATOR REVIEW NEEDED");
+    expect(fieldGameSource).not.toContain("PILOT CASE / FACILITATOR REVIEW NEEDED");
     expect(fieldGameSource).toContain("REVIEWED CASE");
     const gamePage = readFileSync(resolve(process.cwd(), "client/src/pages/GamePage.tsx"), "utf8");
     expect(gamePage).toContain('aria-label="Filter learning games"');

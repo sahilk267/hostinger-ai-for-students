@@ -30,14 +30,15 @@ describe("AI Explorer Lab pilot contract", () => {
     }
   });
 
-  it("requires submitted work, reflection checks and minimum evidence before completion", () => {
+  it("requires completed interactions and saved selections before completion", () => {
     expect(pageSource).toContain("Save evidence & complete");
-    expect(pageSource).toContain("I did the task, not just read the instructions.");
-    expect(pageSource).toContain("I looked at my result and can explain one choice.");
     expect(pageSource).toContain("Give me optional AI coaching on this attempt");
     expect(pageSource).toContain("showing the practice feedback instead");
     expect(pageSource).toContain("const missing = ([\"choice\", \"reason\"] as ExplorerEvidenceField[]).filter((field) => !evidence[field]?.trim())");
     expect(pageSource).toContain("Your selections and confirmations are saved as the practice evidence.");
+    expect(pageSource).not.toContain("confirmedWork");
+    expect(pageSource).not.toContain("confirmedReview");
+    expect(pageSource).not.toContain('className="explorer-confirmations"');
     expect(pageSource).toContain("const attemptNumber = Math.min(20");
     expect(pageSource).toContain("aifs-explorer-attempt-counts-v1");
   });

@@ -50,3 +50,7 @@ Removed the repeated proof notice and the “Kya naya samajh aaya?” reflection
 ## Full-suite verification after minimal answer panel
 
 The complete Vitest suite now passes: 13 test files and 45 tests. The focused Explorer/Journey suite also passes, along with TypeScript and the production build. No external Hostinger Mail API failure occurred in this run.
+
+## Explorer checkbox-free completion QA
+
+Removed both learner confirmation checkboxes from the answer panel. Completion now requires the actual visual move interaction plus move and reason selections; the existing saved evidence object, privacy boundary, attempt numbering and optional coaching behavior remain intact. The answer form is shorter and no longer asks the learner to confirm actions the interface can already observe. Desktop and mobile Explorer previews remain clean after the change. Full Vitest suite: 13 files, 45 tests passed. TypeScript and production build passed.

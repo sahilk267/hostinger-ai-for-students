@@ -521,3 +521,20 @@
 - [x] Keep dropdown selections and explicit completion confirmations as the saved evidence gate.
 - [x] Add regression coverage for the minimal answer form and privacy boundary.
 - [x] Run TypeScript, tests, production build and desktop/mobile visual QA.
+
+## Explorer checkbox-free completion
+
+- [x] Remove the two learner confirmation checkboxes from the Explorer answer form.
+- [x] Remove confirmation state and validation dependencies without weakening interaction completion.
+- [x] Keep visual/play/reason selections, privacy boundaries and saved progress behavior intact.
+- [x] Add regression coverage proving the checkbox-free form and automatic completion gate.
+- [x] Run TypeScript, tests, production build and desktop/mobile visual QA.
+
+## Field-game authored content upgrade
+
+- [x] Replace the generated 25-scenario padding in each field game with distinct authored scenarios.
+- [x] Preserve at least 30 scenarios per field game with unique prompts, skills, correct answers and explanations.
+- [x] Keep review-status metadata explicit so only the authored scenarios are marked reviewed.
+- [x] Preserve randomized answer ordering and scoring by answer ID.
+- [x] Add regression checks for uniqueness, review coverage and absence of the padding template.
+- [x] Run the full test suite, TypeScript check, production build and representative game QA.
