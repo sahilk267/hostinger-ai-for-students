@@ -7,15 +7,39 @@ function isUsableDatabaseUrl(value: string) {
   }
 }
 
+const firstTrimmed = (env: Record<string, string | undefined>, keys: string[]) => {
+  for (const key of keys) {
+    const value = env[key]?.trim();
+    if (value) return { key, value };
+  }
+  return undefined;
+};
+
+export function describeDatabaseConfig(env: Record<string, string | undefined>) {
+  const explicit = env.DATABASE_URL?.trim();
+  if (explicit) return { source: "DATABASE_URL", valid: isUsableDatabaseUrl(explicit), presentKeys: ["DATABASE_URL"] };
+
+  const fields = {
+    host: firstTrimmed(env, ["DATABASE_HOST", "DB_HOST", "MYSQL_HOST"]),
+    port: firstTrimmed(env, ["DATABASE_PORT", "DB_PORT", "MYSQL_PORT"]),
+    user: firstTrimmed(env, ["DATABASE_USER", "DB_USER", "MYSQL_USER"]),
+    password: firstTrimmed(env, ["DATABASE_PASSWORD", "DB_PASSWORD", "MYSQL_PASSWORD"]),
+    name: firstTrimmed(env, ["DATABASE_NAME", "DB_NAME", "MYSQL_DATABASE", "DB_DATABASE"]),
+  };
+  const presentKeys = Object.values(fields).filter(Boolean).map((field) => field!.key);
+  const valid = Boolean(fields.host && fields.user && fields.password && fields.name);
+  return { source: valid ? "split" : "missing-or-incomplete", valid, presentKeys };
+}
+
 export function buildDatabaseUrl(env: Record<string, string | undefined>) {
   const explicit = env.DATABASE_URL?.trim();
   if (explicit && isUsableDatabaseUrl(explicit)) return explicit;
 
-  const host = (env.DATABASE_HOST ?? env.DB_HOST)?.trim();
-  const port = (env.DATABASE_PORT ?? env.DB_PORT ?? "3306").trim();
-  const user = (env.DATABASE_USER ?? env.DB_USER)?.trim();
-  const password = env.DATABASE_PASSWORD ?? env.DB_PASSWORD;
-  const name = (env.DATABASE_NAME ?? env.DB_NAME)?.trim();
+  const host = firstTrimmed(env, ["DATABASE_HOST", "DB_HOST", "MYSQL_HOST"])?.value;
+  const port = (firstTrimmed(env, ["DATABASE_PORT", "DB_PORT", "MYSQL_PORT"])?.value ?? "3306").trim();
+  const user = firstTrimmed(env, ["DATABASE_USER", "DB_USER", "MYSQL_USER"])?.value;
+  const password = firstTrimmed(env, ["DATABASE_PASSWORD", "DB_PASSWORD", "MYSQL_PASSWORD"])?.value;
+  const name = firstTrimmed(env, ["DATABASE_NAME", "DB_NAME", "MYSQL_DATABASE", "DB_DATABASE"])?.value;
   if (!host || !user || password === undefined || !name) return "";
 
   const safeHost = host.includes(":") && !host.startsWith("[") ? `[${host}]` : host;

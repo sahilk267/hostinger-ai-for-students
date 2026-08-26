@@ -590,3 +590,11 @@
 - [x] Determine whether the 500 is caused by missing connectivity, unapplied schema, column/index mismatch or an application bug.
 - [x] Apply only the smallest safe correction or add a non-secret diagnostic response that identifies the failing layer.
 - [x] Re-run tests/build and provide the exact Hostinger database/schema verification step required to close the live gate.
+
+## Hostinger database configuration visibility follow-up
+
+- [x] Record the new `database not available` runtime evidence and deployed commit.
+- [x] Verify resolver precedence and all supported Hostinger database variable names.
+- [x] Add a secret-safe diagnostic that reports only configuration state, never values.
+- [x] Test, checkpoint and synchronize the diagnostic release.
+- [ ] Guide the required Hostinger variable save/restart and final OTP smoke test.

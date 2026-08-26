@@ -2,14 +2,19 @@ import { and, eq, isNull } from "drizzle-orm";
 import { createHash, randomBytes } from "node:crypto";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
-import { ENV } from './_core/env';
+import { ENV, describeDatabaseConfig } from './_core/env';
 import { gt } from "drizzle-orm";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
-  if (!_db && ENV.databaseUrl) {
+  if (!_db) {
+    if (!ENV.databaseUrl) {
+      const state = describeDatabaseConfig(process.env);
+      console.warn(`[Database] No usable database configuration: source=${state.source}; valid=${state.valid}; present=${state.presentKeys.join(",") || "none"}`);
+      return null;
+    }
     try {
       _db = drizzle(ENV.databaseUrl);
     } catch (error) {

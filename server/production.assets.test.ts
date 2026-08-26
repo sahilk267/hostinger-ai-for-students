@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { formatHostingerPreflight, inspectHostingerEnv } from "@shared/hostingerPreflight";
-import { buildDatabaseUrl } from "./_core/env";
+import { buildDatabaseUrl, describeDatabaseConfig } from "./_core/env";
 
 const root = resolve(import.meta.dirname, "..");
 const read = (file: string) => readFileSync(resolve(root, file), "utf8");
@@ -84,6 +84,13 @@ describe("production asset and analytics contracts", () => {
       DATABASE_NAME: "aifs_db",
     })).toBe("mysql://aifs_user:p%40ss%20word@127.0.0.1:3306/aifs_db");
     expect(buildDatabaseUrl({ DB_HOST: "127.0.0.1", DB_USER: "aifs_user", DB_PASSWORD: "secret" })).toBe("");
+    expect(buildDatabaseUrl({ MYSQL_HOST: "db.internal", MYSQL_PORT: "3306", MYSQL_USER: "aifs_user", MYSQL_PASSWORD: "secret", MYSQL_DATABASE: "aifs_db" })).toBe("mysql://aifs_user:secret@db.internal:3306/aifs_db");
+  });
+
+  it("describes database configuration without exposing values", () => {
+    expect(describeDatabaseConfig({ DATABASE_URL: "127.0.0.1:3306", DATABASE_PASSWORD: "secret" })).toEqual({ source: "DATABASE_URL", valid: false, presentKeys: ["DATABASE_URL"] });
+    expect(describeDatabaseConfig({ MYSQL_HOST: "db.internal", MYSQL_USER: "aifs_user", MYSQL_PASSWORD: "secret", MYSQL_DATABASE: "aifs_db" })).toEqual({ source: "split", valid: true, presentKeys: ["MYSQL_HOST", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DATABASE"] });
+    expect(JSON.stringify(describeDatabaseConfig({ DATABASE_PASSWORD: "secret" }))).not.toContain("secret");
   });
 
   it("uses deploy-safe CDN assets in the homepage and game hub", () => {
