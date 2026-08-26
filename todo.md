@@ -646,7 +646,7 @@
 - [x] Design a clear next-step prompt explaining child nickname and parent consent.
 - [x] Implement the post-OTP profile prompt and eligible progress sync without silently uploading child data.
 - [x] Add regression coverage and validate desktop/mobile behavior.
-- [ ] Checkpoint, synchronize and guide the live OTP-to-save test.
+- [x] Checkpoint, synchronize and guide the live OTP-to-save test.
 
 ## Missing post-OTP profile popup bug
 
@@ -654,4 +654,4 @@
 - [x] Make profile-prompt visibility robust when auth state and profile query resolve at different times.
 - [x] Add a visible fallback entry point for signed-in users with no profile.
 - [x] Add regression coverage and validate desktop/mobile behavior.
-- [ ] Checkpoint, synchronize and guide redeployment for the popup fix.
+- [x] Checkpoint, synchronize and guide redeployment for the popup fix.
