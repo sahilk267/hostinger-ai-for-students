@@ -572,4 +572,4 @@
 - [x] Fix the minimal server/client cause of fresh-code rejection while preserving rate limits and privacy.
 - [x] Add regression coverage for a fresh valid code, normalized email, expiry boundary and resend behavior.
 - [x] Run TypeScript, full tests, production build and a safe auth-flow validation.
-- [ ] Save a checkpoint and document any remaining user-owned production smoke test.
+- [x] Save a checkpoint and document any remaining user-owned production smoke test.
