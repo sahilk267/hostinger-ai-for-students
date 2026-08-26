@@ -80,6 +80,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     });
   } catch (error) {
     console.error("[Database] Failed to upsert user:", error);
+    const cause = error instanceof Error ? (error as Error & { cause?: unknown }).cause : undefined;
+    if (cause instanceof Error) console.error("[Database] Driver cause:", cause.message);
     throw error;
   }
 }

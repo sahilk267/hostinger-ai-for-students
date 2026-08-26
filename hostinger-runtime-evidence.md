@@ -6,3 +6,7 @@
 - The decisive error is `TypeError: Invalid URL` from mysql2 `ConnectionConfig.parseUrl` while `drizzle()` creates the connection. This occurs before `upsertUser` or `getUserByOpenId` can execute SQL, so the current failure is a malformed connection string, not yet a users-table schema mismatch.
 - The repository schema expects a MySQL URL in the form `mysql://USER:PASSWORD@HOST:3306/DATABASE`; a bare value such as `127.0.0.1:3306` is invalid for mysql2.
 - No credentials, OTP values or private learner data were recorded here.
+
+- The latest browser console confirms the connection-string issue is resolved: the server reaches MySQL and generates an INSERT into `users` followed by an `ON DUPLICATE KEY UPDATE` clause.
+- The remaining failure is in the users-table write contract, specifically the `name` column in the duplicate-key update. The supplied console excerpt does not include the underlying MySQL error code/message, so the exact difference—missing column, generated/protected column, or another older table definition—cannot be safely inferred from the query text alone.
+- The repository migration `0000_special_sway.sql` defines `users.name` as nullable `TEXT` and includes the other auth columns. Hostinger’s `SHOW CREATE TABLE users` or the full runtime MySQL error is required before applying a destructive or schema-changing SQL operation.

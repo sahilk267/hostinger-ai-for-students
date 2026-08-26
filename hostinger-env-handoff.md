@@ -46,6 +46,12 @@ The database password previously shared in chat must be replaced before deployme
 | Public configuration | All `VITE_*` values are non-secret and appropriate for the intended domain. |
 | Runtime | The Node.js entrypoint and start command use the platform-provided port rather than a hard-coded port. |
 
+## Blank database schema import
+
+If phpMyAdmin shows **No tables found in database**, select the application database, open **Import**, choose the repository file `hostinger-schema-import.sql`, keep the SQL format selected, and run the import. Do not create individual tables manually and do not modify the SQL to add passwords or user rows. After import, the Structure tab should show `users`, `learningProgress`, `explorerProfiles`, `explorerAttempts` and `explorerShares`. The SQL file also includes the required foreign keys and unique indexes.
+
+For a read-only verification in phpMyAdmin, run `SHOW TABLES;`, `SHOW COLUMNS FROM users;` and `SHOW CREATE TABLE users;`. The `users` table must contain `id`, `openId`, `name`, `email`, `loginMethod`, `role`, `createdAt`, `updatedAt` and `lastSignedIn`, with `id` as the primary key and `openId` unique. Do not run `DROP`, `TRUNCATE` or manual row inserts.
+
 ## User-owned checks after configuration
 
 The following cannot be truthfully marked complete from the sandbox: real HTTPS OTP delivery, guest-progress migration in a second browser/device, contact-form delivery on the live domain, Hostinger database connectivity, and the final staging smoke test. Run those only after the protected variables and domain are configured, then record pass/fail outcomes without copying secrets or private learner data.

@@ -607,3 +607,20 @@
 - [x] Add explicit OAuth environment guidance without making Manus OAuth mandatory for local OTP.
 - [ ] Validate, checkpoint and synchronize the updated release.
 - [ ] Require database-password rotation because a credential was shared in chat, then guide save/redeploy and final smoke test.
+
+## Hostinger users-table schema mismatch follow-up
+
+- [ ] Record the confirmed `name`-column upsert failure without retaining personal or credential values.
+- [ ] Compare the deployed users-table shape with the repository schema and migration SQL.
+- [ ] Choose a non-destructive schema synchronization or compatibility correction.
+- [ ] Add regression coverage for the corrected upsert path and migration contract.
+- [ ] Validate, checkpoint and synchronize the fix, then guide the live migration smoke test.
+
+## Blank Hostinger database initialization
+
+- [x] Record that the target database has no tables and enumerate the project’s required tables.
+- [x] Prepare a reviewed, ordered schema import for the blank database without credentials or user data.
+- [x] Add phpMyAdmin import and post-import verification guidance.
+- [x] Add regression coverage for migration-table and foreign-key contracts.
+- [ ] Run validation, checkpoint and synchronize the schema-guidance release.
+- [ ] Guide the user through import, restart and final OTP/progress smoke testing.

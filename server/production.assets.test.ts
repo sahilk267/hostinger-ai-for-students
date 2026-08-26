@@ -124,6 +124,23 @@ describe("production asset and analytics contracts", () => {
     expect(handoff).not.toContain("DATABASE_URL=mysql://");
   });
 
+  it("keeps the blank Hostinger schema import complete and ordered", () => {
+    const schema = read("hostinger-schema-import.sql");
+    for (const table of ["users", "learningProgress", "explorerProfiles", "explorerAttempts", "explorerShares"]) expect(schema).toContain(`CREATE TABLE \`${table}\``);
+    expect(schema).toContain("learningProgress_userId_users_id_fk");
+    expect(schema).toContain("explorerProfiles_userId_users_id_fk");
+    expect(schema).toContain("explorerAttempts_profileId_explorerProfiles_id_fk");
+    expect(schema).toContain("explorerShares_profileId_explorerProfiles_id_fk");
+    expect(schema).not.toMatch(/INSERT INTO|DROP TABLE|TRUNCATE TABLE/i);
+  });
+
+  it("keeps database diagnostics cause-only and secret-safe", () => {
+    const dbSource = read("server/db.ts");
+    expect(dbSource).toContain('[Database] Driver cause:');
+    expect(dbSource).not.toContain('console.error("[Database] Failed query:');
+    expect(dbSource).not.toContain('console.error("[Database] params:');
+  });
+
   it("keeps deployment status truthful about pending live gates", () => {
     const status = read("hostinger-deployment-status.md");
     expect(status).toContain("53 tests pass");
