@@ -308,7 +308,7 @@ export default function ExplorerPage() {
       <header className="explorer-header">
         <a className="mission-brand" href="/"><img src={assetUrls.mark} alt="" /><span><strong>AI</strong> for <em>Students</em></span></a>
         <a className="mission-back" href="/"><ArrowLeft size={15} /> Back to the desk</a>
-        <AuthControls />
+        <AuthControls onVerified={handleVerified} />
       </header>
       {showProfilePrompt && isAuthenticated && !profileId && (
         <div className="auth-modal-backdrop" role="presentation">
