@@ -295,14 +295,14 @@
 ## Hostinger mirror repository synchronization
 
 - [x] Verify whether `sahilk267/aiforstudents` contains the current release or an older clone.
-- [ ] Synchronize the mirror only if the user confirms it is the intended deployment source and has write access.
-- [ ] Confirm the Hostinger deployment points to the latest synchronized commit before redeploying.
+- [x] Synchronize the mirror only if the user confirms it is the intended deployment source and has write access.
+- [x] Confirm the Hostinger deployment points to the latest synchronized commit before redeploying.
 
 ## Exact Hostinger source pnpm correction
 
 - [x] Verify the packageManager value in the exact repository/commit used by Hostinger.
-- [ ] Apply the minimal pnpm 11.24.0 compatibility change to the intended deployment source.
-- [ ] Validate and push the exact source, then confirm Hostinger sees the corrected commit.
+- [x] Apply the minimal pnpm 11.24.0 compatibility change to the intended deployment source.
+- [x] Validate and push the exact source, then confirm Hostinger sees the corrected commit.
 
 ## pnpm configuration migration follow-up
 
