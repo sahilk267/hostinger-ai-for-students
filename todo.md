@@ -639,3 +639,11 @@
 - [x] Add an explicit parent-consented migration path for existing local Explorer evidence, or document why it remains local by design.
 - [x] Add regression coverage and validate the account-backed progress behavior.
 - [ ] Guide the live verification in phpMyAdmin and across a fresh browser/device.
+
+## Post-OTP save-flow clarity follow-up
+
+- [x] Trace the OTP success callback and the Save progress entry point.
+- [x] Design a clear next-step prompt explaining child nickname and parent consent.
+- [x] Implement the post-OTP profile prompt and eligible progress sync without silently uploading child data.
+- [x] Add regression coverage and validate desktop/mobile behavior.
+- [ ] Checkpoint, synchronize and guide the live OTP-to-save test.

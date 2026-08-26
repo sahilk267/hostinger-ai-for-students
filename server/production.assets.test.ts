@@ -124,6 +124,16 @@ describe("production asset and analytics contracts", () => {
     expect(handoff).not.toContain("DATABASE_URL=mysql://");
   });
 
+  it("explains the required post-OTP Explorer save step", () => {
+    const auth = read("client/src/components/LocalAuthDialog.tsx");
+    const explorer = read("client/src/pages/ExplorerPage.tsx");
+    expect(auth).toContain("onVerified?.()");
+    expect(explorer).toContain("ONE LAST STEP / SAVE YOUR LAB");
+    expect(explorer).toContain("Save profile and my progress");
+    expect(explorer).toContain("Not now — keep this evidence on this device");
+    expect(explorer).toContain("I am the parent/guardian and consent");
+  });
+
   it("keeps Explorer local-evidence migration explicit and account-backed", () => {
     const explorer = read("client/src/pages/ExplorerPage.tsx");
     expect(explorer).toContain("syncLocalEvidence");

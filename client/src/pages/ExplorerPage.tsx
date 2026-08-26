@@ -95,6 +95,7 @@ export default function ExplorerPage() {
   const [consentConfirmed, setConsentConfirmed] = useState(false);
   const [aiFeedbackRequested, setAiFeedbackRequested] = useState(false);
   const [isSyncingLocalEvidence, setIsSyncingLocalEvidence] = useState(false);
+  const [showProfilePrompt, setShowProfilePrompt] = useState(false);
   const [aiFeedback, setAiFeedback] = useState<{ encouragement: string; nextExperiment: string; reflectionQuestion: string; limitation: string } | null>(null);
   const { isAuthenticated } = useAuth();
   const profileQuery = trpc.explorer.profiles.useQuery(undefined, { enabled: isAuthenticated });
@@ -234,6 +235,11 @@ export default function ExplorerPage() {
     }
   };
 
+  const handleVerified = () => {
+    setShowProfilePrompt(true);
+    void profileQuery.refetch();
+  };
+
   const saveProfile = () => {
     if (!ageBand || !profileName.trim() || !consentConfirmed) {
       toast.error("Add a display name and confirm parent consent before saving");
@@ -243,6 +249,7 @@ export default function ExplorerPage() {
       onSuccess: (profile) => {
         setProfileId(profile.id);
         toast.success("Explorer profile saved to your account");
+        setShowProfilePrompt(false);
         void profileQuery.refetch();
         void syncLocalEvidence(profile.id);
       },
@@ -303,6 +310,21 @@ export default function ExplorerPage() {
         <a className="mission-back" href="/"><ArrowLeft size={15} /> Back to the desk</a>
         <AuthControls />
       </header>
+      {showProfilePrompt && isAuthenticated && !profileId && (
+        <div className="auth-modal-backdrop" role="presentation">
+          <section className="auth-modal" role="dialog" aria-modal="true" aria-labelledby="profile-prompt-title">
+            <button className="auth-modal-close" type="button" onClick={() => setShowProfilePrompt(false)} aria-label="Close profile setup"><span aria-hidden="true">×</span></button>
+            <span className="game-kicker">ONE LAST STEP / SAVE YOUR LAB</span>
+            <h2 id="profile-prompt-title">Make this progress easy to return to.</h2>
+            <p>You are signed in. To save Explorer evidence across devices, a parent or guardian should choose a nickname and confirm consent. No full name is needed.</p>
+            <label htmlFor="post-auth-profile-name">Child nickname</label>
+            <input id="post-auth-profile-name" value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="A nickname, not a full name" maxLength={80} autoFocus />
+            <label className="explorer-consent-check"><input type="checkbox" checked={consentConfirmed} onChange={(event) => setConsentConfirmed(event.target.checked)} /><span>I am the parent/guardian and consent to saving this learning profile.</span></label>
+            <button className="button button--primary" type="button" onClick={saveProfile} disabled={createProfile.isPending}>{createProfile.isPending ? "Saving profile…" : "Save profile and my progress"}</button>
+            <button className="text-link" type="button" onClick={() => setShowProfilePrompt(false)}>Not now — keep this evidence on this device</button>
+          </section>
+        </div>
+      )}
       <main className="explorer-main">
         <section className="explorer-hero">
           <div>
@@ -334,7 +356,7 @@ export default function ExplorerPage() {
           <section className="explorer-lab" aria-labelledby="explorer-missions-heading">
             <div className="explorer-lab-top"><div><span className="mission-section-label">STEP 02 / CHOOSE A MISSION</span><h2 id="explorer-missions-heading">{copy.missionPickerTitle}</h2></div><button type="button" className="explorer-change-band" onClick={() => setAgeBand(null)}>Change age band</button></div>
             <div className="explorer-progress-strip"><div><strong>{completedCount} / 6</strong><span>missions completed</span></div><div className="explorer-progress-track"><span style={{ width: `${(completedCount / 6) * 100}%` }} /></div><p>Complete several different missions before treating any pattern as meaningful.</p></div>
-            {isAuthenticated && !profileId ? <div className="explorer-account-save"><div><span className="mission-section-label">OPTIONAL / PARENT SAVE</span><strong>Keep this lab across devices.</strong><p>Create one parent-controlled profile for this age band. Your child can still play as a guest.</p></div><div className="explorer-account-fields"><label><span>Child display name</span><input value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="A nickname, not a full name" maxLength={80} /></label><label className="explorer-consent-check"><input type="checkbox" checked={consentConfirmed} onChange={(event) => setConsentConfirmed(event.target.checked)} /><span>I am the parent/guardian and consent to saving this learning profile.</span></label><button type="button" className="explorer-save-profile" onClick={saveProfile} disabled={createProfile.isPending}>Save parent profile <ArrowRight size={15} /></button></div></div> : !isAuthenticated ? <div className="explorer-guest-save"><span>Playing as a guest? Evidence stays on this device.</span><LocalAuthDialog label="Sign in to save this lab" className="text-link" /></div> : <div className="explorer-guest-save"><Check size={15} /> Parent profile connected; completed evidence can sync. <button type="button" className="text-link" onClick={() => { if (profileId) void syncLocalEvidence(profileId); }} disabled={isSyncingLocalEvidence || !profileId}>{isSyncingLocalEvidence ? "Syncing…" : "Sync completed evidence"}</button></div>}
+            {isAuthenticated && !profileId ? <div className="explorer-account-save"><div><span className="mission-section-label">OPTIONAL / PARENT SAVE</span><strong>Keep this lab across devices.</strong><p>Create one parent-controlled profile for this age band. Your child can still play as a guest.</p></div><div className="explorer-account-fields"><label><span>Child display name</span><input value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="A nickname, not a full name" maxLength={80} /></label><label className="explorer-consent-check"><input type="checkbox" checked={consentConfirmed} onChange={(event) => setConsentConfirmed(event.target.checked)} /><span>I am the parent/guardian and consent to saving this learning profile.</span></label><button type="button" className="explorer-save-profile" onClick={saveProfile} disabled={createProfile.isPending}>Save parent profile <ArrowRight size={15} /></button></div></div> : !isAuthenticated ? <div className="explorer-guest-save"><span>Playing as a guest? Evidence stays on this device.</span><LocalAuthDialog label="Sign in to save this lab" className="text-link" onVerified={handleVerified} /></div> : <div className="explorer-guest-save"><Check size={15} /> Parent profile connected; completed evidence can sync. <button type="button" className="text-link" onClick={() => { if (profileId) void syncLocalEvidence(profileId); }} disabled={isSyncingLocalEvidence || !profileId}>{isSyncingLocalEvidence ? "Syncing…" : "Sync completed evidence"}</button></div>}
             <div className="explorer-mission-grid">
               {missions.map((item, index) => {
                 const done = Boolean(records[item.id]);

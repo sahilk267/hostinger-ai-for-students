@@ -7,9 +7,11 @@ import { toast } from "sonner";
 export default function LocalAuthDialog({
   label = "Sign in to save progress",
   className = "auth-action",
+  onVerified,
 }: {
   label?: string;
   className?: string;
+  onVerified?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -34,6 +36,7 @@ export default function LocalAuthDialog({
       setSent(false);
       setCode("");
       toast.success("You are signed in. Your progress is now saved.");
+      onVerified?.();
     },
     onError: (error) => toast.error(error.message || "We could not verify that code."),
   });
