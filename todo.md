@@ -624,3 +624,18 @@
 - [x] Add regression coverage for migration-table and foreign-key contracts.
 - [x] Run validation, checkpoint and synchronize the schema-guidance release.
 - [ ] Guide the user through import, restart and final OTP/progress smoke testing.
+
+## Authenticated progress persistence follow-up
+
+- [ ] Trace whether completed-game progress is saved locally, remotely, or both for authenticated users.
+- [ ] Trace the `learning.save` mutation and `learningProgress` database write path.
+- [ ] Fix any gap that prevents authenticated saved progress from reaching Hostinger and add regression coverage.
+- [ ] Validate and guide a live progress-row smoke test in phpMyAdmin.
+
+## Progress visibility and Explorer migration follow-up
+
+- [x] Document which progress is local guest evidence versus account-backed learning progress.
+- [x] Verify why the completed Explorer missions are not represented in the current database tables after login.
+- [x] Add an explicit parent-consented migration path for existing local Explorer evidence, or document why it remains local by design.
+- [x] Add regression coverage and validate the account-backed progress behavior.
+- [ ] Guide the live verification in phpMyAdmin and across a fresh browser/device.

@@ -52,6 +52,10 @@ If phpMyAdmin shows **No tables found in database**, select the application data
 
 For a read-only verification in phpMyAdmin, run `SHOW TABLES;`, `SHOW COLUMNS FROM users;` and `SHOW CREATE TABLE users;`. The `users` table must contain `id`, `openId`, `name`, `email`, `loginMethod`, `role`, `createdAt`, `updatedAt` and `lastSignedIn`, with `id` as the primary key and `openId` unique. Do not run `DROP`, `TRUNCATE` or manual row inserts.
 
+## Progress persistence behavior
+
+General learning-game scores are kept in browser storage while a learner plays. When the learner signs in and opens the progress dashboard, the dashboard sends those score summaries through `learning.syncGuest` to the account-backed `learningProgress` table; login alone does not create a progress row. Explorer mission evidence is intentionally more private: it remains in the browser unless a parent or guardian creates an age-band profile and explicitly chooses **Sync completed evidence**. That action writes completed mission evidence to `explorerAttempts` for the selected profile. This separation is intentional and prevents guest evidence from being uploaded merely because an account exists.
+
 ## User-owned checks after configuration
 
 The following cannot be truthfully marked complete from the sandbox: real HTTPS OTP delivery, guest-progress migration in a second browser/device, contact-form delivery on the live domain, Hostinger database connectivity, and the final staging smoke test. Run those only after the protected variables and domain are configured, then record pass/fail outcomes without copying secrets or private learner data.

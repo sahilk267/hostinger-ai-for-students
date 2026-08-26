@@ -124,6 +124,15 @@ describe("production asset and analytics contracts", () => {
     expect(handoff).not.toContain("DATABASE_URL=mysql://");
   });
 
+  it("keeps Explorer local-evidence migration explicit and account-backed", () => {
+    const explorer = read("client/src/pages/ExplorerPage.tsx");
+    expect(explorer).toContain("syncLocalEvidence");
+    expect(explorer).toContain("saveAttempt.mutateAsync");
+    expect(explorer).toContain("Parent profile connected; completed evidence can sync.");
+    expect(explorer).toContain("Sync completed evidence");
+    expect(explorer).toContain("aifs-explorer-evidence-synced-");
+  });
+
   it("keeps the blank Hostinger schema import complete and ordered", () => {
     const schema = read("hostinger-schema-import.sql");
     for (const table of ["users", "learningProgress", "explorerProfiles", "explorerAttempts", "explorerShares"]) expect(schema).toContain(`CREATE TABLE \`${table}\``);

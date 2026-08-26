@@ -94,6 +94,7 @@ export default function ExplorerPage() {
   const [profileName, setProfileName] = useState("");
   const [consentConfirmed, setConsentConfirmed] = useState(false);
   const [aiFeedbackRequested, setAiFeedbackRequested] = useState(false);
+  const [isSyncingLocalEvidence, setIsSyncingLocalEvidence] = useState(false);
   const [aiFeedback, setAiFeedback] = useState<{ encouragement: string; nextExperiment: string; reflectionQuestion: string; limitation: string } | null>(null);
   const { isAuthenticated } = useAuth();
   const profileQuery = trpc.explorer.profiles.useQuery(undefined, { enabled: isAuthenticated });
@@ -204,6 +205,35 @@ export default function ExplorerPage() {
     setAiFeedback(null);
   };
 
+  const syncLocalEvidence = async (nextProfileId: number) => {
+    if (isSyncingLocalEvidence) return;
+    const syncKey = `aifs-explorer-evidence-synced-${nextProfileId}`;
+    if (localStorage.getItem(syncKey) === "1") {
+      toast.success("This browser’s completed evidence is already synced");
+      return;
+    }
+    const completed = missions.filter((item) => records[item.id]);
+    if (!completed.length) {
+      toast.success("There is no completed local evidence to sync yet");
+      return;
+    }
+    setIsSyncingLocalEvidence(true);
+    try {
+      for (const item of completed) {
+        const record = records[item.id];
+        if (!record) continue;
+        const attemptNumber = Math.min(20, attemptCounts[item.id] ?? 1);
+        await saveAttempt.mutateAsync({ profileId: nextProfileId, missionId: item.id, attemptNumber, difficulty: "standard", language: locale, accessibilityMode: "standard", evidenceJson: JSON.stringify(record.evidence), observationJson: JSON.stringify({ skill: item.skill, rubric: item.rubric }), startedAt: new Date(record.completedAt) });
+      }
+      localStorage.setItem(syncKey, "1");
+      toast.success(`${completed.length} completed mission${completed.length === 1 ? "" : "s"} synced to the account`);
+    } catch {
+      toast.error("Some local evidence could not be synced yet; your browser copy is still safe");
+    } finally {
+      setIsSyncingLocalEvidence(false);
+    }
+  };
+
   const saveProfile = () => {
     if (!ageBand || !profileName.trim() || !consentConfirmed) {
       toast.error("Add a display name and confirm parent consent before saving");
@@ -214,6 +244,7 @@ export default function ExplorerPage() {
         setProfileId(profile.id);
         toast.success("Explorer profile saved to your account");
         void profileQuery.refetch();
+        void syncLocalEvidence(profile.id);
       },
       onError: () => toast.error("We could not save this profile yet"),
     });
@@ -303,7 +334,7 @@ export default function ExplorerPage() {
           <section className="explorer-lab" aria-labelledby="explorer-missions-heading">
             <div className="explorer-lab-top"><div><span className="mission-section-label">STEP 02 / CHOOSE A MISSION</span><h2 id="explorer-missions-heading">{copy.missionPickerTitle}</h2></div><button type="button" className="explorer-change-band" onClick={() => setAgeBand(null)}>Change age band</button></div>
             <div className="explorer-progress-strip"><div><strong>{completedCount} / 6</strong><span>missions completed</span></div><div className="explorer-progress-track"><span style={{ width: `${(completedCount / 6) * 100}%` }} /></div><p>Complete several different missions before treating any pattern as meaningful.</p></div>
-            {isAuthenticated && !profileId ? <div className="explorer-account-save"><div><span className="mission-section-label">OPTIONAL / PARENT SAVE</span><strong>Keep this lab across devices.</strong><p>Create one parent-controlled profile for this age band. Your child can still play as a guest.</p></div><div className="explorer-account-fields"><label><span>Child display name</span><input value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="A nickname, not a full name" maxLength={80} /></label><label className="explorer-consent-check"><input type="checkbox" checked={consentConfirmed} onChange={(event) => setConsentConfirmed(event.target.checked)} /><span>I am the parent/guardian and consent to saving this learning profile.</span></label><button type="button" className="explorer-save-profile" onClick={saveProfile} disabled={createProfile.isPending}>Save parent profile <ArrowRight size={15} /></button></div></div> : !isAuthenticated ? <div className="explorer-guest-save"><span>Playing as a guest? Evidence stays on this device.</span><LocalAuthDialog label="Sign in to save this lab" className="text-link" /></div> : <div className="explorer-guest-save"><Check size={15} /> Parent profile connected; completed evidence can sync.</div>}
+            {isAuthenticated && !profileId ? <div className="explorer-account-save"><div><span className="mission-section-label">OPTIONAL / PARENT SAVE</span><strong>Keep this lab across devices.</strong><p>Create one parent-controlled profile for this age band. Your child can still play as a guest.</p></div><div className="explorer-account-fields"><label><span>Child display name</span><input value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="A nickname, not a full name" maxLength={80} /></label><label className="explorer-consent-check"><input type="checkbox" checked={consentConfirmed} onChange={(event) => setConsentConfirmed(event.target.checked)} /><span>I am the parent/guardian and consent to saving this learning profile.</span></label><button type="button" className="explorer-save-profile" onClick={saveProfile} disabled={createProfile.isPending}>Save parent profile <ArrowRight size={15} /></button></div></div> : !isAuthenticated ? <div className="explorer-guest-save"><span>Playing as a guest? Evidence stays on this device.</span><LocalAuthDialog label="Sign in to save this lab" className="text-link" /></div> : <div className="explorer-guest-save"><Check size={15} /> Parent profile connected; completed evidence can sync. <button type="button" className="text-link" onClick={() => { if (profileId) void syncLocalEvidence(profileId); }} disabled={isSyncingLocalEvidence || !profileId}>{isSyncingLocalEvidence ? "Syncing…" : "Sync completed evidence"}</button></div>}
             <div className="explorer-mission-grid">
               {missions.map((item, index) => {
                 const done = Boolean(records[item.id]);
