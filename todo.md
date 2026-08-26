@@ -472,3 +472,12 @@
 - [x] Add an optional Journey-to-Explorer link without bypassing Journey evidence submission.
 - [x] Add regression contracts for anchor count, spacing and query handoff.
 - [x] Validate TypeScript, targeted tests, production build and desktop route QA.
+
+## Explorer simplicity and Hinglish correction
+
+- [x] Simplify the Explorer mission flow so the key play choices fit more comfortably on laptop and mobile screens.
+- [x] Replace large visual option groups with compact, accessible dropdown/select controls where appropriate.
+- [x] Make the “type your own” path an explicit optional dropdown choice while preserving evidence requirements.
+- [x] Audit and correct Hinglish mission wording, including changing unnatural “Plan ko bachao” phrasing to the intended “Plan ko batao” where applicable.
+- [x] Add regression coverage for simplified controls and corrected Hinglish copy.
+- [x] Run TypeScript, tests, production build and desktop/mobile visual QA.

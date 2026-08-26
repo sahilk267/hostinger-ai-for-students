@@ -70,6 +70,18 @@ describe("AI Explorer Lab pilot contract", () => {
     expect(shareSource).not.toContain("evidenceJson");
   });
 
+  it("supports simplified select controls and corrected Hinglish wording", () => {
+    expect(pageSource).toContain("explorer-visual-selects");
+    expect(pageSource).toContain("First move");
+    expect(pageSource).toContain("ownReasonLabel");
+    expect(pageSource).toContain("<select aria-label={copy.chooseMove}");
+    expect(pageSource).toContain("<select aria-label={copy.choiceSaved}");
+    const styleSource = readFileSync(resolve(process.cwd(), "client/src/index.css"), "utf8");
+    expect(styleSource).toContain(".explorer-mission-layout { order: 1; }");
+    expect(styleSource).toContain(".explorer-play-first { order: 3; }");
+    expect(getExplorerMissionCopy(EXPLORER_PILOT_MISSIONS.find((mission) => mission.pilotKey === "plan-rescue")!, "hinglish").title).toBe("Plan ko batao");
+  });
+
   it("supports India-first Hinglish, Hindi and worldwide English with play-first options", () => {
     expect(EXPLORER_LOCALES.map((item) => item.id)).toEqual(["hinglish", "hi", "en"]);
     expect(explorerCopy.hinglish.playFirst).toContain("Pehle khelo");

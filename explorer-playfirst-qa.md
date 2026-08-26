@@ -26,3 +26,7 @@ The desktop `/journey` view shows Day 1 ready with the existing one-mission-toda
 ## Facilitator pilot-review route QA
 
 The desktop `/explorer/pilot-review` view clearly presents the pilot-only purpose, local-only storage boundary and structured session form. At 375px, the hero, privacy notice and form start remain readable with no horizontal overflow; the form stacks into a single column. The route is intentionally not evidence of child ability and remains a facilitator capture tool pending real anonymized sessions.
+
+## Explorer simplicity and Hinglish correction QA
+
+The mission detail flow now orders the challenge/evidence layout before the play controls, so the scenario appears earlier on mobile instead of arriving after every option group. Visual choices, play choices and reasons use compact native selects with visible labels and keyboard focus. The reason select includes an explicit own-words option. The first pilot title now reads “Plan ko batao” and its task uses “Apna plan batao.” Desktop and mobile entry-route captures remain readable; TypeScript, 14 targeted Explorer/Journey tests and production build passed. Full-suite validation still has the unrelated live Hostinger Mail API Cloudflare 403 gate.

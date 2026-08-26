@@ -178,10 +178,16 @@ export default function ExplorerPage() {
     setShowFeedback(false);
   };
 
-  const chooseVisualCard = (card: string) => {
-    setVisualSelections((previous) => previous.includes(card) ? previous.filter((item) => item !== card) : [...previous, card].slice(-visualMinimum));
+  const chooseVisualCard = (card: string, slot = 0) => {
+    setVisualSelections((previous) => {
+      const next = [...previous];
+      next[slot] = card;
+      return next.filter(Boolean).filter((item, index, all) => all.indexOf(item) === index).slice(0, visualMinimum);
+    });
     setShowFeedback(false);
   };
+
+  const ownReasonLabel: Record<ExplorerLocale, string> = { hinglish: "Apne words mein batao", hi: "अपने शब्दों में बताएं", en: "Explain in your own words" };
 
   const chooseReason = (reason: string) => {
     setPlayReason(reason);
@@ -329,11 +335,11 @@ export default function ExplorerPage() {
         ) : (
           <section className="explorer-mission-view" aria-labelledby="explorer-mission-heading">
             <div className="explorer-mission-view-head"><button type="button" className="explorer-inline-back" onClick={() => setSelectedMissionId(null)}><ArrowLeft size={15} /> All missions</button><span>{mission.ageBand} years · {mission.arc}</span></div>
-            <div className="explorer-visual-game" aria-labelledby="explorer-visual-heading"><div className="explorer-visual-game-head"><span className="mission-section-label">PLAY MODE · {visualModeCopy[visualMode][locale].label}</span><h3 id="explorer-visual-heading">{visualModeCopy[visualMode][locale].instruction}</h3></div><div className="explorer-visual-cards">{visualCardLabels.map((card) => <button key={card} type="button" className={visualSelections.includes(card) ? "is-selected" : ""} onClick={() => chooseVisualCard(card)} aria-pressed={visualSelections.includes(card)}><span>{card.split(" ")[0]}</span><strong>{card.substring(card.indexOf(" ") + 1)}</strong></button>)}</div><p className="explorer-visual-status">{visualDone ? <><Check size={15} /> {visualModeCopy[visualMode][locale].done}</> : `${visualSelections.length} / ${visualMinimum}`}</p></div>
+            <div className="explorer-visual-game" aria-labelledby="explorer-visual-heading"><div className="explorer-visual-game-head"><span className="mission-section-label">PLAY MODE · {visualModeCopy[visualMode][locale].label}</span><h3 id="explorer-visual-heading">{visualModeCopy[visualMode][locale].instruction}</h3></div><div className="explorer-visual-selects">{Array.from({ length: visualMinimum }, (_, slot) => <label key={slot}><span>{slot === 0 ? "First move" : "Next move"}</span><select value={visualSelections[slot] ?? ""} onChange={(event) => event.target.value && chooseVisualCard(event.target.value, slot)}><option value="">Choose a card…</option>{visualCardLabels.map((card) => <option key={card} value={card}>{card}</option>)}</select></label>)}</div><p className="explorer-visual-status">{visualDone ? <><Check size={15} /> {visualModeCopy[visualMode][locale].done}</> : `${visualSelections.length} / ${visualMinimum}`}</p></div>
             <div className="explorer-play-first" aria-labelledby="explorer-play-heading">
               <div className="explorer-play-copy"><span className="mission-section-label">STEP 03 / PLAY FIRST</span><h3 id="explorer-play-heading">{copy.playFirst}</h3><p>{copy.playFirstHint}</p><button type="button" className="explorer-listen" onClick={() => readAloud(`${missionCopy?.scenario ?? mission.scenario}. ${missionCopy?.task ?? mission.task}`)}><Ear size={16} /> {isSpeaking ? copy.listening : copy.listen}</button></div>
-              <div className="explorer-play-options"><span>{copy.chooseMove}</span><div>{playOptions.map((option) => <button key={option.label.en} type="button" className={playChoice === option.label[locale] ? "is-selected" : ""} onClick={() => choosePlay(option)}><b>{option.icon}</b><span>{option.label[locale]}</span></button>)}</div></div>
-              <div className="explorer-reason-options"><span>{copy.choiceSaved} · {copy.optionalWriting}</span><div>{copy.reasonOptions.map((reason) => <button key={reason} type="button" className={playReason === reason ? "is-selected" : ""} onClick={() => chooseReason(reason)}>{reason}</button>)}</div></div>
+              <div className="explorer-play-options"><span>{copy.chooseMove}</span><select aria-label={copy.chooseMove} value={playChoice ?? ""} onChange={(event) => { const option = playOptions.find((item) => item.label[locale] === event.target.value); if (option) choosePlay(option); }}><option value="">{copy.chooseMove}…</option>{playOptions.map((option) => <option key={option.label.en} value={option.label[locale]}>{option.icon} {option.label[locale]}</option>)}</select></div>
+              <div className="explorer-reason-options"><span>{copy.choiceSaved} · {copy.optionalWriting}</span><select aria-label={copy.choiceSaved} value={playReason ?? ""} onChange={(event) => event.target.value && chooseReason(event.target.value)}><option value="">{copy.choiceSaved}…</option>{copy.reasonOptions.map((reason) => <option key={reason} value={reason}>{reason}</option>)}<option value={ownReasonLabel[locale]}>{ownReasonLabel[locale]}</option></select></div>
             </div>
             <div className="explorer-mission-layout">
               <article className="explorer-challenge-card">

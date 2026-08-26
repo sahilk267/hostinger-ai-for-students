@@ -7,7 +7,7 @@ type LocalizedMissionCopy = Partial<Record<ExplorerLocale, MissionCopy>>;
 
 const copyByPrefix: Record<string, LocalizedMissionCopy> = {
   "plan-rescue": {
-    hinglish: { title: "Plan ko bachao", objective: "Steps ko order karke planning practice karo.", scenario: "Tumhare paas ek chhota kaam hai, par steps mix ho gaye hain.", task: "Pehle kya karoge, phir kya? Apna plan banao." },
+    hinglish: { title: "Plan ko batao", objective: "Steps ko order karke planning practice karo.", scenario: "Tumhare paas ek chhota kaam hai, par steps mix ho gaye hain.", task: "Pehle kya karoge, phir kya? Apna plan batao." },
     hi: { title: "योजना बचाएँ", objective: "कदमों को क्रम में रखकर योजना बनाना सीखें।", scenario: "आपके पास एक छोटा काम है, लेकिन उसके कदम मिल गए हैं।", task: "पहले क्या करेंगे, फिर क्या? अपनी योजना बनाएं।" },
     en: { title: "Rescue the plan", objective: "Practice planning by putting steps in a useful order.", scenario: "You have a small task, but its steps have been mixed up.", task: "What comes first, and what comes next? Make a plan." },
   },
