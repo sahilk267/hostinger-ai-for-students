@@ -53,6 +53,27 @@ export function createEmailCodeChallenge(email: string, response: Response) {
   return { code, expiresInMinutes: CODE_TTL_MS / 60000 };
 }
 
+export function getEmailChallengeCookie(request: { headers?: { cookie?: string }; cookies?: Record<string, string> }) {
+  const parsedCookie = request.cookies?.[AUTH_EMAIL_CODE_COOKIE];
+  if (parsedCookie) return parsedCookie;
+
+  const header = request.headers?.cookie;
+  if (!header) return undefined;
+  for (const part of header.split(";")) {
+    const separator = part.indexOf("=");
+    if (separator < 0) continue;
+    const name = part.slice(0, separator).trim();
+    if (name !== AUTH_EMAIL_CODE_COOKIE) continue;
+    const value = part.slice(separator + 1).trim();
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return value;
+    }
+  }
+  return undefined;
+}
+
 export function verifyEmailCode(email: string, code: string, cookieValue?: string) {
   const normalizedEmail = normalizeEmail(email);
   if (!cookieValue) return false;

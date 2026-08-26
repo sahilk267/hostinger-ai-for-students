@@ -13,6 +13,7 @@ vi.mock("./db", () => ({ upsertUser, getUserByOpenId, getLearningProgressForUser
 vi.mock("./_core/sdk", () => ({ sdk: { createSessionToken } }));
 
 import { COOKIE_NAME } from "@shared/const";
+import { getEmailChallengeCookie } from "./authEmail";
 import { appRouter } from "./routers";
 
 const createContext = (cookies: Record<string, string> = {}) => ({
@@ -22,6 +23,12 @@ const createContext = (cookies: Record<string, string> = {}) => ({
 });
 
 describe("auth email-code procedure", () => {
+  it("reads a challenge from the raw Cookie header used by production requests", () => {
+    const value = "eyJlbWFpbCI6ImxlYXJuZXJAZXhhbXBsZS5jb20iLCJkaWdlc3QiOiJhYmMiLCJleHBpcmVzQXQiOjE3MDAwMDAwMDAwMDB9";
+    expect(getEmailChallengeCookie({ headers: { cookie: `other=1; ai_students_email_challenge=${value}` } })).toBe(value);
+    expect(getEmailChallengeCookie({ cookies: { ai_students_email_challenge: value } })).toBe(value);
+  });
+
   it("calls the provider adapter without returning the code", async () => {
     const context = createContext();
     const caller = appRouter.createCaller(context);
@@ -45,6 +52,21 @@ describe("auth email-code procedure", () => {
     const caller = appRouter.createCaller(createContext());
     await caller.auth.requestEmailCode({ email: "privacy@example.com" });
     await expect(caller.auth.requestEmailCode({ email: "privacy@example.com" })).rejects.toMatchObject({ code: "TOO_MANY_REQUESTS" });
+  });
+
+  it("accepts a fresh code when the challenge is present only in the raw Cookie header", async () => {
+    const requestContext = createContext();
+    await appRouter.createCaller(requestContext).auth.requestEmailCode({ email: "raw-cookie@example.com" });
+    const challengeCookie = (requestContext.res as { cookie: ReturnType<typeof vi.fn> }).cookie.mock.calls[0][1] as string;
+    const sentCode = sendAuthenticationCode.mock.calls.at(-1)?.[0].code as string;
+    const verifyContext = {
+      req: { headers: { cookie: `ai_students_email_challenge=${challengeCookie}` }, protocol: "https", cookies: undefined } as never,
+      res: { cookie: vi.fn(), clearCookie: vi.fn() } as never,
+      user: null,
+    };
+
+    const result = await appRouter.createCaller(verifyContext).auth.verifyEmailCode({ email: "raw-cookie@example.com", code: sentCode });
+    expect(result).toEqual({ success: true });
   });
 
   it("creates a local session after a valid code and clears the one-time challenge", async () => {

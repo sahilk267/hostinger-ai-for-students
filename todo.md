@@ -564,3 +564,12 @@
 - [x] Ensure validator output names only failing keys and never prints secret values.
 - [x] Add tests for missing keys, placeholders, valid configuration and secret-safe output.
 - [x] Run full validation and save a checkpoint.
+
+## Production OTP verification incident
+
+- [x] Trace the local OTP request, storage, email delivery and verification paths without logging OTP values.
+- [x] Inspect production/runtime evidence for expiry, email normalization, resend invalidation and timestamp mismatch; production route reachability was checked, but Hostinger server logs are not exposed here.
+- [x] Fix the minimal server/client cause of fresh-code rejection while preserving rate limits and privacy.
+- [x] Add regression coverage for a fresh valid code, normalized email, expiry boundary and resend behavior.
+- [x] Run TypeScript, full tests, production build and a safe auth-flow validation.
+- [ ] Save a checkpoint and document any remaining user-owned production smoke test.

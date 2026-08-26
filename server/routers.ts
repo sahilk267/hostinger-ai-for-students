@@ -10,7 +10,7 @@ import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { sdk } from "./_core/sdk";
 import { invokeLLM } from "./_core/llm";
 import { sendAuthenticationCode, sendContactMessage } from "./mail";
-import { AUTH_EMAIL_CODE_COOKIE, canRequestEmailCode, clearEmailCodeChallenge, createEmailCodeChallenge, localEmailOpenId, normalizeEmail, verifyEmailCode } from "./authEmail";
+import { AUTH_EMAIL_CODE_COOKIE, canRequestEmailCode, clearEmailCodeChallenge, createEmailCodeChallenge, getEmailChallengeCookie, localEmailOpenId, normalizeEmail, verifyEmailCode } from "./authEmail";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -40,7 +40,7 @@ export const appRouter = router({
     }),
     verifyEmailCode: publicProcedure.input(z.object({ email: z.string().email().max(320), code: z.string().regex(/^\d{6}$/) })).mutation(async ({ ctx, input }) => {
       const email = normalizeEmail(input.email);
-      const verified = verifyEmailCode(email, input.code, ctx.req.cookies?.[AUTH_EMAIL_CODE_COOKIE]);
+      const verified = verifyEmailCode(email, input.code, getEmailChallengeCookie(ctx.req));
       if (!verified) return { success: false as const };
 
       const openId = localEmailOpenId(email);
