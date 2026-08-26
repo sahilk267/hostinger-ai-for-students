@@ -8,6 +8,8 @@ The validated application source is ready for the next Hostinger deployment atte
 
 Local release validation is green: TypeScript passes, the complete 13-file Vitest suite passes with 53 tests, and the production build completes successfully. The application includes the Explorer, 30-day Journey, twelve interactive learning modules, local OTP support, guest progress, the split-credential database fallback and the Hostinger environment handoff/preflight materials.
 
+The latest Hostinger runtime log identifies the live failure precisely: mysql2 throws `TypeError: Invalid URL` while Drizzle creates the connection pool. This happens before `upsertUser` or `getUserByOpenId` executes SQL. Therefore the current live blocker is the Hostinger database connection-string value, not a demonstrated users-table schema mismatch. A value such as `127.0.0.1:3306` must not be entered as `DATABASE_URL`; it must be a complete `mysql://USER:PASSWORD@HOST:3306/DATABASE` URL or be supplied through the complete split database-variable set.
+
 ## Verified versus pending
 
 | Area | Status | Evidence or owner |
@@ -16,6 +18,7 @@ Local release validation is green: TypeScript passes, the complete 13-file Vites
 | Package manager | Verified | `packageManager` is `pnpm@11.24.0`. |
 | TypeScript, tests and build | Verified locally | 53 tests pass; production build completes. |
 | Secret-safe environment handoff | Verified | Name-only handoff and preflight validator are in the repository. |
+| Runtime log diagnosis | Verified | Hostinger log shows mysql2 `Invalid URL` during pool creation, before SQL execution. |
 | Database password replacement | Pending | User must replace the password previously exposed in chat. |
 | Hostinger protected variables | Pending | User must enter values in hPanel; no values are stored here. |
 | Hostinger staging app/domain | Pending | Requires user-owned hPanel access and configuration. |

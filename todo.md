@@ -582,3 +582,11 @@
 - [x] Add regression coverage for verified-user creation, lookup and missing-user failure behavior.
 - [x] Run TypeScript, full tests, production build and safe database-path validation.
 - [x] Synchronize the fix to the authorized Hostinger repository and document the remaining staging migration step.
+
+## Persistent Hostinger account-loading 500 investigation
+
+- [x] Capture the current Hostinger deployment commit, runtime error and database-related log evidence without exposing credentials.
+- [x] Audit the deployed application’s database URL construction, MySQL driver options, table names and migration assumptions against Hostinger’s configuration.
+- [x] Determine whether the 500 is caused by missing connectivity, unapplied schema, column/index mismatch or an application bug.
+- [x] Apply only the smallest safe correction or add a non-secret diagnostic response that identifies the failing layer.
+- [x] Re-run tests/build and provide the exact Hostinger database/schema verification step required to close the live gate.

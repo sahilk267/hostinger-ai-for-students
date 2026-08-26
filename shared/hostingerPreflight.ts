@@ -57,6 +57,14 @@ export function inspectHostingerEnv(env: Record<string, string | undefined>): Ho
     const value = env[key]?.trim();
     if (value && looksLikePlaceholder(value)) placeholders.push(key);
   }
+  if (env.DATABASE_URL?.trim()) {
+    try {
+      const parsed = new URL(env.DATABASE_URL.trim());
+      if (!(parsed.protocol === "mysql:" || parsed.protocol === "mysql2:") || !parsed.hostname || parsed.pathname.length <= 1) invalid.push("DATABASE_URL");
+    } catch {
+      invalid.push("DATABASE_URL");
+    }
+  }
   if (env.AUTH_MAIL_FROM?.trim() && env.AUTH_MAIL_FROM.trim() !== "auth@aiforstudents.in") invalid.push("AUTH_MAIL_FROM");
 
   return { ok: missing.length === 0 && placeholders.length === 0 && invalid.length === 0, missing, placeholders, invalid };

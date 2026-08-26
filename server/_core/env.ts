@@ -1,6 +1,15 @@
+function isUsableDatabaseUrl(value: string) {
+  try {
+    const parsed = new URL(value);
+    return (parsed.protocol === "mysql:" || parsed.protocol === "mysql2:") && Boolean(parsed.hostname) && parsed.pathname.length > 1;
+  } catch {
+    return false;
+  }
+}
+
 export function buildDatabaseUrl(env: Record<string, string | undefined>) {
   const explicit = env.DATABASE_URL?.trim();
-  if (explicit) return explicit;
+  if (explicit && isUsableDatabaseUrl(explicit)) return explicit;
 
   const host = (env.DATABASE_HOST ?? env.DB_HOST)?.trim();
   const port = (env.DATABASE_PORT ?? env.DB_PORT ?? "3306").trim();

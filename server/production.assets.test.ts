@@ -26,6 +26,17 @@ describe("production asset and analytics contracts", () => {
     expect(placeholder.placeholders).toEqual(expect.arrayContaining(["JWT_SECRET", "HOSTINGER_MAIL_API_TOKEN"]));
     expect(formatHostingerPreflight(placeholder)).not.toContain("secret-value");
 
+    const malformedUrl = inspectHostingerEnv({
+      DATABASE_URL: "127.0.0.1:3306",
+      JWT_SECRET: "long-random-session-secret",
+      HOSTINGER_MAIL_API_TOKEN: "long-random-mail-token",
+      AUTH_MAIL_FROM: "auth@aiforstudents.in",
+      BUILT_IN_FORGE_API_URL: "https://forge.example",
+      BUILT_IN_FORGE_API_KEY: "long-random-forge-key",
+    });
+    expect(malformedUrl.ok).toBe(false);
+    expect(malformedUrl.invalid).toContain("DATABASE_URL");
+
     const splitValid = inspectHostingerEnv({
       DATABASE_HOST: "127.0.0.1",
       DATABASE_PORT: "3306",
@@ -57,6 +68,14 @@ describe("production asset and analytics contracts", () => {
 
   it("resolves Hostinger split database fields when DATABASE_URL is not supplied", () => {
     expect(buildDatabaseUrl({ DATABASE_URL: "mysql://explicit.example/db" })).toBe("mysql://explicit.example/db");
+    expect(buildDatabaseUrl({
+      DATABASE_URL: "127.0.0.1:3306",
+      DATABASE_HOST: "127.0.0.1",
+      DATABASE_PORT: "3306",
+      DATABASE_USER: "aifs_user",
+      DATABASE_PASSWORD: "secret",
+      DATABASE_NAME: "aifs_db",
+    })).toBe("mysql://aifs_user:secret@127.0.0.1:3306/aifs_db");
     expect(buildDatabaseUrl({
       DATABASE_HOST: "127.0.0.1",
       DATABASE_PORT: "3306",
