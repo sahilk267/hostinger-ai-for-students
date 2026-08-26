@@ -581,4 +581,4 @@
 - [x] Fix the minimal database/account lookup cause while preserving existing users and privacy.
 - [x] Add regression coverage for verified-user creation, lookup and missing-user failure behavior.
 - [x] Run TypeScript, full tests, production build and safe database-path validation.
-- [ ] Synchronize the fix to the authorized Hostinger repository and document the remaining staging migration step.
+- [x] Synchronize the fix to the authorized Hostinger repository and document the remaining staging migration step.
