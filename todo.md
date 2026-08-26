@@ -550,3 +550,10 @@
 
 - [x] Author distinct correct answers, distractors and explanations for every new field-game scenario instead of reusing the original five-case templates.
 - [x] Add regression checks that extended scenarios do not repeat the same answer set or explanation in a fixed cycle.
+
+## Autonomous Hostinger environment preflight
+
+- [x] Verify and document the required server-side and public environment keys without exposing values.
+- [x] Provide a safe Hostinger protected-form entry/import method without putting secrets in GitHub or chat.
+- [x] Add a secret-scan regression contract for the handoff documentation.
+- [x] Validate the documentation and save a release-readiness checkpoint.

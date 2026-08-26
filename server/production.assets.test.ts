@@ -18,6 +18,14 @@ describe("production asset and analytics contracts", () => {
     expect(games).not.toContain("/manus-storage/");
   });
 
+  it("keeps the Hostinger handoff secret-safe", () => {
+    const handoff = read("hostinger-env-handoff.md");
+    for (const key of ["DATABASE_URL", "JWT_SECRET", "HOSTINGER_MAIL_API_TOKEN", "AUTH_MAIL_FROM", "VITE_OAUTH_PORTAL_URL"]) expect(handoff).toContain(key);
+    expect(handoff).toContain("never commit them to GitHub");
+    expect(handoff).not.toMatch(/qwertyuiop|password123|sk-[A-Za-z0-9]{12,}|Bearer\s+[A-Za-z0-9._-]{12,}/i);
+    expect(handoff).not.toContain("DATABASE_URL=mysql://");
+  });
+
   it("keeps the favicon deploy-safe and avoids an unconditional Umami request", () => {
     const html = read("client/index.html");
     const main = read("client/src/main.tsx");
