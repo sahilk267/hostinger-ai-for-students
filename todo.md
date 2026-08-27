@@ -607,7 +607,7 @@
 - [x] Add compatibility normalization and a non-secret diagnostic for the transported DATABASE_URL value shape.
 - [x] Add explicit OAuth environment guidance without making Manus OAuth mandatory for local OTP.
 - [x] Validate, checkpoint and synchronize the updated release.
-- [ ] Require database-password rotation because a credential was shared in chat, then guide save/redeploy and final smoke test.
+- [x] Require database-password rotation because a credential was shared in chat, then guide save/redeploy and final smoke test; user confirmed completion on 2026-08-27.
 
 ## Hostinger users-table schema mismatch follow-up
 
