@@ -666,3 +666,7 @@
 - [x] Integrate the mechanics without changing Explorer or breaking progress tracking.
 - [x] Validate scoring, randomization, accessibility, responsive layouts and content integrity.
 - [x] Checkpoint and deliver the upgraded game release.
+
+- [x] Fix multi-mode renderer TypeScript regressions: declaration order and analytics payload array typing.
+
+- [x] Fix final-round score calculation so the last correct answer is included for standard, sorting and timed modes.

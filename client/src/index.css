@@ -1110,3 +1110,16 @@ h1 span, h2 em { color: var(--evergreen); font-style: italic; font-weight: 500; 
   .game-inspect-card { padding: 1rem; }
   .game-inspect-card .game-button { width: 100%; justify-content: center; }
 }
+
+/* Multi-mode learning games */
+.game-sort-card { display: grid; gap: 14px; margin-top: 20px; padding: 22px; border: 1px solid rgba(24,69,61,.2); border-left: 4px solid var(--saffron); background: #f1f5e9; }
+.game-sort-card h3 { margin: 0; color: var(--evergreen); font: 600 26px/1.05 "Fraunces", serif; }
+.game-sort-card p { margin: 0; color: #5f665e; font-size: 13px; line-height: 1.5; }
+.game-sort-options { display: grid; gap: 8px; }
+.sort-option { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: center; min-height: 52px; padding: 10px 12px; border: 1px solid rgba(24,69,61,.22); background: #fffdf7; color: var(--ink); text-align: left; cursor: pointer; transition: transform .16s var(--ease-out), border-color .16s var(--ease-out), background .16s var(--ease-out); }
+.sort-option:hover:not(:disabled), .sort-option.is-picked { transform: translateX(3px); border-color: var(--evergreen); background: #e3eee3; }
+.sort-option > span:first-child { display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid currentColor; border-radius: 50%; color: var(--evergreen); font-size: 12px; font-weight: 800; }
+.sort-option.is-picked > span:first-child { color: #fffdf7; background: var(--evergreen); }
+.game-timer { color: var(--evergreen); font-weight: 800; }
+.game-timer.is-urgent { color: #a43d2e; }
+@media (max-width: 560px) { .game-sort-card { padding: 17px; } .game-sort-card h3 { font-size: 22px; } .game-progress-row { flex-wrap: wrap; } }

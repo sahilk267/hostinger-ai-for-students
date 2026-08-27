@@ -135,6 +135,16 @@ describe("production asset and analytics contracts", () => {
     expect(source).toContain('learning_game_confidence');
   });
 
+  it("keeps multi-mode mechanics and final-round scoring explicit", () => {
+    const source = read("client/src/components/game/MoreAIGames.tsx");
+    expect(source).toContain('const mode: MultiMode = game.id === "data-detective" ? "sort"');
+    expect(source).toContain("STEP 2 / BUILD THE ORDER");
+    expect(source).toContain("Lock my order");
+    expect(source).toContain("game-timer");
+    expect(source).toContain("learning_game_timeout");
+    expect(source).toContain("const finalScore = score + (currentWasCorrect ? 1 : 0)");
+  });
+
   it("explains the required post-OTP Explorer save step", () => {
     const auth = read("client/src/components/LocalAuthDialog.tsx");
     const explorer = read("client/src/pages/ExplorerPage.tsx");
