@@ -24,6 +24,17 @@ describe("visual game contracts", () => {
     expect(idle.quality).toBe("review");
   });
 
+  it("flags assistance, timeout or exposed-answer events for review without changing score", () => {
+    const summary = scoreVisualSession([
+      { sessionId: "s", gameId: "pattern-builder", round: 1, action: "hint", usedHint: true },
+      { sessionId: "s", gameId: "pattern-builder", round: 1, action: "choose", correct: true, exposed: true },
+      { sessionId: "s", gameId: "pattern-builder", round: 2, action: "choose", correct: true },
+      { sessionId: "s", gameId: "pattern-builder", round: 3, action: "timeout" },
+    ], 5);
+    expect(summary.score).toBe(2);
+    expect(summary.quality).toBe("review");
+  });
+
   it("requires two matching skills before suggesting a field", () => {
     expect(suggestFields(["pattern-recognition"]).length).toBe(0);
     expect(suggestFields(["logical-reasoning", "spatial-reasoning", "systems-thinking"])[0]?.field).toBe("Engineering and robotics");

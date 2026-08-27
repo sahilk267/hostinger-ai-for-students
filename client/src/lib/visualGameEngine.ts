@@ -8,6 +8,7 @@ export type VisualRoundEvent = {
   correct?: boolean;
   elapsedMs?: number;
   usedHint?: boolean;
+  exposed?: boolean;
 };
 
 export type VisualSessionSummary = {
@@ -35,7 +36,8 @@ export function scoreVisualSession(events: VisualRoundEvent[], totalRounds: numb
   const distinctRounds = new Set(answered.map((event) => event.round)).size;
   const unusuallyRapid = answered.some((event) => typeof event.elapsedMs === "number" && event.elapsedMs < 250);
   const possiblyIdle = answered.some((event) => typeof event.elapsedMs === "number" && event.elapsedMs > 30_000);
-  const quality = distinctRounds < Math.min(3, rounds) ? "insufficient" : unusuallyRapid || possiblyIdle ? "review" : "usable";
+  const usedAssistanceOrExposure = events.some((event) => event.action === "hint" || event.action === "retry" || event.exposed === true || event.action === "timeout");
+  const quality = usedAssistanceOrExposure || unusuallyRapid || possiblyIdle ? "review" : distinctRounds < Math.min(3, rounds) ? "insufficient" : "usable";
   return { score: correct, rounds, answered: answered.length, correct, accuracy, quality, evidenceNote: "Based on current gameplay" };
 }
 
