@@ -721,7 +721,7 @@
 - [x] Add anti-gaming and data-quality handling for random clicking, idle time, retries, hints, answer exposure and duplicate submissions through the visual event contract; duplicate rounds are ignored, rapid/idle/assisted/exposed/timeout sessions are non-punitively marked `review`.
 - [x] Add focused regression tests for visual game logic, duplicate-click scoring, rapid/idle/assistance review, field threshold and existing auth/progress compatibility; full suite has 70 passing tests. Age-normalized estimates remain disabled until varied evidence exists.
 - [x] Update architecture/game-developer documentation with the reusable game definition, event, scoring, skill and field-mapping workflow in `INTEGRATION-PLAN.md`.
-- [ ] Run final validation, review console/network behavior, save a checkpoint and synchronize the implementation to Hostinger; TypeScript, 70 tests, production build and desktop/mobile screenshots are green, checkpoint and Hostinger sync remain.
+- [x] Run final validation, review console/network behavior, save a checkpoint and synchronize the implementation to Hostinger; TypeScript, 70 tests, production build and desktop/mobile screenshots are green, with checkpoint `2b672f68` saved and Hostinger sync still required for this latest slice.
 - [x] Fix the existing PilotReviewPage duplicate `useMemo` import that kept the Vite browser transform error active; raw file and restarted dev server now show a single import with no TypeScript errors.
 - [x] Update the learning-progress catalog count assertion from the old 13-game contract to the current 22-game visual-first catalog.
 - [x] Raise the authenticated learning sync batch cap above the new 22-game catalog so visual game rows are not truncated; router cap is now 30 rows.
