@@ -1135,3 +1135,5 @@ h1 span, h2 em { color: var(--evergreen); font-style: italic; font-weight: 500; 
 .match-option:hover { transform: translateX(3px); border-color: var(--evergreen); background: #e3eee3; }
 .match-option > span:first-child { display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid var(--evergreen); border-radius: 50%; color: var(--evergreen); font-size: 12px; font-weight: 800; }
 @media (max-width: 680px) { .game-match-card { grid-template-columns: 1fr; } .game-match-source strong { font-size: 21px; } }
+
+.game-boundary-note { margin-top: 12px !important; color: var(--evergreen) !important; font-size: 12px !important; font-weight: 700; letter-spacing: .02em; }

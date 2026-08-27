@@ -124,6 +124,11 @@ describe("production asset and analytics contracts", () => {
     expect(handoff).not.toContain("DATABASE_URL=mysql://");
   });
 
+  it("states that game results are practice, not diagnosis", () => {
+    const source = read("client/src/pages/GamePage.tsx");
+    expect(source).toContain("Practice games—not IQ tests, diagnoses or career predictions.");
+  });
+
   it("keeps the first game batch play-first before answer selection", () => {
     const source = read("client/src/components/game/MoreAIGames.tsx");
     expect(source).toContain('const inspectFirst = game.id === "bias-buster" || game.id === "data-detective" || game.id === "decision-studio"');

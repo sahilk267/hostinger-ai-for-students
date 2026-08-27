@@ -676,3 +676,5 @@
 - [x] Update the game contract test for AI Decoder matching mode while retaining confidence checks for the other games.
 
 - [x] Fix the completion screen to display the same final-round score that is saved and tracked.
+
+- [x] Add visible game-hub copy stating that AI games are learning practice, not IQ tests, diagnoses or career predictions.
