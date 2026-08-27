@@ -1,4 +1,4 @@
-export type GameId = "prompt-detective" | "fact-check-quest" | "ai-safety-lab" | "prompt-workshop" | "source-hunt" | "bias-buster" | "ai-decoder" | "data-detective" | "creative-director" | "code-coach" | "decision-studio" | "tool-match" | "robotics";
+export type GameId = "prompt-detective" | "fact-check-quest" | "ai-safety-lab" | "prompt-workshop" | "source-hunt" | "bias-buster" | "ai-decoder" | "data-detective" | "creative-director" | "code-coach" | "decision-studio" | "tool-match" | "robotics" | "pattern-builder" | "memory-adventure" | "mini-scientist" | "bridge-builder" | "robot-programmer" | "traffic-controller" | "mission-commander" | "creative-studio" | "performance-arena";
 
 export type GameProgress = { attempts: number; completions: number; bestScore: number; lastScore: number; lastPlayed: string | null };
 export type LearningProgress = Record<GameId, GameProgress>;
@@ -21,6 +21,15 @@ const empty = (): LearningProgress => ({
   "decision-studio": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
   "tool-match": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
   "robotics": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
+  "pattern-builder": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
+  "memory-adventure": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
+  "mini-scientist": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
+  "bridge-builder": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
+  "robot-programmer": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
+  "traffic-controller": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
+  "mission-commander": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
+  "creative-studio": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
+  "performance-arena": { attempts: 0, completions: 0, bestScore: 0, lastScore: 0, lastPlayed: null },
 });
 
 export function isGuestSessionExpired(touchedAt: string | null, now = Date.now()) {

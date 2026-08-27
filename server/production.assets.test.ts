@@ -248,6 +248,21 @@ describe("production asset and analytics contracts", () => {
     expect(pilot).toContain("Unsupported pilot notes file");
   });
 
+  it("keeps the visual logic game system non-reading and progress-connected", () => {
+    const discovery = read("client/src/pages/DiscoveryLabPage.tsx");
+    const engine = read("client/src/lib/visualGameEngine.ts");
+    const progress = read("client/src/pages/ProgressPage.tsx");
+    for (const id of ["pattern-builder", "memory-adventure", "mini-scientist", "bridge-builder", "robot-programmer", "traffic-controller", "mission-commander", "creative-studio", "performance-arena"]) expect(discovery).toContain(id);
+    expect(discovery).toContain("No long reading. No typing.");
+    expect(discovery).toContain("Practice only");
+    expect(engine).toContain("seenRounds");
+    expect(engine).toContain("if (seenRounds.has(key)) return false");
+    expect(engine).toContain("unusuallyRapid");
+    expect(progress).toContain("makeSkillEvidence");
+    expect(progress).toContain("suggestFields");
+    expect(progress).toContain("not a test result or fixed label");
+  });
+
   it("keeps the favicon deploy-safe and avoids an unconditional Umami request", () => {
     const html = read("client/index.html");
     const main = read("client/src/main.tsx");

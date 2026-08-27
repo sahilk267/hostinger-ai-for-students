@@ -137,7 +137,7 @@ export const appRouter = router({
       gameId: z.string().min(1).max(64), attempts: z.number().int().min(0), completions: z.number().int().min(0), bestScore: z.number().int().min(0), lastScore: z.number().int().min(0), lastPlayedAt: z.date().nullable().optional(),
     })).mutation(({ ctx, input }) => saveLearningProgress({ userId: ctx.user.id, ...input })),
     syncGuest: protectedProcedure.input(z.object({
-      rows: z.array(z.object({ gameId: z.string().min(1).max(64), attempts: z.number().int().min(0), completions: z.number().int().min(0), bestScore: z.number().int().min(0), lastScore: z.number().int().min(0) })).max(20),
+      rows: z.array(z.object({ gameId: z.string().min(1).max(64), attempts: z.number().int().min(0), completions: z.number().int().min(0), bestScore: z.number().int().min(0), lastScore: z.number().int().min(0) })).max(30),
     })).mutation(async ({ ctx, input }) => { for (const row of input.rows) await mergeGuestProgressForUser(ctx.user.id, row); return { success: true as const }; }),
     reset: protectedProcedure.mutation(({ ctx }) => deleteLearningProgressForUser(ctx.user.id).then(() => ({ success: true as const }))),
     export: protectedProcedure.query(async ({ ctx }) => ({ user: { name: ctx.user.name, email: ctx.user.email }, progress: await getLearningProgressForUser(ctx.user.id) })),

@@ -1,6 +1,6 @@
 export type ReviewStatus = "reviewed" | "needs-review";
 export type Difficulty = "starter" | "building" | "stretch";
-export type AgeBand = "11-13" | "14-17" | "18+";
+export type AgeBand = "5-7" | "8-10" | "11-12" | "11-13" | "13-15" | "14-17" | "18+";
 
 export type ReviewedContentMeta = {
   id: string;

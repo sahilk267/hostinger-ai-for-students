@@ -705,3 +705,24 @@
 - [x] Add visible pilot summary counts for imported/exported sessions without making learner claims.
 - [x] Add regression tests for pilot export/import validation, privacy boundaries and expanded mission families; 64 non-live tests pass.
 - [x] Re-run full validation and save a checkpoint after implementation; TypeScript, 64 non-live tests and production build pass.
+
+## Visual logic-first Child Mind & Strength Discovery system
+
+- [x] Audit existing game, Explorer, Progress, auth, parent-consent, analytics and localization contracts against the pasted master prompt.
+- [x] Define centralized visual-skill taxonomy, age bands 5–7/8–10/11–12/13–15, early-estimate language and evidence confidence rules without fabricated percentiles.
+- [x] Define reusable game-event and scoring contracts for visual actions and completion scoring through `visualGameEngine.ts`; hints, abandonment, response-time and anti-gaming extensions remain pending.
+- [x] Add visual-first Discovery Lab games: Pattern Builder, Memory Adventure, Mini Scientist, Bridge Builder, Robot Programmer, Traffic Controller, Mission Commander, Creative Studio and Performance Arena using color, shape, position, sequence, balance and silent timing interactions; all are available at `/discovery-lab`.
+- [x] Expand Future Tech with visual Bridge Builder and Robot Programmer mechanics while preserving the existing Robotics route game.
+- [x] Add visual Mission Control game foundations for Traffic Controller and Mission Commander without career or psychological labels.
+- [x] Add visual Creative Studio and Performance Arena foundations with accessible symbol-based interactions and no mandatory reading, camera or microphone.
+- [x] Integrate multi-game visual skill evidence into the existing Progress dashboard with source-game counts, early-estimate wording and no direct career mapping; age-normalized estimates remain pending until enough varied evidence exists.
+- [x] Add field-exploration suggestions as non-deterministic “fields worth exploring” with evidence explanations and a two-signal minimum threshold; no prediction language is used.
+- [x] Add visual accessibility: touch/mouse/keyboard where practical, replayable instructions, non-color-only cues, non-audio alternatives, contrast and reduced-motion support; first slice includes keyboard focus, shape cues, text helpers and reduced-motion CSS.
+- [ ] Add anti-gaming and data-quality handling for random clicking, idle time, retries, hints, answer exposure and duplicate submissions; duplicate round submissions are now ignored by `visualGameEngine.ts`, while the remaining quality signals are pending.
+- [x] Add focused regression tests for visual game logic, duplicate-click scoring, rapid-play review, field threshold and existing auth/progress compatibility; 26 focused tests pass. Full visual accessibility and age-normalization coverage remains pending.
+- [x] Update architecture/game-developer documentation with the reusable game definition, event, scoring, skill and field-mapping workflow in `INTEGRATION-PLAN.md`.
+- [ ] Run final validation, review console/network behavior, save a checkpoint and synchronize the implementation to Hostinger; TypeScript, 69 tests, production build and desktop/mobile screenshots are green, checkpoint and Hostinger sync remain.
+- [x] Fix the existing PilotReviewPage duplicate `useMemo` import that kept the Vite browser transform error active; raw file and restarted dev server now show a single import with no TypeScript errors.
+- [x] Update the learning-progress catalog count assertion from the old 13-game contract to the current 22-game visual-first catalog.
+- [x] Raise the authenticated learning sync batch cap above the new 22-game catalog so visual game rows are not truncated; router cap is now 30 rows.
+- [x] Correct the visual contract regression assertion to check the actual duplicate-round protection implementation without relying on a comment word.

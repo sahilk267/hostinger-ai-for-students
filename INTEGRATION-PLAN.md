@@ -4,6 +4,12 @@
 
 AI for Students will become a practical learning platform with four connected surfaces: **Learn AI** for guided understanding, **Study with AI** for real academic workflows, **Robotics Lab** for visual systems thinking, and **AI Explorer Lab** for age-banded strengths-in-practice activities. The platform will guide learners toward observable practice and useful next steps; it will not diagnose IQ, personality, mindset or future careers.
 
+### What “game” means in this product
+
+A game is an interactive challenge with a goal, visible state, meaningful choices, feedback, replay and a clear way to improve. It is not limited to reading a question, writing an answer or selecting a quiz option. The visual-first track will use colors, shapes, positions, memory, sorting, matching, sequencing, drag/tap planning, changing conditions and safe retry loops. Text will be a short helper, not the main gate; no typing, camera or microphone is required for the first visual game slice.
+
+The system will distinguish **play evidence** from **claims**. A Pattern Builder round can record a correct sequence choice and a retry; it cannot declare intelligence, personality or a fixed career. Reports will use “current game-based signal,” “areas to explore” and “based on current gameplay,” with confidence increasing only after varied evidence from multiple games.
+
 ## Experience architecture
 
 | Surface | Learner promise | Primary interaction | Existing seam | Persistence |
@@ -48,8 +54,16 @@ All new interfaces will support keyboard navigation, visible focus, native contr
 
 ## Delivery order
 
-First, build the Learn AI and Study with AI hubs and their reusable cards. Next, implement Robot Route Builder using the shared game renderer and progress contract. Then add the first Explorer expansion slice with two new mission families. Finally, wire catalog, journey, dashboard, badges, analytics, sharing and tests, followed by desktop/mobile visual QA and Hostinger synchronization.
+First, build the Learn AI and Study with AI hubs and their reusable cards. The first visual Discovery Lab slice now uses one reusable interaction shell for Pattern Builder, Memory Adventure, Mini Scientist, Bridge Builder, Robot Programmer, Traffic Controller and Mission Commander, all using the existing progress contract. Continue with Creative Studio and Performance Arena only when they can remain accessible without mandatory reading, camera or microphone. Explorer expansion remains additive and parent-consented. Finally, wire centralized skill evidence, age-normalized early estimates, field exploration language, catalog, dashboard, badges, analytics, sharing and tests, followed by desktop/mobile visual QA and Hostinger synchronization.
 
 ## Release gates
 
 A release is ready only when the new routes have useful above-the-fold content, the Robotics game can be played without typing, Explorer expansion works for all four age bands, existing auth/progress tests remain green, answer ordering remains fair, safety copy remains non-diagnostic, and production build plus responsive screenshots pass. Human comprehension claims and content revisions remain gated on anonymized pilot evidence.
+
+## Visual game contract (implemented foundation)
+
+Each visual game is a catalog item plus a `GameId`, a local progress slot, a route mode, and a set of visual actions. The shared `visualGameEngine.ts` accepts session events such as start, observe, choose, retry, hint, timeout, complete and abandon. It scores only the first valid choice per round, so duplicate clicks cannot inflate a result. Every summary carries the boundary label “Based on current gameplay” and is not an IQ score, diagnosis, personality label or career prediction.
+
+The current Discovery Lab contains nine visual worlds: Pattern Builder, Memory Adventure, Mini Scientist, Bridge Builder, Robot Programmer, Traffic Controller, Mission Commander, Creative Studio and Performance Arena. They use colors, shapes, memory tiles, balance blocks, arrows, lanes, symbols and silent rhythm patterns. Text is helper copy, not the primary interaction. Their visual signals map to the centralized taxonomy only as practice areas, and the Progress dashboard shows source-game counts plus non-diagnostic fields worth exploring after at least two matching signals.
+
+The next safe engineering slice is to add elapsed-time context, optional hint/retry events, idle/rapid-click quality flags and tests around the engine. Those signals must affect evidence confidence rather than punish a child, and they must never be presented as a fixed ability score. Age-normalized estimates remain disabled until varied, reviewed evidence exists.

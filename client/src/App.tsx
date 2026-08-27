@@ -21,6 +21,7 @@ import ExplorerPage from "./pages/ExplorerPage";
 import ExplorerReportPage from "./pages/ExplorerReportPage";
 import ExplorerSharePage from "./pages/ExplorerSharePage";
 import PilotReviewPage from "./pages/PilotReviewPage";
+import DiscoveryLabPage from "./pages/DiscoveryLabPage";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -40,6 +41,7 @@ function Router() {
       <Route path="/learn" component={LearnPage} />
       <Route path="/study" component={StudyPage} />
       <Route path="/robotics" component={RoboticsPage} />
+      <Route path="/discovery-lab" component={DiscoveryLabPage} />
       <Route path="/contact" component={ContactPage} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

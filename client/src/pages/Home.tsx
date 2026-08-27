@@ -156,7 +156,7 @@ export default function Home() {
                 ["02", "I want to study better", "Prompts and workflows that protect your thinking", "Explore study tools"],
                 ["03", "I want to discover how I learn", "Age-appropriate missions and next experiments", "Explore the lab"],
                 ["04", "I want to get career-ready", "Practical help for CVs, interviews and new skills", "Build your edge"],
-              ].map(([num, title, copy, cta]) => <a className="path-row" href={num === "02" ? "/journey" : num === "03" ? "/explorer" : "#prompts"} key={num}><span className="path-number">{num}</span><span className="path-content"><strong>{title}</strong><small>{copy}</small></span><span className="path-cta">{cta} <ArrowUpRight size={15} /></span></a>)}
+              ].map(([num, title, copy, cta]) => <a className="path-row" href={num === "01" ? "/learn" : num === "02" ? "/study" : num === "03" ? "/explorer" : "#career"} key={num}><span className="path-number">{num}</span><span className="path-content"><strong>{title}</strong><small>{copy}</small></span><span className="path-cta">{cta} <ArrowUpRight size={15} /></span></a>)}
             </div>
           </div>
         </section>
@@ -164,7 +164,7 @@ export default function Home() {
         <section className="feature-section" id="study-with-ai">
           <div className="container feature-layout">
             <div className="feature-image-wrap"><img src={studyImage} alt="Study notes and flashcards arranged on a desk" /><span className="image-stamp">TRY THIS</span></div>
-            <div className="feature-copy"><SectionLabel>STUDY WITH AI</SectionLabel><h2>Use AI as a<br /><em>thinking partner.</em></h2><p>Good study support does not give you an answer and disappear. It helps you ask a sharper question, spot a gap and practice until the idea is yours.</p><div className="check-list"><span><Check size={15} /> Explain a concept in your own words</span><span><Check size={15} /> Turn notes into active recall</span><span><Check size={15} /> Get feedback without losing your voice</span></div><a href="/mission" className="button button--ink">Start a 5-minute mission <ArrowUpRight size={16} /></a></div>
+            <div className="feature-copy"><SectionLabel>STUDY WITH AI</SectionLabel><h2>Use AI as a<br /><em>thinking partner.</em></h2><p>Good study support does not give you an answer and disappear. It helps you ask a sharper question, spot a gap and practice until the idea is yours.</p><div className="check-list"><span><Check size={15} /> Explain a concept in your own words</span><span><Check size={15} /> Turn notes into active recall</span><span><Check size={15} /> Get feedback without losing your voice</span></div><div className="home-study-actions"><a href="/mission" className="button button--ink">Start a 5-minute mission <ArrowUpRight size={16} /></a><a href="/discovery-lab" className="text-link">Play visual logic games <ArrowUpRight size={15} /></a></div></div>
           </div>
         </section>
 
