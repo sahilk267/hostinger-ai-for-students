@@ -144,6 +144,7 @@ describe("production asset and analytics contracts", () => {
     expect(source).toContain("game-timer");
     expect(source).toContain("learning_game_timeout");
     expect(source).toContain("const finalScore = score + (currentWasCorrect ? 1 : 0)");
+    expect(source).toContain("const shownScore = resultScore ?? score");
   });
 
   it("explains the required post-OTP Explorer save step", () => {
