@@ -11,6 +11,9 @@ import CertificatePage from "./pages/CertificatePage";
 import NotFound from "./pages/NotFound";
 import AccountPage from "./pages/AccountPage";
 import TopicsPage from "./pages/TopicsPage";
+import LearnPage from "./pages/LearnPage";
+import StudyPage from "./pages/StudyPage";
+import RoboticsPage from "./pages/RoboticsPage";
 import ContactPage from "./pages/ContactPage";
 import MissionPage from "./pages/MissionPage";
 import JourneyPage from "./pages/JourneyPage";
@@ -34,6 +37,9 @@ function Router() {
       <Route path="/certificate" component={CertificatePage} />
       <Route path="/account" component={AccountPage} />
       <Route path="/topics" component={TopicsPage} />
+      <Route path="/learn" component={LearnPage} />
+      <Route path="/study" component={StudyPage} />
+      <Route path="/robotics" component={RoboticsPage} />
       <Route path="/contact" component={ContactPage} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

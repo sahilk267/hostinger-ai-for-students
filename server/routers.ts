@@ -82,7 +82,7 @@ export const appRouter = router({
       startedAt: z.date(),
     })).mutation(({ ctx, input }) => db.saveExplorerAttempt({ userId: ctx.user.id, ...input })),
     deleteProfile: protectedProcedure.input(z.object({ profileId: z.number().int().positive() })).mutation(async ({ ctx, input }) => { await db.softDeleteExplorerProfile(ctx.user.id, input.profileId); return { success: true as const }; }),
-    createShare: protectedProcedure.input(z.object({ profileId: z.number().int().positive(), completedCount: z.number().int().min(3).max(24), skills: z.array(z.enum(["planning", "evidence", "creativity", "explanation", "flexibility", "reflection"])).min(1).max(3), expiresInDays: z.union([z.literal(1), z.literal(7), z.literal(30)]).default(7) })).mutation(({ ctx, input }) => db.createExplorerShare({ userId: ctx.user.id, profileId: input.profileId, summaryJson: JSON.stringify({ completedCount: input.completedCount, skills: input.skills }), expiresAt: new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000) })),
+    createShare: protectedProcedure.input(z.object({ profileId: z.number().int().positive(), completedCount: z.number().int().min(3).max(28), skills: z.array(z.enum(["planning", "evidence", "creativity", "explanation", "flexibility", "reflection"])).min(1).max(3), expiresInDays: z.union([z.literal(1), z.literal(7), z.literal(30)]).default(7) })).mutation(({ ctx, input }) => db.createExplorerShare({ userId: ctx.user.id, profileId: input.profileId, summaryJson: JSON.stringify({ completedCount: input.completedCount, skills: input.skills }), expiresAt: new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000) })),
     revokeShare: protectedProcedure.input(z.object({ shareId: z.number().int().positive() })).mutation(({ ctx, input }) => db.revokeExplorerShare(ctx.user.id, input.shareId)),
     getShare: publicProcedure.input(z.object({ token: z.string().regex(/^[A-Za-z0-9_-]{32,80}$/) })).query(({ input }) => db.getExplorerShareByToken(input.token)),
     feedback: protectedProcedure.input(z.object({
@@ -137,7 +137,7 @@ export const appRouter = router({
       gameId: z.string().min(1).max(64), attempts: z.number().int().min(0), completions: z.number().int().min(0), bestScore: z.number().int().min(0), lastScore: z.number().int().min(0), lastPlayedAt: z.date().nullable().optional(),
     })).mutation(({ ctx, input }) => saveLearningProgress({ userId: ctx.user.id, ...input })),
     syncGuest: protectedProcedure.input(z.object({
-      rows: z.array(z.object({ gameId: z.string().min(1).max(64), attempts: z.number().int().min(0), completions: z.number().int().min(0), bestScore: z.number().int().min(0), lastScore: z.number().int().min(0) })).max(10),
+      rows: z.array(z.object({ gameId: z.string().min(1).max(64), attempts: z.number().int().min(0), completions: z.number().int().min(0), bestScore: z.number().int().min(0), lastScore: z.number().int().min(0) })).max(20),
     })).mutation(async ({ ctx, input }) => { for (const row of input.rows) await mergeGuestProgressForUser(ctx.user.id, row); return { success: true as const }; }),
     reset: protectedProcedure.mutation(({ ctx }) => deleteLearningProgressForUser(ctx.user.id).then(() => ({ success: true as const }))),
     export: protectedProcedure.query(async ({ ctx }) => ({ user: { name: ctx.user.name, email: ctx.user.email }, progress: await getLearningProgressForUser(ctx.user.id) })),

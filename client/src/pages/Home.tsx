@@ -71,7 +71,7 @@ function Header() {
           <span className="brand-type"><strong>AI</strong> for <em>Students</em></span>
         </a>
         <nav className={`desktop-nav ${open ? "is-open" : ""}`} aria-label="Primary navigation">
-          {navItems.map((item) => <a key={item} href={item === "30-day Journey" ? "/journey" : item === "Explorer Lab" ? "/explorer" : `#${item.toLowerCase().replaceAll(" ", "-")}`}>{item}</a>)}
+          {navItems.map((item) => <a key={item} href={item === "Learn AI" ? "/learn" : item === "Study with AI" ? "/study" : item === "30-day Journey" ? "/journey" : item === "Explorer Lab" ? "/explorer" : `#${item.toLowerCase().replaceAll(" ", "-")}`}>{item}</a>)}
         </nav>
         <div className="header-actions">
           <a className="header-link" href="/progress">Your progress <ArrowUpRight size={14} /></a>
@@ -140,7 +140,7 @@ export default function Home() {
               </div>
               <div className="toolkit-stack" aria-label="Quick learning paths">
                 <div className="stack-heading"><span>Today's toolkit</span><Sparkles size={15} /></div>
-                {toolkit.map(({ icon: Icon, label, copy, color }, index) => <a href={index === 1 ? "/journey" : index === 2 ? "/explorer" : "#learn-ai"} className={`toolkit-row toolkit-row--${color}`} key={label}><span className="toolkit-icon"><Icon size={17} /></span><span><strong>{label}</strong><small>{copy}</small></span><ArrowUpRight size={16} /></a>)}
+                {toolkit.map(({ icon: Icon, label, copy, color }, index) => <a href={index === 0 ? "/learn" : index === 1 ? "/study" : "/explorer"} className={`toolkit-row toolkit-row--${color}`} key={label}><span className="toolkit-icon"><Icon size={17} /></span><span><strong>{label}</strong><small>{copy}</small></span><ArrowUpRight size={16} /></a>)}
               </div>
             </div>
           </div>

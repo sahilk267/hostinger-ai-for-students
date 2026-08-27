@@ -24,7 +24,7 @@ describe("learning progress access", () => {
     expect(questions.length).toBeGreaterThanOrEqual(30);
     expect(factQuestions.length).toBeGreaterThanOrEqual(30);
     expect(safetyQuestions.length).toBeGreaterThanOrEqual(30);
-    expect(gameCatalog).toHaveLength(12);
+    expect(gameCatalog).toHaveLength(13);
     for (const item of gameCatalog) {
       expect(item.topics.length).toBeGreaterThan(0);
       expect(item.skills.length).toBeGreaterThan(0);

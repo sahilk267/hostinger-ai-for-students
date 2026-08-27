@@ -13,11 +13,11 @@ const shareSource = readFileSync(resolve(process.cwd(), "client/src/pages/Explor
 const pilotReviewSource = readFileSync(resolve(process.cwd(), "client/src/pages/PilotReviewPage.tsx"), "utf8");
 
 describe("AI Explorer Lab pilot contract", () => {
-  it("covers four age bands with six missions each", () => {
+  it("covers four age bands with eight missions each after the expansion slices", () => {
     expect(EXPLORER_AGE_BANDS).toHaveLength(4);
-    expect(EXPLORER_PILOT_MISSIONS).toHaveLength(24);
+    expect(EXPLORER_PILOT_MISSIONS).toHaveLength(32);
     for (const band of EXPLORER_AGE_BANDS) {
-      expect(EXPLORER_PILOT_MISSIONS.filter((mission) => mission.ageBand === band.id)).toHaveLength(6);
+      expect(EXPLORER_PILOT_MISSIONS.filter((mission) => mission.ageBand === band.id)).toHaveLength(8);
     }
   });
 

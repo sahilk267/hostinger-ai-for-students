@@ -197,6 +197,42 @@ describe("production asset and analytics contracts", () => {
     expect(status).not.toContain("production deployment is complete");
   });
 
+  it("exposes meaningful Learn AI and Study with AI hubs", () => {
+    const learn = read("client/src/pages/LearnPage.tsx");
+    const study = read("client/src/pages/StudyPage.tsx");
+    expect(learn).toContain('data-testid="learn-ai-page"');
+    expect(learn).toContain("Short lessons, one useful idea at a time");
+    expect(learn).toContain("Open Robotics");
+    expect(study).toContain('data-testid="study-with-ai-page"');
+    expect(study).toContain("Choose a workflow for the task in front of you");
+    expect(study).toContain("Keep the thinking yours");
+  });
+
+  it("keeps Robotics playable, progress-backed and non-diagnostic", () => {
+    const robotics = read("client/src/pages/RoboticsPage.tsx");
+    const progress = read("client/src/lib/learningProgress.ts");
+    const catalog = read("client/src/data/gameCatalog.ts");
+    expect(robotics).toContain("Robot Route Builder");
+    expect(robotics).toContain("startGame(gameId)");
+    expect(robotics).toContain("completeGame(gameId");
+    expect(robotics).toContain("No typing needed");
+    expect(robotics).toContain("not an IQ test or a career prediction");
+    expect(progress).toContain('"robotics"');
+    expect(catalog).toContain('id: "robotics"');
+  });
+
+  it("keeps Explorer expansion age-banded and localized", () => {
+    const explorer = read("client/src/data/explorerLab.ts");
+    const copy = read("client/src/data/explorerMissionI18n.ts");
+    expect(explorer).toContain('id: "robot-route-5-7"');
+    expect(explorer).toContain('id: "robot-route-8-10"');
+    expect(explorer).toContain('id: "robot-route-11-13"');
+    expect(explorer).toContain('id: "robot-route-14-17"');
+    expect(copy).toContain('"robot-route"');
+    expect(copy).toContain("Robot ka route banao");
+    expect(copy).toContain("रोबोट का रास्ता बनाएं");
+  });
+
   it("keeps the favicon deploy-safe and avoids an unconditional Umami request", () => {
     const html = read("client/index.html");
     const main = read("client/src/main.tsx");

@@ -16,4 +16,5 @@ export const gameCatalog: GameCatalogItem[] = [
   { id: "code-coach", label: "Code Coach", note: "Review with care", difficulty: "stretch", ageBand: "18+", topics: ["software practice"], skills: ["coding", "security"] },
   { id: "decision-studio", label: "Decision Studio", note: "Keep humans deciding", difficulty: "stretch", ageBand: "18+", topics: ["human judgment"], skills: ["judgment", "safety"] },
   { id: "tool-match", label: "Tool Matchmaker", note: "Choose the right fit", difficulty: "building", ageBand: "14-17", topics: ["tool choice"], skills: ["tools", "workflow"] },
+  { id: "robotics", label: "Robot Route Builder", note: "Plan, test and repair a robot system", difficulty: "building", ageBand: "11-13", topics: ["robotics", "systems thinking"], skills: ["planning", "logic", "safety"] },
 ];

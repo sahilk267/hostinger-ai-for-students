@@ -679,3 +679,21 @@
 - [x] Fix the completion screen to display the same final-round score that is saved and tracked.
 
 - [x] Add visible game-hub copy stating that AI games are learning practice, not IQ tests, diagnoses or career predictions.
+
+## Learn AI, Study with AI, Robotics and Explorer expansion
+
+- [x] Replace the empty Learn AI section with an age-banded learning hub containing guided paths, bite-sized lessons, examples, progress cues and clear next actions.
+- [x] Replace the empty Study with AI section with task-based workflows, prompt starters, guided practice and safe academic-integrity feedback.
+- [x] Define a detailed Robotics learning track for ages 5–17 with visual, logic, sensors, control-flow and real-world problem-solving outcomes.
+- [x] Build the first Robotics interactive game with visual assembly/planning mechanics, multiple difficulty levels, replayable rounds, scoring by learning objective and non-diagnostic feedback.
+- [x] Add Robotics to discovery, progress, badges, sharing and analytics without breaking existing game contracts; Game Hub, Progress, certificate link, local sync and anonymous events are wired.
+- [x] Expand Explorer Lab beyond the six-mission pilot with an additive Robot Route mission family across all four age bands, localized Hinglish/Hindi/English copy and age-band progression.
+- [x] Add Explorer expansion controls by preserving the existing mission unlock, evidence, parent-consented sync and safe report/share contracts for the new mission family.
+- [x] Add regression tests for Learn AI, Study with AI, Robotics gameplay and Explorer expansion contracts; 64 Vitest tests pass.
+- [x] Verify desktop/mobile layouts, low-reading interactions, Hinglish/Hindi/English fallback, keyboard access and reduced motion; desktop/mobile previews and source-contract tests pass, with live learner keyboard validation still human-gated.
+- [ ] Save a release checkpoint and synchronize the integrated update to the Hostinger repository.
+
+### Human evidence gates for this expansion
+
+- [ ] Run pilot sessions before making claims about comprehension, strengths or difficulty.
+- [ ] Apply content revisions only from anonymized pilot evidence; do not diagnose IQ, mindset, personality or career destiny.

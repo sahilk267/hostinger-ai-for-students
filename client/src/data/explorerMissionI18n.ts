@@ -31,6 +31,16 @@ const copyByPrefix: Record<string, LocalizedMissionCopy> = {
     hi: { title: "नियम बदल गया", objective: "नए नियम पर रणनीति बदलने का अभ्यास करें।", scenario: "खेल का नियम अचानक बदल गया है।", task: "पुराना कदम दोहराने के बजाय नया कदम चुनें।" },
     en: { title: "The rule changed", objective: "Practice switching strategy when the rule changes.", scenario: "The game rule has suddenly changed.", task: "Do not repeat the old move; choose a new one." },
   },
+  "pattern-remix": {
+    hinglish: { title: "Pattern ko remix karo", objective: "Repeat hota pattern notice karke next step choose karo.", scenario: "Toy robot clap, turn, clap, turn karta hai aur phir rukta hai.", task: "Next move choose karo aur pattern gesture ya drawing se dikhao." },
+    hi: { title: "पैटर्न बदलकर देखें", objective: "दोहरते पैटर्न को देखकर अगला कदम चुनें।", scenario: "खिलौना रोबोट ताली, घूमना, ताली, घूमना करता है और फिर रुकता है।", task: "अगली चाल चुनें और पैटर्न को इशारे या चित्र से दिखाएं।" },
+    en: { title: "Remix the pattern", objective: "Notice a repeating pattern and choose what comes next.", scenario: "A toy robot claps, turns, claps, turns and then pauses.", task: "Choose the next move and show the pattern with a gesture or drawing." },
+  },
+  "robot-route": {
+    hinglish: { title: "Robot ka route banao", objective: "Signal dekhkar safe next step choose karo.", scenario: "Ek chhota robot toy shelf tak ja raha hai, par raaste mein puddle hai.", task: "Robot ko pehle kya notice aur kya action lena chahiye? Words, pointing ya drawing se batao." },
+    hi: { title: "रोबोट का रास्ता बनाएं", objective: "संकेत देखकर सुरक्षित अगला कदम चुनें।", scenario: "एक छोटा रोबोट खिलौनों की शेल्फ तक जा रहा है, लेकिन रास्ते में पानी है।", task: "रोबोट को पहले क्या देखना और क्या करना चाहिए? शब्दों, इशारे या चित्र से बताएं।" },
+    en: { title: "Build the robot route", objective: "Notice a signal and choose a safe next step.", scenario: "A small robot is going to the toy shelf, but there is a puddle on the path.", task: "What should the robot notice and do first? Show it with words, pointing or a drawing." },
+  },
   "try-again": {
     hinglish: { title: "Phir se try karo", objective: "Result dekhkar next attempt improve karo.", scenario: "Pehli try mein kuch unexpected hua.", task: "Kya change karke second try karoge?" },
     hi: { title: "फिर से कोशिश करें", objective: "नतीजा देखकर अगली कोशिश बेहतर करें।", scenario: "पहली कोशिश में कुछ अलग हुआ।", task: "दूसरी कोशिश में क्या बदलेंगे?" },

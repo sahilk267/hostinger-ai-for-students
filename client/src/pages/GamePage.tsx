@@ -18,6 +18,7 @@ const coreGames = [
   { key: "workshop", label: "Prompt Workshop", note: "Build, don't guess", icon: Sparkles, href: "/play?game=workshop" },
   { key: "source-hunt", label: "Source Hunt", note: "Sequence the check", icon: Search, href: "/play?game=source-hunt" },
   ...moreGameCatalog.map((game) => ({ key: game.id, label: game.label, note: game.tagline, icon: iconMap[game.id as keyof typeof iconMap] || Brain, href: `/play?game=${game.id}` })),
+  { key: "robotics", label: "Robot Route Builder", note: "Plan, test and repair a robot system", icon: Wrench, href: "/robotics" },
 ];
 
 export default function GamePage() {
