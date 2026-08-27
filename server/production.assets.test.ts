@@ -231,6 +231,17 @@ describe("production asset and analytics contracts", () => {
     expect(copy).toContain('"robot-route"');
     expect(copy).toContain("Robot ka route banao");
     expect(copy).toContain("रोबोट का रास्ता बनाएं");
+    expect(explorer).toContain('id: "pattern-remix-5-7"');
+    expect(explorer).toContain('id: "pattern-remix-14-17"');
+    expect(copy).toContain('"pattern-remix"');
+  });
+
+  it("keeps the pilot worksheet aligned with expanded mission families", () => {
+    const pilot = read("client/src/pages/PilotReviewPage.tsx");
+    expect(pilot).toContain('"Robot Route"');
+    expect(pilot).toContain('"Pattern Remix"');
+    expect(pilot).toContain("Local-only notes");
+    expect(pilot).toContain("Not a diagnosis");
   });
 
   it("keeps the favicon deploy-safe and avoids an unconditional Umami request", () => {
