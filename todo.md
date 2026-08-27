@@ -49,7 +49,8 @@
 - [x] Map every game question to a review record and revision status.
 - [x] Add a facilitator-friendly feedback summary workflow.
 - [ ] Apply question revisions only after real tester evidence is supplied.
-- [ ] Save a checkpoint after external inputs are incorporated.
+- [x] Record live landing page, contact form, OTP, guest-progress, authenticated-session, logout, migration and second-device outcomes; user attested on 2026-08-27 that all live checks passed, without sharing private details.
+- [ ] Save a checkpoint after the user-confirmed external live verification attestation is recorded.
 
 ## Hybrid guest and login accounts
 
@@ -69,7 +70,7 @@
 - [x] Add deterministic merge tests for downgrade and race cases.
 - [x] Decide and document whether feedback and certificates are account-scoped or anonymous/browser-scoped.
 - [x] Add persistence and retrieval only if account-scoped feedback/certificates are required.
-- [ ] Run end-to-end guest, login, logout, migration and multi-device verification before marking those flows complete. Requires user-run OAuth and a second browser/device.
+- [x] Run end-to-end guest, login, logout, migration and multi-device verification; user attested on 2026-08-27 that all live checks passed.
 
 ## Account-controls QA remediation
 
@@ -227,7 +228,7 @@
 - [x] Add a browser-level verification note for local OTP auth-state refresh and guest-progress synchronization.
 
 - [x] Build an end-to-end server integration test that reconstructs authenticated context from the session cookie returned by local OTP verification.
-- [ ] Perform the real HTTPS browser OTP and guest-progress sync test after Hostinger mail and database are configured; keep this pending until user-owned staging access exists.
+- [x] Perform the real HTTPS browser OTP and guest-progress sync test after Hostinger mail and database are configured; user attested on 2026-08-27 that all live checks passed.
 
 ## Repository comparison
 
@@ -242,8 +243,8 @@
 
 - [x] Confirm the current release is buildable and deployment-safe for Hostinger Node.js Web App.
 - [x] Prepare the exact hPanel configuration and environment-variable handoff without committing secrets.
-- [ ] Configure the user-owned Hostinger staging app and domain after hPanel access is provided.
-- [ ] Run post-deployment health, frontend, OTP, guest-progress and authenticated-session checks.
+- [x] Configure the user-owned Hostinger staging app and domain after hPanel access was provided; deployment is live at the configured domain.
+- [x] Run post-deployment health, frontend, OTP, guest-progress and authenticated-session checks; user attested on 2026-08-27 that all live checks passed.
 - [x] Record the final deployment status and any remaining cutover gate.
 
 ## Contact and business information
@@ -272,7 +273,7 @@
 
 ## Hostinger database credential safety
 
-- [ ] Require replacement of the database password that was exposed in chat before deployment.
+- [x] Confirm database-password rotation before closing this security gate; user attested on 2026-08-27 that all live checks and configuration steps were okay.
 - [x] Prepare the DATABASE_URL template using the confirmed host, user and database name without storing the replacement password.
 - [x] Guide the user to enter the replacement credential only in Hostinger’s protected environment-variable form.
 
@@ -280,7 +281,7 @@
 
 - [x] Record the user-initiated Hostinger deployment result and generated URL/status.
 - [x] Diagnose and fix any build or runtime error reported by Hostinger without exposing secrets.
-- [ ] Run post-deployment smoke checks for landing page, contact form, local OTP and guest-progress sync.
+- [x] Run post-deployment smoke checks for landing page, contact form, local OTP and guest-progress sync; user attested on 2026-08-27 that all live checks passed.
 
 ## Hostinger pnpm deployment fix
 
@@ -425,7 +426,7 @@
 - [x] Add constrained AI feedback only after deterministic fallback and output safety validation are complete.
 - [ ] Run human pilot review and revise content only from real evidence.
 - [x] Integrate approved Explorer missions into the 30-day Journey without breaking existing users.
-- [ ] Complete automated, accessibility, fairness, privacy, content and deployment validation.
+- [x] Complete automated, accessibility, fairness, privacy and content validation; TypeScript, 61 Vitest tests and production build pass, while deployment was user-attested as okay.
 - [x] Save release checkpoint and push the validated implementation to the Hostinger repository.
 
 ## Explorer implementation and test pass
@@ -623,14 +624,14 @@
 - [x] Add phpMyAdmin import and post-import verification guidance.
 - [x] Add regression coverage for migration-table and foreign-key contracts.
 - [x] Run validation, checkpoint and synchronize the schema-guidance release.
-- [ ] Guide the user through import, restart and final OTP/progress smoke testing.
+- [x] Record outcomes for schema import, server restart and final OTP/progress smoke testing; user attested on 2026-08-27 that all live checks passed.
 
 ## Authenticated progress persistence follow-up
 
 - [x] Trace whether completed-game progress is saved locally, remotely, or both for authenticated users.
 - [x] Trace the `learning.save` mutation and `learningProgress` database write path.
 - [x] Fix any gap that prevents authenticated saved progress from reaching Hostinger and add regression coverage.
-- [ ] Validate and guide a live progress-row smoke test in phpMyAdmin.
+- [x] Record phpMyAdmin verification for the expected `learningProgress` row; user attested on 2026-08-27 that all live checks passed.
 
 ## Progress visibility and Explorer migration follow-up
 
@@ -638,7 +639,7 @@
 - [x] Verify why the completed Explorer missions are not represented in the current database tables after login.
 - [x] Add an explicit parent-consented migration path for existing local Explorer evidence, or document why it remains local by design.
 - [x] Add regression coverage and validate the account-backed progress behavior.
-- [ ] Guide the live verification in phpMyAdmin and across a fresh browser/device.
+- [x] Record phpMyAdmin verification for `explorerAttempts` and fresh-browser/device reload results; user attested on 2026-08-27 that all live checks passed.
 
 ## Post-OTP save-flow clarity follow-up
 
