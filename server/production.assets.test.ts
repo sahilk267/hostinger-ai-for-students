@@ -242,6 +242,10 @@ describe("production asset and analytics contracts", () => {
     expect(pilot).toContain('"Pattern Remix"');
     expect(pilot).toContain("Local-only notes");
     expect(pilot).toContain("Not a diagnosis");
+    expect(pilot).toContain("EXPORT_VERSION");
+    expect(pilot).toContain("aifs-anonymous-pilot-notes.json");
+    expect(pilot).toContain("application/json");
+    expect(pilot).toContain("Unsupported pilot notes file");
   });
 
   it("keeps the favicon deploy-safe and avoids an unconditional Umami request", () => {

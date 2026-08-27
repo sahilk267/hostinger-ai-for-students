@@ -697,3 +697,11 @@
 
 - [ ] Run pilot sessions before making claims about comprehension, strengths or difficulty.
 - [ ] Apply content revisions only from anonymized pilot evidence; do not diagnose IQ, mindset, personality or career destiny.
+
+## Pilot evidence handling implementation
+
+- [x] Add local-only JSON export for anonymous pilot notes with schema version and privacy-safe fields.
+- [x] Add local-only JSON import with validation, duplicate-safe merge and clear error feedback.
+- [x] Add visible pilot summary counts for imported/exported sessions without making learner claims.
+- [x] Add regression tests for pilot export/import validation, privacy boundaries and expanded mission families; 64 non-live tests pass.
+- [x] Re-run full validation and save a checkpoint after implementation; TypeScript, 64 non-live tests and production build pass.
