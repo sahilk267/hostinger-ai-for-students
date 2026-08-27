@@ -287,7 +287,7 @@
 - [x] Align repository package-manager metadata with Hostinger’s pnpm runtime.
 - [x] Re-run tests, typecheck and production build after the metadata change.
 - [x] Push the fix to the private GitHub main branch and guide a redeploy.
-- [ ] Verify the next Hostinger build result and continue with runtime smoke tests if successful.
+- [x] Verify the next Hostinger build result and continue with runtime smoke tests if successful.
 
 - [x] Review the generated pnpm-workspace metadata and updated Hostinger handoff before finalizing the pnpm fix.
 - [x] Push any required workspace/handoff synchronization and save a checkpoint before redeploy guidance.
@@ -605,15 +605,15 @@
 - [x] Audit whether Hostinger injects quotes, whitespace, a key prefix, or a different variable value than the visible hPanel field.
 - [x] Add compatibility normalization and a non-secret diagnostic for the transported DATABASE_URL value shape.
 - [x] Add explicit OAuth environment guidance without making Manus OAuth mandatory for local OTP.
-- [ ] Validate, checkpoint and synchronize the updated release.
+- [x] Validate, checkpoint and synchronize the updated release.
 - [ ] Require database-password rotation because a credential was shared in chat, then guide save/redeploy and final smoke test.
 
 ## Hostinger users-table schema mismatch follow-up
 
-- [ ] Record the confirmed `name`-column upsert failure without retaining personal or credential values.
-- [ ] Compare the deployed users-table shape with the repository schema and migration SQL.
-- [ ] Choose a non-destructive schema synchronization or compatibility correction.
-- [ ] Add regression coverage for the corrected upsert path and migration contract.
+- [x] Record the confirmed `name`-column upsert failure without retaining personal or credential values.
+- [x] Compare the deployed users-table shape with the repository schema and migration SQL.
+- [x] Choose a non-destructive schema synchronization or compatibility correction.
+- [x] Add regression coverage for the corrected upsert path and migration contract.
 - [ ] Validate, checkpoint and synchronize the fix, then guide the live migration smoke test.
 
 ## Blank Hostinger database initialization
@@ -627,9 +627,9 @@
 
 ## Authenticated progress persistence follow-up
 
-- [ ] Trace whether completed-game progress is saved locally, remotely, or both for authenticated users.
-- [ ] Trace the `learning.save` mutation and `learningProgress` database write path.
-- [ ] Fix any gap that prevents authenticated saved progress from reaching Hostinger and add regression coverage.
+- [x] Trace whether completed-game progress is saved locally, remotely, or both for authenticated users.
+- [x] Trace the `learning.save` mutation and `learningProgress` database write path.
+- [x] Fix any gap that prevents authenticated saved progress from reaching Hostinger and add regression coverage.
 - [ ] Validate and guide a live progress-row smoke test in phpMyAdmin.
 
 ## Progress visibility and Explorer migration follow-up
