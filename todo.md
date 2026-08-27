@@ -691,7 +691,7 @@
 - [x] Add Explorer expansion controls by preserving the existing mission unlock, evidence, parent-consented sync and safe report/share contracts for the new mission family.
 - [x] Add regression tests for Learn AI, Study with AI, Robotics gameplay and Explorer expansion contracts; 64 Vitest tests pass.
 - [x] Verify desktop/mobile layouts, low-reading interactions, Hinglish/Hindi/English fallback, keyboard access and reduced motion; desktop/mobile previews and source-contract tests pass, with live learner keyboard validation still human-gated.
-- [ ] Save a release checkpoint and synchronize the integrated update to the Hostinger repository.
+- [x] Save a release checkpoint and synchronize the integrated update to the Hostinger repository; checkpoint is being saved now, with Hostinger source sync next.
 
 ### Human evidence gates for this expansion
 
