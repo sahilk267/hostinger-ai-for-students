@@ -50,7 +50,7 @@
 - [x] Add a facilitator-friendly feedback summary workflow.
 - [ ] Apply question revisions only after real tester evidence is supplied.
 - [x] Record live landing page, contact form, OTP, guest-progress, authenticated-session, logout, migration and second-device outcomes; user attested on 2026-08-27 that all live checks passed, without sharing private details.
-- [ ] Save a checkpoint after the user-confirmed external live verification attestation is recorded.
+- [x] Save a checkpoint after the user-confirmed external live verification attestation is recorded; checkpoint `1b1f60f1` saved.
 
 ## Hybrid guest and login accounts
 
