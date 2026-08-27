@@ -1123,3 +1123,15 @@ h1 span, h2 em { color: var(--evergreen); font-style: italic; font-weight: 500; 
 .game-timer { color: var(--evergreen); font-weight: 800; }
 .game-timer.is-urgent { color: #a43d2e; }
 @media (max-width: 560px) { .game-sort-card { padding: 17px; } .game-sort-card h3 { font-size: 22px; } .game-progress-row { flex-wrap: wrap; } }
+
+.game-match-card { display: grid; grid-template-columns: .9fr 1.1fr; gap: 16px; margin-top: 20px; }
+.game-match-source, .game-match-target { display: grid; align-content: start; gap: 12px; padding: 20px; border: 1px solid rgba(24,69,61,.2); }
+.game-match-source { background: var(--evergreen); color: #fffaf0; }
+.game-match-source .game-kicker { color: #f0b33f; }
+.game-match-source strong { font: 600 24px/1.12 "Fraunces", serif; }
+.game-match-target { background: #f1f5e9; color: var(--ink); }
+.game-match-target p { margin: -4px 0 2px; color: #62685f; font-size: 13px; }
+.match-option { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: center; min-height: 54px; padding: 10px; border: 1px solid rgba(24,69,61,.22); background: #fffdf7; color: var(--ink); text-align: left; cursor: pointer; transition: transform .16s var(--ease-out), border-color .16s var(--ease-out), background .16s var(--ease-out); }
+.match-option:hover { transform: translateX(3px); border-color: var(--evergreen); background: #e3eee3; }
+.match-option > span:first-child { display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid var(--evergreen); border-radius: 50%; color: var(--evergreen); font-size: 12px; font-weight: 800; }
+@media (max-width: 680px) { .game-match-card { grid-template-columns: 1fr; } .game-match-source strong { font-size: 21px; } }

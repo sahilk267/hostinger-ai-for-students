@@ -670,3 +670,7 @@
 - [x] Fix multi-mode renderer TypeScript regressions: declaration order and analytics payload array typing.
 
 - [x] Fix final-round score calculation so the last correct answer is included for standard, sorting and timed modes.
+
+- [x] Add a matching interaction to AI Decoder with reusable pair-selection state and answer-key scoring.
+
+- [x] Update the game contract test for AI Decoder matching mode while retaining confidence checks for the other games.

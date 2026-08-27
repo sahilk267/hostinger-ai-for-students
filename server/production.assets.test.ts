@@ -130,7 +130,8 @@ describe("production asset and analytics contracts", () => {
     expect(source).toContain("Reveal the clue");
     expect(source).toContain('learning_game_inspect');
     expect(source).toContain("setInspected(false)");
-    expect(source).toContain('const confidenceMode = game.id === "creative-director" || game.id === "code-coach" || game.id === "ai-decoder" || game.id === "tool-match"');
+    expect(source).toContain('const confidenceMode = game.id === "creative-director" || game.id === "code-coach" || game.id === "tool-match"');
+    expect(source).toContain('game.id === "ai-decoder" ? "match"');
     expect(source).toContain("How sure are you about that move?");
     expect(source).toContain('learning_game_confidence');
   });
