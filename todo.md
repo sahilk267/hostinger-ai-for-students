@@ -657,3 +657,12 @@
 - [x] Checkpoint, synchronize and guide redeployment for the popup fix.
 
 - [x] Add an authenticated Explorer evidence summary to the Progress dashboard, backed by the owner-scoped attempts query.
+
+## Next AI game expansion
+
+- [x] Audit the current 12-game catalog and shared interaction engine for quiz-only gaps.
+- [x] Define the next play-first mechanics and select the first game batch to upgrade.
+- [x] Author distinct 30-round content with balanced answer keys and age-appropriate language.
+- [x] Integrate the mechanics without changing Explorer or breaking progress tracking.
+- [x] Validate scoring, randomization, accessibility, responsive layouts and content integrity.
+- [ ] Checkpoint and deliver the upgraded game release.

@@ -37,3 +37,28 @@ Real-time AI calls, multiplayer, leaderboards, avatars, accounts, payments and u
 ## Definition of done
 
 The game is complete when a player can start a lesson from the platform, finish five reviewed questions, receive an explanation for every answer, see a score and next action, replay the lesson, and use the entire flow on mobile and keyboard without runtime errors.
+
+
+# Next AI game expansion
+
+## Goal
+Upgrade the seven additional AI field games from answer-only rounds into varied, play-first practice while preserving the existing 30-round content, balanced answer ordering, progress IDs and Explorer privacy boundaries.
+
+## First release slice
+
+1. **Bias Buster**: classify a representation or evaluation signal, then reveal an inspectable explanation.
+2. **Data Detective**: inspect a visual/data clue before choosing the strongest interpretation.
+3. **Decision Studio**: choose the human-boundary action and confirm the risk level.
+4. Keep Creative Director, Code Coach, Tool Matchmaker and AI Decoder on the shared renderer until the first slice is validated.
+
+## Risk slices and acceptance criteria
+
+- The shared renderer must continue to render all 30 reviewed scenarios per game.
+- Answer IDs, not display positions, determine correctness; each session uses a fresh seed.
+- Every interaction must be keyboard reachable, readable in the available language surfaces, and usable on mobile.
+- No game may imply IQ, diagnosis, personality labels or career prediction.
+- Existing `GameId` values and `learningProgress` writes remain unchanged.
+
+## Verification
+
+Run TypeScript, the non-live Vitest suite, production build, and representative desktop/mobile preview checks for the upgraded games.
