@@ -260,7 +260,7 @@
 
 - [x] Verify the current release’s required server and public environment keys.
 - [x] Provide a safe Hostinger entry/import method that does not expose secrets in GitHub or chat.
-- [ ] Validate the configured key set before the user starts deployment.
+- [x] Validate the configured key set before the user starts deployment.
 
 ## Database naming verification
 
@@ -597,7 +597,7 @@
 - [x] Verify resolver precedence and all supported Hostinger database variable names.
 - [x] Add a secret-safe diagnostic that reports only configuration state, never values.
 - [x] Test, checkpoint and synchronize the diagnostic release.
-- [ ] Guide the required Hostinger variable save/restart and final OTP smoke test.
+- [x] Guide the required Hostinger variable save/restart and final OTP smoke test.
 
 ## Hostinger malformed full-URL follow-up
 
@@ -614,7 +614,7 @@
 - [x] Compare the deployed users-table shape with the repository schema and migration SQL.
 - [x] Choose a non-destructive schema synchronization or compatibility correction.
 - [x] Add regression coverage for the corrected upsert path and migration contract.
-- [ ] Validate, checkpoint and synchronize the fix, then guide the live migration smoke test.
+- [x] Validate, checkpoint and synchronize the fix, then guide the live migration smoke test.
 
 ## Blank Hostinger database initialization
 
