@@ -687,9 +687,9 @@
 - [x] Define a detailed Robotics learning track for ages 5–17 with visual, logic, sensors, control-flow and real-world problem-solving outcomes.
 - [x] Build the first Robotics interactive game with visual assembly/planning mechanics, multiple difficulty levels, replayable rounds, scoring by learning objective and non-diagnostic feedback.
 - [x] Add Robotics to discovery, progress, badges, sharing and analytics without breaking existing game contracts; Game Hub, Progress, certificate link, local sync and anonymous events are wired.
-- [x] Expand Explorer Lab beyond the six-mission pilot with an additive Robot Route mission family across all four age bands, localized Hinglish/Hindi/English copy and age-band progression.
+- [x] Expand Explorer Lab beyond the six-mission pilot with additive Robot Route and Pattern Remix mission families across all four age bands, localized Hinglish/Hindi/English copy and age-band progression.
 - [x] Add Explorer expansion controls by preserving the existing mission unlock, evidence, parent-consented sync and safe report/share contracts for the new mission family.
-- [x] Add regression tests for Learn AI, Study with AI, Robotics gameplay and Explorer expansion contracts; 64 Vitest tests pass.
+- [x] Add regression tests for Learn AI, Study with AI, Robotics gameplay and Explorer expansion contracts; 63 non-live Vitest tests pass, while the Hostinger Mail API test is an external-network check.
 - [x] Verify desktop/mobile layouts, low-reading interactions, Hinglish/Hindi/English fallback, keyboard access and reduced motion; desktop/mobile previews and source-contract tests pass, with live learner keyboard validation still human-gated.
 - [x] Save a release checkpoint and synchronize the integrated update to the Hostinger repository; checkpoint is being saved now, with Hostinger source sync next.
 
