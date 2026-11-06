@@ -1,5 +1,31 @@
 import { describe, expect, it, vi } from "vitest";
 
+const { reserveEmailLoginChallenge, consumeEmailLoginChallenge, cancelEmailLoginChallenge } = vi.hoisted(() => {
+  const rows = new Map<string, {
+    challengeId: string; codeHash: string; attempts: number; requestedAt: number;
+    expiresAt: number; consumed: boolean;
+  }>();
+  return {
+    reserveEmailLoginChallenge: vi.fn(async (record: { emailKey: string; challengeId: string; codeHash: string; now: Date; expiresAt: Date }) => {
+      const existing = rows.get(record.emailKey);
+      if (existing && record.now.getTime() - existing.requestedAt < 60_000) return false;
+      rows.set(record.emailKey, { challengeId: record.challengeId, codeHash: record.codeHash, attempts: 0, requestedAt: record.now.getTime(), expiresAt: record.expiresAt.getTime(), consumed: false });
+      return true;
+    }),
+    consumeEmailLoginChallenge: vi.fn(async (input: { emailKey: string; challengeId: string; codeHash: string; now: Date }) => {
+      const row = rows.get(input.emailKey);
+      if (!row || row.challengeId !== input.challengeId || row.consumed || row.attempts >= 5 || row.expiresAt <= input.now.getTime()) return false;
+      row.attempts++;
+      if (row.codeHash !== input.codeHash) return false;
+      row.consumed = true;
+      return true;
+    }),
+    cancelEmailLoginChallenge: vi.fn(async (emailKey: string, challengeId: string) => {
+      if (rows.get(emailKey)?.challengeId === challengeId) rows.delete(emailKey);
+    }),
+  };
+});
+
 const { sendAuthenticationCode, upsertUser, getUserByOpenId, getLearningProgressForUser, mergeGuestProgressForUser, createSessionToken } = vi.hoisted(() => ({
   sendAuthenticationCode: vi.fn().mockResolvedValue(undefined),
   upsertUser: vi.fn().mockResolvedValue(undefined),
@@ -9,7 +35,7 @@ const { sendAuthenticationCode, upsertUser, getUserByOpenId, getLearningProgress
   createSessionToken: vi.fn().mockResolvedValue("signed-local-session"),
 }));
 vi.mock("./mail", () => ({ sendAuthenticationCode }));
-vi.mock("./db", () => ({ upsertUser, getUserByOpenId, getLearningProgressForUser, mergeGuestProgressForUser }));
+vi.mock("./db", () => ({ upsertUser, getUserByOpenId, getLearningProgressForUser, mergeGuestProgressForUser, reserveEmailLoginChallenge, consumeEmailLoginChallenge, cancelEmailLoginChallenge }));
 vi.mock("./_core/sdk", () => ({ sdk: { createSessionToken } }));
 
 import { COOKIE_NAME } from "@shared/const";
@@ -112,6 +138,40 @@ describe("auth email-code procedure", () => {
       code: "INTERNAL_SERVER_ERROR",
       message: "Account could not be loaded",
     });
+  });
+
+  it("rejects challenge replay and tampering after a successful login", async () => {
+    const start = createContext();
+    await appRouter.createCaller(start).auth.requestEmailCode({ email: "once-only@example.com" });
+    const token = (start.res as { cookie: ReturnType<typeof vi.fn> }).cookie.mock.calls.at(-1)?.[1] as string;
+    expect(token).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    expect(token).not.toContain("once-only");
+    const otp = sendAuthenticationCode.mock.calls.at(-1)?.[0].code as string;
+    const caller = appRouter.createCaller(createContext({ ai_students_email_challenge: token }));
+    expect(await caller.auth.verifyEmailCode({ email: "once-only@example.com", code: otp })).toEqual({ success: true });
+    expect(await caller.auth.verifyEmailCode({ email: "once-only@example.com", code: otp })).toEqual({ success: false });
+    expect(await appRouter.createCaller(createContext({ ai_students_email_challenge: token.slice(0,-1)+"!" })).auth.verifyEmailCode({ email: "once-only@example.com", code: otp })).toEqual({ success: false });
+  });
+
+  it("blocks verification after five incorrect attempts across callers", async () => {
+    const start = createContext();
+    await appRouter.createCaller(start).auth.requestEmailCode({ email: "limit-five@example.com" });
+    const token = (start.res as { cookie: ReturnType<typeof vi.fn> }).cookie.mock.calls.at(-1)?.[1] as string;
+    const correct = sendAuthenticationCode.mock.calls.at(-1)?.[0].code as string;
+    const wrong = correct === "000000" ? "999999" : "000000";
+    for (let n = 0; n < 5; n++) {
+      const c = appRouter.createCaller(createContext({ ai_students_email_challenge: token }));
+      expect(await c.auth.verifyEmailCode({ email: "limit-five@example.com", code: wrong })).toEqual({ success: false });
+    }
+    expect(await appRouter.createCaller(createContext({ ai_students_email_challenge: token })).auth.verifyEmailCode({ email: "limit-five@example.com", code: correct })).toEqual({ success: false });
+  });
+
+  it("rejects a code for a different email address", async () => {
+    const start = createContext();
+    await appRouter.createCaller(start).auth.requestEmailCode({ email: "one-person@example.com" });
+    const token = (start.res as { cookie: ReturnType<typeof vi.fn> }).cookie.mock.calls.at(-1)?.[1] as string;
+    const otp = sendAuthenticationCode.mock.calls.at(-1)?.[0].code as string;
+    expect(await appRouter.createCaller(createContext({ ai_students_email_challenge: token })).auth.verifyEmailCode({ email: "another-person@example.com", code: otp })).toEqual({ success: false });
   });
 
   it("rejects malformed codes before verification", async () => {
