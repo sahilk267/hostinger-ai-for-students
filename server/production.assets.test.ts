@@ -159,7 +159,7 @@ describe("production asset and analytics contracts", () => {
     expect(explorer).toContain("ONE LAST STEP / SAVE YOUR LAB");
     expect(explorer).toContain("Save profile and my progress");
     expect(explorer).toContain("Not now — keep this evidence on this device");
-    expect(explorer).toContain("I am the parent/guardian and consent");
+    expect(explorer).toContain("I confirm I am an adult parent/guardian authorized");
   });
 
   it("keeps Explorer local-evidence migration explicit and account-backed", () => {
