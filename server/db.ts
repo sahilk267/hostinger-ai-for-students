@@ -1,4 +1,5 @@
 import { and, eq, isNull, sql, gt, lt, ne, desc } from "drizzle-orm";
+import { EXPLORER_PILOT_MISSIONS } from "../client/src/data/explorerLab";
 import { createHash, randomBytes } from "node:crypto";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, authEmailChallenges, discoveryCheckpoints, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
@@ -166,6 +167,10 @@ export async function createExplorerProfile(input: {
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
+  // Prevent accidental proliferation of identifying child profiles on shared accounts.
+  const active = await db.select({ id: explorerProfiles.id }).from(explorerProfiles)
+    .where(and(eq(explorerProfiles.userId, input.userId), isNull(explorerProfiles.deletedAt)));
+  if (active.length >= 5) throw new Error("Maximum five learner profiles per account");
   const now = new Date();
   const [created] = await db.insert(explorerProfiles).values({ ...input, consentAt: now });
   return { id: Number(created.insertId), ...input, consentAt: now };
@@ -187,6 +192,10 @@ export async function saveExplorerAttempt(input: {
   if (!db) throw new Error("Database is not available");
   const profile = await db.select().from(explorerProfiles).where(and(eq(explorerProfiles.id, input.profileId), eq(explorerProfiles.userId, input.userId), isNull(explorerProfiles.deletedAt))).limit(1);
   if (!profile[0]) throw new Error("Explorer profile not found");
+  const authoredMission = EXPLORER_PILOT_MISSIONS.find((mission) => mission.id === input.missionId);
+  if (!authoredMission || authoredMission.ageBand !== profile[0].ageBand) {
+    throw new Error("Mission does not belong to this learner's age band");
+  }
   const [created] = await db.insert(explorerAttempts).values({
     profileId: input.profileId,
     missionId: input.missionId,
@@ -233,7 +242,8 @@ export async function revokeExplorerShare(userId: number, shareId: number) {
 export async function softDeleteExplorerProfile(userId: number, profileId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
-  await db.update(explorerProfiles).set({ deletedAt: new Date() }).where(and(eq(explorerProfiles.id, profileId), eq(explorerProfiles.userId, userId)));
+  // Permanent account-owned deletion, cascading to evidence and share tokens.
+  await db.delete(explorerProfiles).where(and(eq(explorerProfiles.id, profileId), eq(explorerProfiles.userId, userId)));
 }
 
 
