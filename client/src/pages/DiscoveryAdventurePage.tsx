@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, RotateCcw, Sparkles, Undo2, Printer, LockKeyhole, Lightbulb } from "lucide-react";
 import { ADVENTURE_LOCALES, ADVENTURE_AGE_BANDS, ALL_ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, summarizeAdventure, chooseAdventureNextPractice, getAgeAdventureMissions, describeAdventureWorld, type AdventureAgeBand, type AdventureAttempt, type AdventureLocale, type AdventureMission } from "@/data/discoveryAdventure";
 import DiscoveryEvidenceScene from "@/components/DiscoveryEvidenceScene";
+import DiscoveryAgeEvidenceScene from "@/components/DiscoveryAgeEvidenceScene";
 import "./discoveryAdventure.css";
 
 const STORAGE_KEY = "aifs-discovery-adventure-v1";
@@ -269,6 +270,7 @@ export default function DiscoveryAdventurePage() {
             </div>
             <p className="da-story">{current.story[locale]}</p>
             <DiscoveryEvidenceScene missionId={current.id} locale={locale} />
+            <DiscoveryAgeEvidenceScene missionId={current.id} locale={locale} />
             <h3 className="da-instruction">{current.instruction[locale]}</h3>
 
             {current.mode === "sequence" && (
