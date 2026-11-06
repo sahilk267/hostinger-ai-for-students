@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, RotateCcw, Sparkles, Undo2, Volume2, Printer, LockKeyhole } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, RotateCcw, Sparkles, Undo2, Printer, LockKeyhole } from "lucide-react";
 import { ADVENTURE_LOCALES, ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, summarizeAdventure, type AdventureAttempt, type AdventureLocale, type AdventureMission } from "@/data/discoveryAdventure";
 import "./discoveryAdventure.css";
 
