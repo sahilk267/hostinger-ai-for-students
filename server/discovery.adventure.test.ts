@@ -7,6 +7,7 @@ const page = readFileSync(resolve(process.cwd(), "client/src/pages/DiscoveryAdve
 const router = readFileSync(resolve(process.cwd(), "client/src/App.tsx"), "utf8");
 const css = readFileSync(resolve(process.cwd(), "client/src/pages/discoveryAdventure.css"), "utf8");
 const scene = readFileSync(resolve(process.cwd(), "client/src/components/DiscoveryEvidenceScene.tsx"), "utf8");
+const ageScene = readFileSync(resolve(process.cwd(), "client/src/components/DiscoveryAgeEvidenceScene.tsx"), "utf8");
 
 describe("Discovery Adventure pilot", () => {
   it("covers three worlds with three unique missions each", () => {
@@ -169,5 +170,11 @@ describe("Discovery Adventure pilot", () => {
     expect(scene).toContain('missionId === "viral-claim"');
     expect(scene).toContain("not real survey data");
     expect(scene).not.toContain("fetch(");
+    expect(page).toContain("DiscoveryAgeEvidenceScene");
+    for (const id of ["garden-robot-8-10", "pattern-patrol-8-10", "weather-poster-8-10", "sample-bias-14-17", "accessible-study-app-14-17", "correlation-check-14-17"]) {
+      expect(ageScene).toContain(id);
+    }
+    expect(ageScene).toContain("Fictional survey");
+    expect(ageScene).not.toContain("fetch(");
   });
 });
