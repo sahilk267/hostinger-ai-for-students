@@ -11,7 +11,7 @@ import { sdk } from "./_core/sdk";
 import { invokeLLM } from "./_core/llm";
 import { sendAuthenticationCode, sendContactMessage } from "./mail";
 import { CHECKPOINT_POLICY, getCheckpoints, gradeCheckpoint } from "./discoveryCheckpoints";
-import { AUTH_EMAIL_CODE_COOKIE, canRequestEmailCode, clearEmailCodeChallenge, createEmailCodeChallenge, getEmailChallengeCookie, localEmailOpenId, normalizeEmail, verifyEmailCode } from "./authEmail";
+import { cancelEmailCodeChallenge, clearEmailCodeChallenge, createEmailCodeChallenge, getEmailChallengeCookie, localEmailOpenId, normalizeEmail, verifyEmailCode } from "./authEmail";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -34,14 +34,27 @@ export const appRouter = router({
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     requestEmailCode: publicProcedure.input(z.object({ email: z.string().email().max(320) })).mutation(async ({ ctx, input }) => {
-      if (!canRequestEmailCode(input.email)) throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Please wait before requesting another code" });
-      const challenge = createEmailCodeChallenge(input.email, ctx.res);
-      await sendAuthenticationCode({ to: input.email, code: challenge.code, expiresInMinutes: challenge.expiresInMinutes });
+      let challenge: Awaited<ReturnType<typeof createEmailCodeChallenge>>;
+      try {
+        challenge = await createEmailCodeChallenge(input.email, ctx.req, ctx.res);
+      } catch {
+        throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Email login is temporarily unavailable" });
+      }
+      if (!challenge) throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Please wait before requesting another code" });
+      try {
+        await sendAuthenticationCode({ to: challenge.email, code: challenge.code, expiresInMinutes: challenge.expiresInMinutes });
+      } catch {
+        await cancelEmailCodeChallenge(challenge.email, challenge.challengeId).catch(() => undefined);
+        clearEmailCodeChallenge(ctx.res, ctx.req);
+        throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Verification email could not be sent" });
+      }
       return { success: true as const, expiresInMinutes: challenge.expiresInMinutes };
     }),
     verifyEmailCode: publicProcedure.input(z.object({ email: z.string().email().max(320), code: z.string().regex(/^\d{6}$/) })).mutation(async ({ ctx, input }) => {
       const email = normalizeEmail(input.email);
-      const verified = verifyEmailCode(email, input.code, getEmailChallengeCookie(ctx.req));
+      let verified: boolean;
+      try { verified = await verifyEmailCode(email, input.code, getEmailChallengeCookie(ctx.req)); }
+      catch { throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Email login is temporarily unavailable" }); }
       if (!verified) return { success: false as const };
 
       const openId = localEmailOpenId(email);
@@ -49,9 +62,10 @@ export const appRouter = router({
       const user = await db.getUserByOpenId(openId);
       if (!user) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Account could not be loaded" });
 
-      const sessionToken = await sdk.createSessionToken(openId, { name: user.name || email, expiresInMs: ONE_YEAR_MS });
-      ctx.res.cookie(COOKIE_NAME, sessionToken, { ...getSessionCookieOptions(ctx.req), maxAge: ONE_YEAR_MS });
-      clearEmailCodeChallenge(ctx.res);
+      const emailSessionMs = 30 * 24 * 60 * 60 * 1000;
+      const sessionToken = await sdk.createSessionToken(openId, { name: user.name || email, expiresInMs: emailSessionMs });
+      ctx.res.cookie(COOKIE_NAME, sessionToken, { ...getSessionCookieOptions(ctx.req), maxAge: emailSessionMs });
+      clearEmailCodeChallenge(ctx.res, ctx.req);
       return { success: true as const };
     }),
     logout: publicProcedure.mutation(({ ctx }) => {
