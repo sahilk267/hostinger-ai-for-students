@@ -247,6 +247,77 @@
 .da-parent-note strong { color: #1b3956; }
 .da-parent-note p { font-size: 13px; line-height: 1.6; margin-top: 7px; }
 .da-footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 27px 0 36px; color: #77819b; font-size: 11px; border-top: 1px solid #dbe2f0; }
+
+/* Parent report: evidence-first presentation with a strict non-credential milestone. */
+.da-parent-report { margin: 0 auto 50px; max-width: 1060px; background: #fff; padding: clamp(17px,3.3vw,38px); border: 1px solid #dbe3f2; border-radius: 24px; box-shadow: 0 20px 70px rgba(27,45,82,.1); }
+.da-parent-report:focus { outline: none; }
+.da-report-toolbar, .da-report-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.da-report-controls { justify-content: flex-end; }
+.da-report-controls .da-secondary-action { padding: 11px 12px; }
+.da-report-cover { padding: 27px 0 21px; border-bottom: 1px solid #e4e9f5; }
+.da-report-cover h2 { font-family: "Fraunces",Georgia,serif; font-size: clamp(29px,4vw,48px); line-height: 1.12; letter-spacing: -.05em; margin: 12px 0; }
+.da-report-cover > p { color: #53627d; font-size: 14px; line-height: 1.65; max-width: 740px; }
+.da-age-pill { display: inline-block; border: 1px solid #d3e2f6; border-radius: 99px; color: #284b93; background: #eff6ff; font-size: 12px; padding: 8px 12px; margin-top: 15px; }
+.da-report-metrics { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; padding: 23px 0; }
+.da-report-metrics > div { display: grid; gap: 7px; background: #f5f8ff; border: 1px solid #e0e9f7; border-radius: 15px; padding: 17px 13px; }
+.da-report-metrics strong { font-size: clamp(25px,3vw,38px); line-height: 1; font-weight: 900; color: #294ca1; letter-spacing: -.04em; }
+.da-report-metrics span { font-size: 12px; line-height: 1.45; color: #526580; font-weight: 700; }
+.da-progress-meter { padding: 1px 0 21px; }
+.da-progress-label { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; }
+.da-progress-label span { font-weight: 850; color: #29518f; }
+.da-progress-track { height: 10px; background: #e5edf7; border-radius: 99px; overflow: hidden; }
+.da-progress-track > div { height: 100%; background: linear-gradient(95deg,#47b89f,#3473d8); border-radius: inherit; transition: width .2s ease; }
+.da-report-methodology { display: flex; align-items: flex-start; gap: 12px; padding: 19px; border-radius: 15px; background: #eaf4fc; color: #345170; }
+.da-report-methodology > svg { flex-shrink: 0; margin-top: 2px; }
+.da-report-methodology strong { color: #254369; font-size: 14px; }
+.da-report-methodology p { font-size: 12px; line-height: 1.65; margin-top: 6px; }
+.da-world-evidence > h3, .da-parent-conversation h3 { font-family: "Fraunces",Georgia,serif; font-size: 25px; margin: 26px 0 17px; }
+.da-world-evidence .da-report-card { padding: 17px; }
+.da-world-evidence .da-report-card h4 { font-size: 20px; font-weight: 850; margin: 8px 0 13px; }
+.da-world-progress { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 12px; color: #4f6480; margin: 0 0 8px; }
+.da-world-progress strong { font-size: 14px; color: #1c477b; }
+.da-world-small { margin: 10px 0 14px; font-size: 11px; font-weight: 700; color: #536a86; }
+.da-mission-evidence { border-top: 1px solid #dce5f2; display: grid; gap: 0; }
+.da-evidence-row { padding: 12px 0; border-bottom: 1px solid #e1eaf4; display: flex; align-items: flex-start; gap: 9px; }
+.da-evidence-row > span { display: flex; align-items: center; justify-content: center; width: 18px; height: 20px; color: #2d8a77; font-weight: 900; }
+.da-evidence-row > div { min-width: 0; display: grid; gap: 5px; }
+.da-evidence-row strong { font-size: 12px; font-weight: 850; line-height: 1.35; }
+.da-evidence-row small { color: #556783; font-size: 11px; line-height: 1.5; }
+.da-parent-conversation { margin: 24px 0; padding: 20px; border: 1px solid #d9e9df; background: #f1faf5; border-radius: 18px; }
+.da-panel-heading { display: flex; gap: 13px; align-items: flex-start; }
+.da-panel-heading > span { font-size: 27px; }
+.da-parent-conversation h3 { margin: 0 0 7px; }
+.da-parent-conversation .da-panel-heading p { font-size: 12px; margin: 0; line-height: 1.6; }
+.da-parent-conversation > p { margin-top: 13px; padding-top: 12px; border-top: 1px solid #d9eadd; line-height: 1.6; font-size: 13px; }
+.da-local-milestone { display: flex; align-items: flex-start; gap: 17px; padding: 22px; border-radius: 18px; background: #f2f5fa; border: 1px solid #dbe3ed; margin-top: 26px; }
+.da-local-milestone.is-earned { background: linear-gradient(130deg,#fff6dd,#f5faff); border-color: #e6c98c; }
+.da-milestone-symbol { display: grid; place-items: center; min-width: 55px; min-height: 55px; border-radius: 15px; background: #e4e9f1; color: #72819e; }
+.da-local-milestone.is-earned .da-milestone-symbol { color: #996526; background: #ffdf94; }
+.da-local-milestone h3 { font-family: "Fraunces",Georgia,serif; font-size: 23px; letter-spacing: -.025em; margin: 8px 0; }
+.da-local-milestone p { color: #4e5d75; line-height: 1.55; font-size: 13px; margin-top: 8px; }
+.da-noncredential { display: block; color: #94592d; border-top: 1px solid #ded6c7; padding-top: 13px; margin-top: 16px; font-weight: 850; font-size: 11px; letter-spacing: .025em; }
+.da-privacy-footnote { font-size: 11px; line-height: 1.65; color: #6c7890; margin-top: 20px; }
+@media (max-width: 800px) {
+  .da-report-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .da-world-evidence .da-report-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 620px) {
+  .da-parent-report { border-radius: 18px; }
+  .da-report-toolbar { align-items: flex-start; }
+  .da-report-controls { flex-direction: column; align-items: stretch; width: 100%; }
+  .da-report-controls > button { width: 100%; }
+  .da-report-metrics { gap: 8px; }
+  .da-report-metrics > div { padding: 12px 10px; }
+  .da-local-milestone { flex-direction: column; padding: 16px; }
+}
+@media print {
+  .da-parent-report { max-width: none; margin: 0; padding: 0; box-shadow: none; border: none; }
+  .da-report-toolbar, .da-parent-report .da-primary-action, .da-report-controls { display: none !important; }
+  .da-report-metrics { grid-template-columns: repeat(4,minmax(0,1fr)); }
+  .da-world-evidence .da-report-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .da-parent-conversation, .da-local-milestone, .da-report-card { break-inside: avoid; }
+}
+
 @keyframes da-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @media (max-width: 900px) {
   .da-hero { grid-template-columns: 1fr 180px; gap: 8px; }
