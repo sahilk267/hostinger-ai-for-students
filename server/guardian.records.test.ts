@@ -37,6 +37,37 @@ describe("Private guardian-managed Explorer record boundaries", () => {
     expect(ui).not.toContain("evidenceJson");
   });
 
+  it("keeps new child cloud writes and external AI coaching off unless explicitly enabled", async () => {
+    const oldCloud = process.env.EXPLORER_CLOUD_SAVE_ENABLED;
+    const oldAi = process.env.EXPLORER_AI_FEEDBACK_ENABLED;
+    try {
+      delete process.env.EXPLORER_CLOUD_SAVE_ENABLED;
+      delete process.env.EXPLORER_AI_FEEDBACK_ENABLED;
+      const caller = appRouter.createCaller({ req: { headers: {} }, res: {}, user: null } as never);
+      expect(await caller.explorer.features()).toEqual({ cloudSaveEnabled: false, aiFeedbackEnabled: false });
+      const router = source("server/routers.ts");
+      expect(router).toContain('EXPLORER_CLOUD_SAVE_ENABLED !== "1"');
+      expect(router).toContain('EXPLORER_AI_FEEDBACK_ENABLED !== "1"');
+      const explorer = source("client/src/pages/ExplorerPage.tsx");
+      expect(explorer).toContain("Cloud child-profile saving is paused");
+    } finally {
+      if (oldCloud === undefined) delete process.env.EXPLORER_CLOUD_SAVE_ENABLED; else process.env.EXPLORER_CLOUD_SAVE_ENABLED = oldCloud;
+      if (oldAi === undefined) delete process.env.EXPLORER_AI_FEEDBACK_ENABLED; else process.env.EXPLORER_AI_FEEDBACK_ENABLED = oldAi;
+    }
+  });
+
+  it("exports all account-owned Explorer data while retaining a delete route", () => {
+    const db = source("server/db.ts");
+    const router = source("server/routers.ts");
+    const account = source("client/src/pages/AccountPage.tsx");
+    expect(db).toContain("exportExplorerRecordsForAccount");
+    expect(db).toContain("explorerAttempts.evidenceJson");
+    expect(db).toContain("explorerShares.summaryJson");
+    expect(router).toContain("explorer: await db.exportExplorerRecordsForAccount(ctx.user.id)");
+    expect(router).toContain("learning: router({");
+    expect(account).toContain("Browser-only guest practice is not included.");
+  });
+
   it("invalidates views following profile deletion and prevents stale IDs", () => {
     const ui = source("client/src/pages/GuardianRecordsPage.tsx");
     const explorer = source("client/src/pages/ExplorerPage.tsx");
