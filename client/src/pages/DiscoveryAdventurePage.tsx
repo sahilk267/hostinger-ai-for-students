@@ -12,7 +12,7 @@ const words = {
   en: {
     kicker: "DISCOVERY UNIVERSE · FREE PILOT", hero: "Your next adventure begins here.",
     lead: "Three worlds. Nine hands-on missions. Explore how you plan, investigate and improve — without a test label.",
-    private: "Private on this device", privateNote: "Your demo answers stay in this browser. No account, name or payment required.",
+    private: "Private on this device", privateNote: "Practice is shared within this browser, not tied to a child identity. Clear results before another learner. No signup or payment.",
     age: "Choose your learning level", agePrompt: "Pick an age-appropriate adventure", otherAges: "Other experiences, including ages 5–7", worlds: "Choose a world",
     missions: "Missions", ready: "Ready to explore", done: "Practiced", explore: "Start mission", replay: "Practice again",
     back: "Back to map", order: "Your sequence", undo: "Undo last move", reset: "Clear choices",
@@ -34,7 +34,7 @@ const words = {
   hi: {
     kicker: "डिस्कवरी यूनिवर्स · मुफ़्त पायलट", hero: "आपका अगला रोमांच यहीं से शुरू होता है।",
     lead: "तीन दुनिया, नौ गतिविधियाँ। जानें कि आप योजना कैसे बनाते हैं, जाँचते हैं और सुधार करते हैं।",
-    private: "इस डिवाइस पर निजी", privateNote: "आपके उत्तर इसी ब्राउज़र में रहेंगे। नाम, अकाउंट या भुगतान की ज़रूरत नहीं।",
+    private: "इस डिवाइस पर निजी", privateNote: "इस ब्राउज़र में सभी उपयोगकर्ताओं की प्रगति साझा रहती है। दूसरे बच्चे से पहले परिणाम मिटाएँ। नाम या भुगतान नहीं चाहिए।",
     age: "अपना सीखने का स्तर चुनें", agePrompt: "उम्र के हिसाब से खेल चुनें", otherAges: "अन्य अनुभव, 5–7 वर्ष भी", worlds: "दुनिया चुनें",
     missions: "गतिविधियाँ", ready: "खोज के लिए तैयार", done: "अभ्यास किया", explore: "मिशन शुरू करें", replay: "फिर अभ्यास करें",
     back: "नक्शे पर वापस", order: "आपका क्रम", undo: "पिछला कदम हटाएँ", reset: "चुनाव मिटाएँ",
@@ -56,7 +56,7 @@ const words = {
   hinglish: {
     kicker: "DISCOVERY UNIVERSE · FREE PILOT", hero: "Aapka next adventure yahin se shuru hota hai!",
     lead: "3 worlds, 9 hands-on missions. Explore karo ki aap kaise plan, investigate aur improve karte ho.",
-    private: "Isi device par private", privateNote: "Demo answers sirf is browser mein rahenge. Account, name ya payment nahi chahiye.",
+    private: "Isi device par private", privateNote: "Is browser par users ka practice data shared hai. Next learner se pehle clear karo. Account ya payment nahi chahiye.",
     age: "Apna learning level choose karo", agePrompt: "Age ke hisaab se adventure choose karo", otherAges: "Baaki experiences, ages 5–7 bhi", worlds: "Apni world choose karo",
     missions: "Missions", ready: "Explore karne ko ready", done: "Practiced", explore: "Mission shuru karo", replay: "Phir practice karo",
     back: "Map par wapas", order: "Aapka sequence", undo: "Last move undo", reset: "Choices clear karo",
