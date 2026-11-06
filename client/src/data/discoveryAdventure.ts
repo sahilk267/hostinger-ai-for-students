@@ -1,6 +1,8 @@
 import type { ExplorerSkill } from "./explorerLab";
+import { AGE_ADVENTURE_MISSIONS } from "./discoveryAgeMissions";
 
 export type AdventureLocale = "en" | "hi" | "hinglish";
+export type AdventureAgeBand = "8-10" | "11-13" | "14-17";
 export type AdventureWorldId = "logic" | "mystery" | "creator";
 export type AdventureMode = "sequence" | "single" | "multi";
 export type Localized = Record<AdventureLocale, string>;
@@ -11,6 +13,21 @@ export const ADVENTURE_LOCALES: { id: AdventureLocale; label: string }[] = [
   { id: "hinglish", label: "Hinglish" },
   { id: "hi", label: "हिन्दी" },
   { id: "en", label: "English" },
+];
+
+export const ADVENTURE_AGE_BANDS: { id: AdventureAgeBand; label: Localized; tagline: Localized }[] = [
+  { id: "8-10",
+    label: t("Junior Adventurers · 8–10", "नन्हे खोजी · 8–10", "Junior Adventurers · 8–10"),
+    tagline: t("Short, picture-friendly stories and small decisions.", "छोटी कहानियाँ और आसान, समझने योग्य निर्णय।", "Short stories aur easy, playful decisions."),
+  },
+  { id: "11-13",
+    label: t("Skill Detectives · 11–13", "कौशल जासूस · 11–13", "Skill Detectives · 11–13"),
+    tagline: t("Practice planning, checking evidence and improving your ideas.", "योजना, प्रमाण की जाँच और विचार सुधारने का अभ्यास।", "Planning, evidence checks aur ideas ko improve karne ki practice."),
+  },
+  { id: "14-17",
+    label: t("Future Builders · 14–17", "भविष्य निर्माता · 14–17", "Future Builders · 14–17"),
+    tagline: t("Explore realistic dilemmas, trade-offs and responsible AI workflows.", "वास्तविक समस्याएँ, विकल्प और जिम्मेदार AI प्रक्रियाएँ।", "Real-life dilemmas, trade-offs aur responsible AI workflows."),
+  },
 ];
 
 export const ADVENTURE_WORLDS: {
@@ -39,6 +56,7 @@ export const ADVENTURE_WORLDS: {
 
 export type AdventureMission = {
   id: string;
+  ageBand: AdventureAgeBand;
   world: AdventureWorldId;
   skill: ExplorerSkill;
   mode: AdventureMode;
@@ -54,7 +72,7 @@ export type AdventureMission = {
 
 export const ADVENTURE_MISSIONS: AdventureMission[] = [
   {
-    id: "rover-rescue", world: "logic", skill: "planning", mode: "sequence",
+    id: "rover-rescue", ageBand: "11-13", world: "logic", skill: "planning", mode: "sequence",
     title: t("Rescue the Rover", "रोवर को बचाएँ", "Rover ko rescue karo"),
     story: t("A research rover is stuck. Its battery lasts only one trip.", "एक शोध रोवर फँस गया है। उसकी बैटरी बस एक यात्रा के लिए है।", "Research rover phas gaya hai. Battery sirf ek trip ki hai."),
     instruction: t("Tap the cards in the safest order.", "कार्ड को सबसे सुरक्षित क्रम में चुनें।", "Cards ko safest order mein tap karo."),
@@ -69,7 +87,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     hint: t("Which information should you gather before deciding where to drive?", "गाड़ी कहाँ चलानी है, यह तय करने से पहले कौन सी जानकारी चाहिए?", "Drive karne ka decision lene se pehle kaunsi information chahiye?"),
   },
   {
-    id: "rule-switch", world: "logic", skill: "flexibility", mode: "single",
+    id: "rule-switch", ageBand: "11-13", world: "logic", skill: "flexibility", mode: "single",
     title: t("The Rule Changed!", "नियम बदल गया!", "Rule change ho gaya!"),
     story: t("Your rover's bridge is closed. The map also shows a longer, safe path.", "रोवर का पुल बंद है। नक्शे पर एक लंबा मगर सुरक्षित रास्ता भी है।", "Rover ka bridge band hai. Map par ek lamba but safe route bhi hai."),
     instruction: t("What is your best next move?", "अब सबसे अच्छा कदम क्या होगा?", "Ab best next move kya hoga?"),
@@ -83,7 +101,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     hint: t("When one route closes, look for a route you can safely check.", "जब एक रास्ता बंद हो, तो जाँचने योग्य सुरक्षित विकल्प तलाशें।", "Ek route band ho toh alternate safe route check karo."),
   },
   {
-    id: "bridge-lab", world: "logic", skill: "reflection", mode: "multi",
+    id: "bridge-lab", ageBand: "11-13", world: "logic", skill: "reflection", mode: "multi",
     title: t("Fix the Wobbly Bridge", "डगमगाता पुल सुधारें", "Wobbly bridge fix karo"),
     story: t("Your first paper bridge collapsed under a toy truck.", "आपका पहला कागज़ का पुल खिलौना ट्रक के भार से गिर गया।", "Pehla paper bridge toy truck ke weight se gir gaya."),
     instruction: t("Choose TWO useful changes to test.", "जाँचने के लिए दो उपयोगी बदलाव चुनें।", "Test karne ke liye DO useful changes choose karo."),
@@ -98,7 +116,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     hint: t("Think about support and stability, rather than hiding the failed attempt.", "असफलता छिपाने की बजाय सहारे और स्थिरता के बारे में सोचें।", "Failure ignore mat karo. Support aur stability ke baare mein socho."),
   },
   {
-    id: "viral-claim", world: "mystery", skill: "evidence", mode: "multi",
+    id: "viral-claim", ageBand: "11-13", world: "mystery", skill: "evidence", mode: "multi",
     title: t("The Viral Claim", "वायरल दावे की जाँच", "Viral claim check karo"),
     story: t("A post says 'one study trick works for EVERY student!' but gives no link.", "एक पोस्ट कहती है 'एक पढ़ाई का तरीका हर छात्र के लिए काम करता है!' लेकिन लिंक नहीं है।", "Ek post bolti hai 'one trick sab students ke liye works!' par source link nahi."),
     instruction: t("Choose TWO checks before believing it.", "विश्वास करने से पहले दो जाँचें चुनें।", "Believe karne se pehle DO checks choose karo."),
@@ -113,7 +131,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     hint: t("Popularity is not the same as reliable evidence. Who tested the idea, and with whom?", "लोकप्रियता प्रमाण नहीं है। विचार की जाँच किसने और किन लोगों पर की?", "Likes evidence nahi hain. Kisne test kiya aur kin logon ke saath?"),
   },
   {
-    id: "chart-trap", world: "mystery", skill: "evidence", mode: "single",
+    id: "chart-trap", ageBand: "11-13", world: "mystery", skill: "evidence", mode: "single",
     title: t("The Tricky Chart", "भ्रामक चार्ट", "Tricky chart"),
     story: t("Two bars look hugely different, but the vertical axis starts at 95, not zero.", "दो बार बहुत अलग दिखते हैं, लेकिन ऊर्ध्वाधर अक्ष 0 नहीं, 95 से शुरू होता है।", "Do bars bahut different lagte hain, but vertical axis zero ki jagah 95 se start hai."),
     instruction: t("What should you do before concluding?", "निष्कर्ष निकालने से पहले क्या करेंगे?", "Conclusion se pehle kya karoge?"),
@@ -127,7 +145,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     hint: t("Look carefully at the axis before comparing how tall the bars appear.", "बार की ऊँचाई की तुलना से पहले अक्ष का पैमाना देखें।", "Bars compare karne se pehle axis ka scale dekho."),
   },
   {
-    id: "screenshot-check", world: "mystery", skill: "explanation", mode: "sequence",
+    id: "screenshot-check", ageBand: "11-13", world: "mystery", skill: "explanation", mode: "sequence",
     title: t("Investigate a Screenshot", "स्क्रीनशॉट की पड़ताल", "Screenshot investigate karo"),
     story: t("A screenshot claims a school rule changed today, but no official notice is visible.", "एक स्क्रीनशॉट में आज स्कूल का नियम बदलने का दावा है, पर आधिकारिक सूचना नहीं है।", "Screenshot bolta hai school rule aaj change hua, but official notice nahi hai."),
     instruction: t("Build a responsible verification sequence.", "जिम्मेदार जाँच का क्रम बनाएँ।", "Responsible verification ka sequence banao."),
@@ -141,7 +159,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     hint: t("What original document can confirm this screenshot, and does its date match?", "कौन सा मूल दस्तावेज़ स्क्रीनशॉट की पुष्टि करेगा और क्या तारीख मेल खाती है?", "Kaunsa original document screenshot verify karega? Date bhi check karo."),
   },
   {
-    id: "study-buddy", world: "creator", skill: "creativity", mode: "multi",
+    id: "study-buddy", ageBand: "11-13", world: "creator", skill: "creativity", mode: "multi",
     title: t("Design a Study Buddy", "स्टडी बडी डिज़ाइन करें", "Study Buddy design karo"),
     story: t("Build a learning helper that supports thinking instead of giving away homework answers.", "ऐसा सहायक बनाएँ जो गृहकार्य के उत्तर देने की जगह सोचने में मदद करे।", "Aisa helper banao jo homework answer dene ke bajaye thinking support kare."),
     instruction: t("Choose TWO responsible features.", "दो जिम्मेदार फीचर चुनें।", "DO responsible features choose karo."),
@@ -156,7 +174,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     hint: t("Which features still leave the real thinking to the learner?", "कौन सी सुविधाएँ वास्तविक सोच विद्यार्थी के पास ही रहने देती हैं?", "Kaunse features learner ko khud sochne dete hain?"),
   },
   {
-    id: "teach-the-robot", world: "creator", skill: "creativity", mode: "sequence",
+    id: "teach-the-robot", ageBand: "11-13", world: "creator", skill: "creativity", mode: "sequence",
     title: t("Teach the Tiny Robot", "नन्हे रोबोट को सिखाएँ", "Tiny robot ko sikhayo"),
     story: t("A robot must learn how to sort paper and plastic, and it needs clear instructions.", "एक रोबोट को कागज़ और प्लास्टिक अलग करना सीखना है। उसे स्पष्ट निर्देश चाहिए।", "Robot ko paper aur plastic separate karna seekhna hai. Clear instructions chahiye."),
     instruction: t("Put the teaching cards in a useful order.", "सिखाने वाले कार्ड सही क्रम में रखें।", "Teaching cards useful order mein arrange karo."),
@@ -170,7 +188,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     hint: t("A learner needs an example, a rule and a way to check the rule.", "सीखने वाले को उदाहरण, नियम और उस नियम की जाँच चाहिए।", "Learner ko example, rule aur test chahiye."),
   },
   {
-    id: "poster-upgrade", world: "creator", skill: "flexibility", mode: "single",
+    id: "poster-upgrade", ageBand: "11-13", world: "creator", skill: "flexibility", mode: "single",
     title: t("Upgrade the Poster", "पोस्टर बेहतर बनाएँ", "Poster upgrade karo"),
     story: t("A friend says your science poster looks nice, but the main instruction is hard to find.", "दोस्त कहता है विज्ञान पोस्टर सुंदर है, लेकिन मुख्य निर्देश दिख नहीं रहा।", "Friend bolta hai science poster nice hai, par main instruction clear nahi."),
     instruction: t("Which revision best uses that feedback?", "कौन सा सुधार उस फीडबैक का सही उपयोग है?", "Kaunsa revision feedback ko best use karta hai?"),
@@ -184,6 +202,12 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     hint: t("The reader found the instruction hard to find. Focus on making that instruction clearer.", "पाठक को निर्देश ढूँढने में कठिनाई हुई। निर्देश को स्पष्ट करें।", "Reader ko instruction nahi mil raha. Instruction clear karne par focus karo."),
   },
 ];
+
+export const ALL_ADVENTURE_MISSIONS: AdventureMission[] = [...ADVENTURE_MISSIONS, ...AGE_ADVENTURE_MISSIONS];
+
+export function getAgeAdventureMissions(ageBand: AdventureAgeBand): AdventureMission[] {
+  return ALL_ADVENTURE_MISSIONS.filter((mission) => mission.ageBand === ageBand);
+}
 
 /** Stable permutation for one play session. Does not award security-sensitive scores. */
 export function shuffledAdventureOptions(mission: AdventureMission, seed: number): AdventureMission["options"] {
@@ -220,9 +244,9 @@ export type AdventureAttempt = {
   updatedAt: string;
 };
 
-export function summarizeAdventure(attempts: Record<string, AdventureAttempt>) {
+export function summarizeAdventure(attempts: Record<string, AdventureAttempt>, ageBand: AdventureAgeBand = "11-13") {
   return ADVENTURE_WORLDS.map((world) => {
-    const missions = ADVENTURE_MISSIONS.filter((mission) => mission.world === world.id);
+    const missions = getAgeAdventureMissions(ageBand).filter((mission) => mission.world === world.id);
     const recorded = missions.map((mission) => attempts[mission.id]).filter((item): item is AdventureAttempt => Boolean(item));
     return {
       world,
@@ -239,10 +263,11 @@ export function summarizeAdventure(attempts: Record<string, AdventureAttempt>) {
 
 
 /** Suggestions are transparent practice navigation, not a validated aptitude or career inference. */
-export function chooseAdventureNextPractice(attempts: Record<string, AdventureAttempt>) {
-  const retry = ADVENTURE_MISSIONS.find((mission) => attempts[mission.id] && !attempts[mission.id].bestCorrect);
-  const next = retry ?? ADVENTURE_MISSIONS.find((mission) => !attempts[mission.id]) ?? null;
-  const explicitlyEnjoyed = summarizeAdventure(attempts)
+export function chooseAdventureNextPractice(attempts: Record<string, AdventureAttempt>, ageBand: AdventureAgeBand = "11-13") {
+  const available = getAgeAdventureMissions(ageBand);
+  const retry = available.find((mission) => attempts[mission.id] && !attempts[mission.id].bestCorrect);
+  const next = retry ?? available.find((mission) => !attempts[mission.id]) ?? null;
+  const explicitlyEnjoyed = summarizeAdventure(attempts, ageBand)
     .filter((item) => item.enjoyed > 0)
     .sort((a, b) => b.enjoyed - a.enjoyed)[0] ?? null;
   return { mission: next, isRetry: Boolean(retry), enjoyedWorld: explicitlyEnjoyed?.world ?? null };
