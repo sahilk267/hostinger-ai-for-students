@@ -93,3 +93,21 @@ export const explorerShares = mysqlTable("explorerShares", {
 
 export type ExplorerShare = typeof explorerShares.$inferSelect;
 export type InsertExplorerShare = typeof explorerShares.$inferInsert;
+
+/**
+ * Account-owned proof of participation in a server-checked practice preview.
+ * No child identity, answers, free-text evidence, DOB or claims of accreditation.
+ * Opt-in adult acknowledgement required for mutation; NOT guardian verification.
+ */
+export const discoveryCheckpoints = mysqlTable("discoveryCheckpoints", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  ageBand: mysqlEnum("ageBand", ["8-10", "11-13", "14-17"]).notNull(),
+  challengeId: varchar("challengeId", { length: 64 }).notNull(),
+  attempts: int("attempts").default(0).notNull(),
+  solvedAt: timestamp("solvedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  accountChallengeUnique: uniqueIndex("discoveryCheckpoints_user_challenge_unique").on(table.userId, table.challengeId),
+}));
