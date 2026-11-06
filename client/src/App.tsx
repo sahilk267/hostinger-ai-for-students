@@ -18,6 +18,7 @@ import ContactPage from "./pages/ContactPage";
 import MissionPage from "./pages/MissionPage";
 import JourneyPage from "./pages/JourneyPage";
 import ExplorerPage from "./pages/ExplorerPage";
+import DiscoveryAdventurePage from "./pages/DiscoveryAdventurePage";
 import ExplorerReportPage from "./pages/ExplorerReportPage";
 import ExplorerSharePage from "./pages/ExplorerSharePage";
 import PilotReviewPage from "./pages/PilotReviewPage";
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/play" component={GamePage} />
       <Route path="/mission" component={MissionPage} />
       <Route path="/journey" component={JourneyPage} />
+      <Route path="/explorer/adventure" component={DiscoveryAdventurePage} />
       <Route path="/explorer" component={ExplorerPage} />
       <Route path="/explorer/report" component={ExplorerReportPage} />
       <Route path="/explorer/share/:token" component={ExplorerSharePage} />
