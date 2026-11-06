@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, RotateCcw, Sparkles, Undo2, Printer, LockKeyhole, Lightbulb } from "lucide-react";
-import { ADVENTURE_LOCALES, ADVENTURE_AGE_BANDS, ALL_ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, summarizeAdventure, chooseAdventureNextPractice, getAgeAdventureMissions, describeAdventureWorld, type AdventureAgeBand, type AdventureAttempt, type AdventureLocale, type AdventureMission } from "@/data/discoveryAdventure";
+import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, RotateCcw, Sparkles, Undo2, LockKeyhole, Lightbulb } from "lucide-react";
+import { ADVENTURE_LOCALES, ADVENTURE_AGE_BANDS, ALL_ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, getAgeAdventureMissions, describeAdventureWorld, type AdventureAgeBand, type AdventureAttempt, type AdventureLocale, type AdventureMission } from "@/data/discoveryAdventure";
 import DiscoveryEvidenceScene from "@/components/DiscoveryEvidenceScene";
 import DiscoveryAgeEvidenceScene from "@/components/DiscoveryAgeEvidenceScene";
+import DiscoveryParentReport from "@/components/DiscoveryParentReport";
 import "./discoveryAdventure.css";
 
 const STORAGE_KEY = "aifs-discovery-adventure-v1";
@@ -137,8 +138,6 @@ export default function DiscoveryAdventurePage() {
   const current = availableMissions.find((mission) => mission.id === activeId) ?? null;
   const bandCopy = ADVENTURE_AGE_BANDS.find((band) => band.id === ageBand)!;
   const visibleOptions = current ? optionOrder.map((id) => current.options.find((option) => option.id === id)).filter((item): item is AdventureMission["options"][number] => Boolean(item)) : [];
-  const summary = useMemo(() => summarizeAdventure(attempts, ageBand), [attempts, ageBand]);
-  const suggestion = useMemo(() => chooseAdventureNextPractice(attempts, ageBand), [attempts, ageBand]);
   const totalAttempted = availableMissions.filter((mission) => attempts[mission.id]).length;
 
   useEffect(() => {
@@ -324,33 +323,14 @@ export default function DiscoveryAdventurePage() {
             )}
           </section>
         ) : showReport ? (
-          <section id="da-report-panel" tabIndex={-1} className="da-report" aria-labelledby="da-report-title">
-            <button className="da-text-button" type="button" onClick={backToMap}><ChevronLeft size={16} /> {copy.back}</button>
-            <div className="da-report-header"><span className="da-eyebrow">✧ {copy.results} · {bandCopy.label[locale]}</span><h2 id="da-report-title">{copy.reportTitle}</h2><p>{copy.reportIntro}</p></div>
-            <div className="da-report-grid">
-              {summary.map((item) => <article className="da-report-card" key={item.world.id}>
-                <span className="da-report-symbol" aria-hidden="true">{item.world.icon}</span>
-                <h3>{item.world.title[locale]}</h3>
-                <dl><div><dt>{copy.practiced}</dt><dd>{item.practiced}/3</dd></div><div><dt>{copy.first}</dt><dd>{item.firstIndependent}/3</dd></div><div><dt>{copy.improved}</dt><dd>{item.revisedToCorrect}/3</dd></div><div><dt>{copy.hinted}</dt><dd>{item.hintedAttempts}</dd></div><div><dt>{copy.interest}</dt><dd>{item.enjoyed}</dd></div></dl>
-                <p className="da-report-observation">{item.practiced < 3 ? copy.noEvidence : item.firstIndependent >= 2 ? copy.high : copy.practice}</p>
-              </article>)}
-            </div>
-            {suggestion.mission && <div className="da-suggestion">
-              <span className="da-eyebrow"><Sparkles size={15} /> {copy.nextPractice}</span>
-              <h3>{suggestion.mission.title[locale]}</h3>
-              <p>{suggestion.isRetry ? copy.nextReasonRetry : copy.nextReasonNew}</p>
-              <button type="button" className="da-primary-action" onClick={() => openMission(suggestion.mission!)}>{copy.explore} <ArrowRight size={16} /></button>
-            </div>}
-            {suggestion.enjoyedWorld && <div className="da-enjoyed-note">
-              <span aria-hidden="true">{suggestion.enjoyedWorld.icon}</span><div><strong>{copy.enjoymentHeading}: {suggestion.enjoyedWorld.title[locale]}</strong><p>{copy.enjoymentNote}</p></div>
-            </div>}
-            {totalAttempted === 9 && <div className="da-badge-note">🏅 {copy.completion}</div>}
-            <div className="da-parent-note"><LockKeyhole size={22} /><div><strong>{copy.parent}</strong><p>{copy.reportHint}</p><p>{copy.notScore}</p></div></div>
-            <div className="da-report-actions">
-              <button type="button" className="da-secondary-action" onClick={() => window.print()}><Printer size={17} /> {copy.print}</button>
-              {totalAttempted > 0 && <button type="button" className="da-delete-action" onClick={clearLocalPractice}>{copy.clearPractice}</button>}
-            </div>
-          </section>
+          <DiscoveryParentReport
+            ageBand={ageBand}
+            locale={locale}
+            attempts={attempts}
+            onBack={backToMap}
+            onClear={clearLocalPractice}
+            onOpen={openMission}
+          />
         ) : (
           <section className="da-map" aria-labelledby="da-worlds-heading">
             <div className="da-section-heading"><div><span className="da-eyebrow">✧ {copy.ready}</span><h2 id="da-worlds-heading">{copy.worlds}</h2></div><button type="button" className="da-text-button" onClick={() => setShowReport(true)}>{copy.report} <ArrowRight size={16} /></button></div>
