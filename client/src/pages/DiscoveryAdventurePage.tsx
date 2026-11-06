@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, RotateCcw, Sparkles, Undo2, Printer, LockKeyhole } from "lucide-react";
-import { ADVENTURE_LOCALES, ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, summarizeAdventure, type AdventureAttempt, type AdventureLocale, type AdventureMission } from "@/data/discoveryAdventure";
+import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, RotateCcw, Sparkles, Undo2, Printer, LockKeyhole, Lightbulb } from "lucide-react";
+import { ADVENTURE_LOCALES, ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, summarizeAdventure, type AdventureAttempt, type AdventureLocale, type AdventureMission } from "@/data/discoveryAdventure";
 import "./discoveryAdventure.css";
 
 const STORAGE_KEY = "aifs-discovery-adventure-v1";
@@ -17,8 +17,8 @@ const words = {
     incorrect: "An opportunity to revise", explanation: "What we can learn",
     retry: "Try a different approach", next: "Next mission", report: "View learning snapshot",
     reportTitle: "Your practice snapshot", reportIntro: "This summary shows activity results on this device, not a diagnosis, fixed strength, IQ test or career prediction.",
-    practiced: "Missions attempted", first: "Solved on first try", improved: "Solved after practice",
-    interest: "Missions enjoyed", noEvidence: "Not enough practice evidence yet", high: "Several first-try solutions in this world", practice: "More practice could be useful here",
+    practiced: "Missions attempted", first: "First try, without hints", improved: "Solved after retry", hinted: "Hint-assisted attempts", hintButton: "Need a clue?",
+    interest: "Missions enjoyed", noEvidence: "Not enough practice evidence yet", high: "Two or more tasks solved independently on the first try. Try fresh examples before drawing conclusions.", practice: "Try new examples in this world; a few tasks cannot measure ability.",
     parent: "For a parent or guardian", reportHint: "Ask which mission felt interesting, what changed after feedback, and what they want to explore next.",
     print: "Print private snapshot", interestQuestion: "Did you enjoy this mission?", yes: "Yes, I enjoyed it", notNow: "Not this one",
     finish: "Worlds explored", completion: "All 9 missions attempted. Explorer badge unlocked — this is a demo milestone, not an accredited certificate.",
@@ -36,8 +36,8 @@ const words = {
     incorrect: "सुधार का एक मौका", explanation: "क्या सीख सकते हैं",
     retry: "दूसरा तरीका आज़माएँ", next: "अगला मिशन", report: "अभ्यास रिपोर्ट देखें",
     reportTitle: "आपके अभ्यास की रिपोर्ट", reportIntro: "यह रिपोर्ट केवल इन गतिविधियों के परिणाम दिखाती है; व्यक्तित्व, IQ, करियर या स्थायी क्षमता का परीक्षण नहीं है।",
-    practiced: "किए गए मिशन", first: "पहले प्रयास में सही", improved: "अभ्यास के बाद सही",
-    interest: "पसंद आए मिशन", noEvidence: "अभी पर्याप्त अभ्यास नहीं", high: "इस दुनिया में कई पहले प्रयास सही रहे", practice: "यहाँ और अभ्यास उपयोगी हो सकता है",
+    practiced: "किए गए मिशन", first: "पहले प्रयास में बिना संकेत सही", improved: "दोबारा प्रयास में सही", hinted: "संकेत लेकर किए प्रयास", hintButton: "संकेत चाहिए?",
+    interest: "पसंद आए मिशन", noEvidence: "अभी पर्याप्त अभ्यास नहीं", high: "इस दुनिया में दो या अधिक कार्य बिना संकेत पहले प्रयास में सही हुए। निष्कर्ष से पहले नए सवाल आज़माएँ।", practice: "यहाँ नए उदाहरण आज़माएँ; कुछ कार्य क्षमता नहीं मापते।",
     parent: "अभिभावक के लिए", reportHint: "पूछें कौन सा मिशन अच्छा लगा, फीडबैक से क्या बदला और आगे क्या जानना चाहेंगे।",
     print: "निजी रिपोर्ट प्रिंट करें", interestQuestion: "क्या आपको यह मिशन पसंद आया?", yes: "हाँ, मज़ा आया", notNow: "खास नहीं",
     finish: "खोजी गई दुनिया", completion: "सभी 9 मिशन किए गए। एक्सप्लोरर बैज मिला — यह डेमो उपलब्धि है, मान्यता प्राप्त प्रमाणपत्र नहीं।",
@@ -55,8 +55,8 @@ const words = {
     incorrect: "Improve karne ka mauka", explanation: "Kya seekha",
     retry: "Dusra approach try karo", next: "Next mission", report: "Learning snapshot dekho",
     reportTitle: "Aapki practice snapshot", reportIntro: "Ye sirf demo activity results hain. IQ, personality, fixed strength ya future career prediction nahi.",
-    practiced: "Missions attempted", first: "First try mein solved", improved: "Practice ke baad solved",
-    interest: "Pasand aaye missions", noEvidence: "Abhi practice evidence kam hai", high: "Is world mein kai first tries correct rahe", practice: "Yahan aur practice useful ho sakti hai",
+    practiced: "Missions attempted", first: "Bina hint first try solved", improved: "Retry par solved", hinted: "Hint-assisted attempts", hintButton: "Ek clue chahiye?",
+    interest: "Pasand aaye missions", noEvidence: "Abhi practice evidence kam hai", high: "Is world mein 2 ya zyada tasks bina hints first try correct hue. New examples bhi try karo.", practice: "Is world ke naye examples try karo; kuch tasks ability measure nahi karte.",
     parent: "Parent / guardian ke liye", reportHint: "Poochhiye kaunsa mission interesting tha, feedback se kya badla aur next kya explore karna hai.",
     print: "Private snapshot print karo", interestQuestion: "Kya ye mission pasand aaya?", yes: "Haan, maza aaya", notNow: "Is baar nahi",
     finish: "Worlds explored", completion: "Saare 9 missions attempted! Explorer badge unlocked — ye demo milestone hai, accredited certificate nahi.",
@@ -76,8 +76,10 @@ function readSaved(): Record<string, AdventureAttempt> {
       if (item && typeof item.firstCorrect === "boolean" && typeof item.bestCorrect === "boolean" && Number.isInteger(item.attempts) && item.attempts > 0) {
         safe[mission.id] = {
           firstCorrect: item.firstCorrect,
+          firstIndependent: typeof item.firstIndependent === "boolean" ? item.firstIndependent : item.firstCorrect,
           bestCorrect: item.bestCorrect,
           attempts: Math.min(item.attempts, 1000),
+          hintsUsed: Number.isInteger(item.hintsUsed) && item.hintsUsed >= 0 ? Math.min(item.hintsUsed, 1000) : 0,
           enjoyed: typeof item.enjoyed === "boolean" ? item.enjoyed : null,
           updatedAt: typeof item.updatedAt === "string" ? item.updatedAt : "",
         };
@@ -104,16 +106,26 @@ export default function DiscoveryAdventurePage() {
   const [attempts, setAttempts] = useState<Record<string, AdventureAttempt>>(readSaved);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
+  const [optionOrder, setOptionOrder] = useState<string[]>([]);
+  const [hintOpen, setHintOpen] = useState(false);
   const [checked, setChecked] = useState<boolean | null>(null);
   const [showReport, setShowReport] = useState(false);
   const copy = words[locale];
   const current = ADVENTURE_MISSIONS.find((mission) => mission.id === activeId) ?? null;
+  const visibleOptions = current ? optionOrder.map((id) => current.options.find((option) => option.id === id)).filter((item): item is AdventureMission["options"][number] => Boolean(item)) : [];
   const summary = useMemo(() => summarizeAdventure(attempts), [attempts]);
   const totalAttempted = ADVENTURE_MISSIONS.filter((mission) => attempts[mission.id]).length;
 
   useEffect(() => {
     try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(attempts)); } catch { /* storage disabled; play still works */ }
   }, [attempts]);
+
+  useEffect(() => {
+    if (activeId || showReport) {
+      const focusTarget = document.getElementById(activeId ? "da-play-panel" : "da-report-panel");
+      focusTarget?.focus();
+    }
+  }, [activeId, showReport]);
 
   const changeLocale = (next: AdventureLocale) => {
     setLocale(next);
@@ -122,7 +134,9 @@ export default function DiscoveryAdventurePage() {
 
   const openMission = (mission: AdventureMission) => {
     setActiveId(mission.id);
+    setOptionOrder(shuffledAdventureOptions(mission, Date.now() ^ Math.floor(Math.random() * 1000000)).map((option) => option.id));
     setSelected([]);
+    setHintOpen(false);
     setChecked(null);
     setShowReport(false);
   };
@@ -147,8 +161,10 @@ export default function DiscoveryAdventurePage() {
         ...previous,
         [current.id]: {
           firstCorrect: existing ? existing.firstCorrect : correct,
+          firstIndependent: existing ? existing.firstIndependent : correct && !hintOpen,
           bestCorrect: (existing?.bestCorrect ?? false) || correct,
           attempts: Math.min((existing?.attempts ?? 0) + 1, 1000),
+          hintsUsed: Math.min((existing?.hintsUsed ?? 0) + Number(hintOpen), 1000),
           enjoyed: existing?.enjoyed ?? null,
           updatedAt: new Date().toISOString(),
         },
@@ -171,7 +187,7 @@ export default function DiscoveryAdventurePage() {
     else { setActiveId(null); setShowReport(true); }
   };
 
-  const backToMap = () => { setActiveId(null); setShowReport(false); setSelected([]); setChecked(null); };
+  const backToMap = () => { setActiveId(null); setShowReport(false); setSelected([]); setHintOpen(false); setChecked(null); };
   const selectedOptions = selected.map((id) => current?.options.find((option) => option.id === id)).filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   return (
@@ -197,7 +213,7 @@ export default function DiscoveryAdventurePage() {
         </nav>
 
         {current ? (
-          <section className="da-play-panel" aria-labelledby="da-mission-title">
+          <section id="da-play-panel" tabIndex={-1} className="da-play-panel" aria-labelledby="da-mission-title">
             <button type="button" className="da-text-button" onClick={backToMap}><ChevronLeft size={17} /> {copy.back}</button>
             <div className={"da-play-heading da-" + current.world}>
               <div className="da-play-icon" aria-hidden="true">{ADVENTURE_WORLDS.find((world) => world.id === current.world)?.icon}</div>
@@ -220,7 +236,7 @@ export default function DiscoveryAdventurePage() {
             )}
 
             <div className="da-choices" aria-label={copy.choose}>
-              {current.options.map((option, index) => {
+              {visibleOptions.map((option, index) => {
                 const active = selected.includes(option.id);
                 const hidden = current.mode === "sequence" && active;
                 return (
@@ -234,6 +250,10 @@ export default function DiscoveryAdventurePage() {
               })}
             </div>
             {current.mode === "sequence" && <p className="da-help">{copy.help}</p>}
+            {checked === null && <div className="da-hint-area">
+              <button type="button" className="da-hint-button" disabled={hintOpen} onClick={() => setHintOpen(true)}><Lightbulb size={17} /> {copy.hintButton}</button>
+              {hintOpen && <p className="da-hint-text" role="note">{current.hint[locale]}</p>}
+            </div>}
             {checked === null ? (
               <button type="button" className="da-primary-action" disabled={selected.length !== current.answer.length} onClick={check}>{copy.check} <ArrowRight size={17} /></button>
             ) : (
@@ -246,22 +266,22 @@ export default function DiscoveryAdventurePage() {
                   <button type="button" aria-pressed={attempts[current.id]?.enjoyed === false} onClick={() => setEnjoyed(false)}>{copy.notNow}</button>
                 </div>
                 <div className="da-feedback-actions">
-                  <button type="button" className="da-secondary-action" onClick={() => { setSelected([]); setChecked(null); }}><RotateCcw size={16} /> {copy.retry}</button>
+                  <button type="button" className="da-secondary-action" onClick={() => { setSelected([]); setHintOpen(false); setChecked(null); }}><RotateCcw size={16} /> {copy.retry}</button>
                   <button type="button" className="da-primary-action" onClick={nextMission}>{totalAttempted === 9 ? copy.report : copy.next} <ArrowRight size={16} /></button>
                 </div>
               </div>
             )}
           </section>
         ) : showReport ? (
-          <section className="da-report" aria-labelledby="da-report-title">
+          <section id="da-report-panel" tabIndex={-1} className="da-report" aria-labelledby="da-report-title">
             <button className="da-text-button" type="button" onClick={backToMap}><ChevronLeft size={16} /> {copy.back}</button>
             <div className="da-report-header"><span className="da-eyebrow">✧ {copy.results}</span><h2 id="da-report-title">{copy.reportTitle}</h2><p>{copy.reportIntro}</p></div>
             <div className="da-report-grid">
               {summary.map((item) => <article className="da-report-card" key={item.world.id}>
                 <span className="da-report-symbol" aria-hidden="true">{item.world.icon}</span>
                 <h3>{item.world.title[locale]}</h3>
-                <dl><div><dt>{copy.practiced}</dt><dd>{item.practiced}/3</dd></div><div><dt>{copy.first}</dt><dd>{item.firstTryCorrect}/3</dd></div><div><dt>{copy.improved}</dt><dd>{item.solvedWithPractice}/3</dd></div><div><dt>{copy.interest}</dt><dd>{item.enjoyed}</dd></div></dl>
-                <p className="da-report-observation">{item.practiced < 3 ? copy.noEvidence : item.firstTryCorrect >= 2 ? copy.high : copy.practice}</p>
+                <dl><div><dt>{copy.practiced}</dt><dd>{item.practiced}/3</dd></div><div><dt>{copy.first}</dt><dd>{item.firstIndependent}/3</dd></div><div><dt>{copy.improved}</dt><dd>{item.revisedToCorrect}/3</dd></div><div><dt>{copy.hinted}</dt><dd>{item.hintedAttempts}</dd></div><div><dt>{copy.interest}</dt><dd>{item.enjoyed}</dd></div></dl>
+                <p className="da-report-observation">{item.practiced < 3 ? copy.noEvidence : item.firstIndependent >= 2 ? copy.high : copy.practice}</p>
               </article>)}
             </div>
             {totalAttempted === 9 && <div className="da-badge-note">🏅 {copy.completion}</div>}
@@ -280,7 +300,7 @@ export default function DiscoveryAdventurePage() {
                     <div className="da-world-illustration" aria-hidden="true"><span className="da-world-sun" /><span className="da-world-icon">{world.icon}</span><span className="da-floating-dot" /></div>
                     <div className="da-world-content"><span className="da-world-number">WORLD 0{index + 1} · {completed}/3 {copy.done}</span><h3>{world.title[locale]}</h3><p>{world.description[locale]}</p>
                       <div className="da-mission-list">{missions.map((mission, missionIndex) => <button type="button" className="da-mission-row" key={mission.id} onClick={() => openMission(mission)}>
-                        <span className="da-mission-index">{attempts[mission.id] ? "✓" : String(missionIndex + 1).padStart(2, "0")}</span>
+                        <span className="da-mission-index">{attempts[mission.id]?.bestCorrect ? "✓" : attempts[mission.id] ? "↻" : String(missionIndex + 1).padStart(2, "0")}</span>
                         <span>{mission.title[locale]}</span><ArrowRight size={16} aria-hidden="true"/>
                       </button>)}</div>
                     </div>
