@@ -72,7 +72,7 @@ describe("Discovery server-only checkpoint preview", () => {
     expect(page).not.toContain("gradeCheckpoint(");
     expect(routes).toContain('path="/explorer/checkpoint"');
     expect(routes).toContain('lazy(() => import("./pages/DiscoveryCheckpointPage"))');
-    expect(page).toContain("CHECKPOINTS_ENABLED")===false;
+    expect(page).not.toContain("CHECKPOINTS_ENABLED");
     expect(read("ops/discovery-checkpoint-preview.sql")).toContain("FOREIGN KEY");
   });
 });
