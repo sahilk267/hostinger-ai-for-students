@@ -41,6 +41,16 @@
 6. Do not treat the nine scenarios per band as a norm-referenced or diagnostic test; no career, IQ or fixed talent claims.
 7. Keep actual parent accounts, payment collection and verified completion certificates disabled until legal, security and content review.
 
+## Phase 4 — private parent reporting and local completion evidence
+- Added `discoveryReport.ts`: age-scoped, deterministic report aggregation with per-task evidence states: **not started**, **attempted but unsolved**, **first try without hint**, **first try with hint**, and **solved after an earlier incorrect attempt**.
+- New reusable `DiscoveryParentReport` view, translated to English, Hindi and Hinglish, showing attempted/solved totals, independent first-try practice, revised solutions, hint-assisted submissions and *explicitly reported* enjoyment. Each world's missions are listed with practice status and practice-area tags.
+- Three age-appropriate **family conversation prompts**, one per world, support a parent's conversation with the learner without asserting an innate strength or future career prediction.
+- Printable age-specific report uses browser-only data; no names, DOB, account, child profile or remote database synchronization are involved.
+- **Demo practice milestone** unlocks only when **all 9 age-band missions were actually solved at least once**, not when nine cards were opened or attempted. The date, if valid, comes from local browser metadata.
+- **Not a verified or accredited certificate**. The scoring rules and local browser records can be read or modified by users, so authoritative identity checks and server-verified awards would be misleading. A future official verification endpoint requires secure guardian-managed accounts, proper consent/legal review, protected server-side assessment integrity, versioned criteria, audit logs and revocation capability.
+- New automated tests cover completion eligibility, invalid timestamps, cross-age isolation, distinctions between independent/hinted/revised results and the no-remote-call contract.
+- **QA still required**: print-to-PDF on mobile, 320px layout, Hindi/Hinglish educational review, accessibility including screen readers, guardian review and shared-device reset behavior.
+
 ## Student and parent value
 The learner must actively decide, order or compare, then receives an explanation and the option to retry. The summary records **only observed performance in these nine practice tasks**. A self-report of enjoyment is not inferred from clicks or playtime.
 
