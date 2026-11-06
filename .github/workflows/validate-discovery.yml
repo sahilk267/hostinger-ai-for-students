@@ -73,5 +73,5 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Check OTP against real MySQL
+      - name: Check OTP and guardian records against real MySQL
         run: pnpm exec vitest run server/auth.mysql.integration.test.ts server/guardian.mysql.integration.test.ts
