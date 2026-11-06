@@ -39,7 +39,7 @@ jobs:
         run: pnpm build
 
   mysql-integration:
-    name: Real MySQL OTP integrity checks
+    name: Real MySQL auth and guardian integrity checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
@@ -74,4 +74,4 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Check OTP against real MySQL
-        run: pnpm exec vitest run server/auth.mysql.integration.test.ts
+        run: pnpm exec vitest run server/auth.mysql.integration.test.ts server/guardian.mysql.integration.test.ts
