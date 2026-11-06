@@ -154,7 +154,7 @@ describe("Discovery Adventure pilot", () => {
     expect(page).toContain("hintOpen");
     expect(page).toContain("firstIndependent");
     expect(page).toContain("clearLocalPractice");
-    expect(page).toContain("chooseAdventureNextPractice");
+    expect(page).toContain("<DiscoveryParentReport");
     expect(page).toContain("chooseBand");
     expect(page).toContain("getAgeAdventureMissions");
     expect(page).toContain("bandCopy.label[locale]");
