@@ -6,6 +6,7 @@ import { ADVENTURE_LOCALES, ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdvent
 const page = readFileSync(resolve(process.cwd(), "client/src/pages/DiscoveryAdventurePage.tsx"), "utf8");
 const router = readFileSync(resolve(process.cwd(), "client/src/App.tsx"), "utf8");
 const css = readFileSync(resolve(process.cwd(), "client/src/pages/discoveryAdventure.css"), "utf8");
+const scene = readFileSync(resolve(process.cwd(), "client/src/components/DiscoveryEvidenceScene.tsx"), "utf8");
 
 describe("Discovery Adventure pilot", () => {
   it("covers three worlds with three unique missions each", () => {
@@ -108,5 +109,12 @@ describe("Discovery Adventure pilot", () => {
     expect(page).not.toContain("trpc.");
     expect(css).toContain("prefers-reduced-motion: reduce");
     expect(css).toContain("@media print");
+    expect(page).toContain("DiscoveryEvidenceScene");
+    expect(scene).toContain('missionId === "chart-trap"');
+    expect(scene).toContain('missionId === "rover-rescue"');
+    expect(scene).toContain('missionId === "poster-upgrade"');
+    expect(scene).toContain('missionId === "viral-claim"');
+    expect(scene).toContain("not real survey data");
+    expect(scene).not.toContain("fetch(");
   });
 });
