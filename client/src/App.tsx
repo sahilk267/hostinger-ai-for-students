@@ -2,6 +2,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
+import { lazy, Suspense } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
@@ -18,11 +19,13 @@ import ContactPage from "./pages/ContactPage";
 import MissionPage from "./pages/MissionPage";
 import JourneyPage from "./pages/JourneyPage";
 import ExplorerPage from "./pages/ExplorerPage";
-import DiscoveryAdventurePage from "./pages/DiscoveryAdventurePage";
+
 import ExplorerReportPage from "./pages/ExplorerReportPage";
 import ExplorerSharePage from "./pages/ExplorerSharePage";
 import PilotReviewPage from "./pages/PilotReviewPage";
 import DiscoveryLabPage from "./pages/DiscoveryLabPage";
+const DiscoveryAdventurePage = lazy(() => import("./pages/DiscoveryAdventurePage"));
+
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -57,7 +60,7 @@ export default function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster position="bottom-right" />
-          <Router />
+          <Suspense fallback={<div role="status" style={{ padding: "3rem", textAlign: "center" }}>Opening Discovery Adventure…</div>}><Router /></Suspense>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
