@@ -48,6 +48,8 @@ export type AdventureMission = {
   options: { id: string; label: Localized }[];
   answer: string[];
   feedback: Localized;
+  /** A learning hint, not the answer key. Requesting it is recorded separately from independent success. */
+  hint: Localized;
 };
 
 export const ADVENTURE_MISSIONS: AdventureMission[] = [
@@ -64,6 +66,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     ],
     answer: ["a", "b", "c", "d"],
     feedback: t("Good planning starts with information, then a safe choice, an action and a check.", "अच्छी योजना में पहले जानकारी, फिर सुरक्षित निर्णय, कार्य और जाँच आती है।", "Achha plan: pehle information, phir safe choice, action aur final check."),
+    hint: t("Which information should you gather before deciding where to drive?", "गाड़ी कहाँ चलानी है, यह तय करने से पहले कौन सी जानकारी चाहिए?", "Drive karne ka decision lene se pehle kaunsi information chahiye?"),
   },
   {
     id: "rule-switch", world: "logic", skill: "flexibility", mode: "single",
@@ -77,6 +80,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     ],
     answer: ["b"],
     feedback: t("Flexibility means updating a plan when evidence or constraints change.", "लचीलापन मतलब नई जानकारी या बाधा मिलने पर योजना बदलना।", "Flexibility ka matlab nayi information milne par plan update karna."),
+    hint: t("When one route closes, look for a route you can safely check.", "जब एक रास्ता बंद हो, तो जाँचने योग्य सुरक्षित विकल्प तलाशें।", "Ek route band ho toh alternate safe route check karo."),
   },
   {
     id: "bridge-lab", world: "logic", skill: "reflection", mode: "multi",
@@ -91,6 +95,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     ],
     answer: ["a", "b"],
     feedback: t("A failed attempt is useful evidence. Change a feature, then test again.", "असफल प्रयास भी जानकारी देता है। बदलाव करें, फिर दोबारा जाँचें।", "Failed attempt bhi evidence hai. Ek feature change karke test again."),
+    hint: t("Think about support and stability, rather than hiding the failed attempt.", "असफलता छिपाने की बजाय सहारे और स्थिरता के बारे में सोचें।", "Failure ignore mat karo. Support aur stability ke baare mein socho."),
   },
   {
     id: "viral-claim", world: "mystery", skill: "evidence", mode: "multi",
@@ -105,6 +110,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     ],
     answer: ["a", "b"],
     feedback: t("A claim needs sources and context. Even a real study may not apply to everyone.", "दावे के लिए स्रोत और संदर्भ ज़रूरी हैं। सही शोध भी सभी पर लागू नहीं होता।", "Claim ke liye source aur context chahiye. Real study bhi sab par apply nahi hoti."),
+    hint: t("Popularity is not the same as reliable evidence. Who tested the idea, and with whom?", "लोकप्रियता प्रमाण नहीं है। विचार की जाँच किसने और किन लोगों पर की?", "Likes evidence nahi hain. Kisne test kiya aur kin logon ke saath?"),
   },
   {
     id: "chart-trap", world: "mystery", skill: "evidence", mode: "single",
@@ -118,6 +124,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     ],
     answer: ["a"],
     feedback: t("Graphs can exaggerate differences. Check scales, labels and source data.", "ग्राफ अंतर बढ़ा-चढ़ाकर दिखा सकते हैं। पैमाना, लेबल और डेटा जाँचें।", "Graphs differences exaggerate kar sakte hain. Scale, labels aur data check karo."),
+    hint: t("Look carefully at the axis before comparing how tall the bars appear.", "बार की ऊँचाई की तुलना से पहले अक्ष का पैमाना देखें।", "Bars compare karne se pehle axis ka scale dekho."),
   },
   {
     id: "screenshot-check", world: "mystery", skill: "explanation", mode: "sequence",
@@ -131,6 +138,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     ],
     answer: ["a", "b", "c"],
     feedback: t("Find the original source, confirm its context, then communicate only what is supported.", "मूल स्रोत खोजें, संदर्भ जाँचें और फिर केवल पुष्ट तथ्य बताएँ।", "Pehle original source, phir context, aur sirf confirmed facts explain karo."),
+    hint: t("What original document can confirm this screenshot, and does its date match?", "कौन सा मूल दस्तावेज़ स्क्रीनशॉट की पुष्टि करेगा और क्या तारीख मेल खाती है?", "Kaunsa original document screenshot verify karega? Date bhi check karo."),
   },
   {
     id: "study-buddy", world: "creator", skill: "creativity", mode: "multi",
@@ -145,6 +153,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     ],
     answer: ["a", "b"],
     feedback: t("Helpful learning tools support effort, feedback and privacy—not shortcuts.", "अच्छे लर्निंग टूल प्रयास, फीडबैक और गोपनीयता को बढ़ावा देते हैं।", "Helpful tool effort, feedback aur privacy support karta hai, shortcuts nahi."),
+    hint: t("Which features still leave the real thinking to the learner?", "कौन सी सुविधाएँ वास्तविक सोच विद्यार्थी के पास ही रहने देती हैं?", "Kaunse features learner ko khud sochne dete hain?"),
   },
   {
     id: "teach-the-robot", world: "creator", skill: "creativity", mode: "sequence",
@@ -158,6 +167,7 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     ],
     answer: ["a", "b", "c"],
     feedback: t("An example, a rule and a test help someone understand a process.", "उदाहरण, नियम और जाँच किसी प्रक्रिया को समझने में मदद करते हैं।", "Example, rule aur test se process samajhna easier hota hai."),
+    hint: t("A learner needs an example, a rule and a way to check the rule.", "सीखने वाले को उदाहरण, नियम और उस नियम की जाँच चाहिए।", "Learner ko example, rule aur test chahiye."),
   },
   {
     id: "poster-upgrade", world: "creator", skill: "flexibility", mode: "single",
@@ -171,8 +181,25 @@ export const ADVENTURE_MISSIONS: AdventureMission[] = [
     ],
     answer: ["b"],
     feedback: t("Specific feedback helps you change the right feature and retest it.", "स्पष्ट फीडबैक से सही सुधार और दोबारा जाँच संभव होती है।", "Specific feedback se right feature improve karke dobara test kar sakte ho."),
+    hint: t("The reader found the instruction hard to find. Focus on making that instruction clearer.", "पाठक को निर्देश ढूँढने में कठिनाई हुई। निर्देश को स्पष्ट करें।", "Reader ko instruction nahi mil raha. Instruction clear karne par focus karo."),
   },
 ];
+
+/** Stable permutation for one play session. Does not award security-sensitive scores. */
+export function shuffledAdventureOptions(mission: AdventureMission, seed: number): AdventureMission["options"] {
+  const options = [...mission.options];
+  let state = (seed >>> 0) || 1;
+  for (let i = options.length - 1; i > 0; i--) {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    const j = state % (i + 1);
+    [options[i], options[j]] = [options[j], options[i]];
+  }
+  // Avoid accidentally displaying a correct sequence top-to-bottom.
+  if (mission.mode === "sequence" && options.every((option, i) => option.id === mission.answer[i])) {
+    [options[0], options[1]] = [options[1], options[0]];
+  }
+  return options;
+}
 
 export function evaluateAdventureAnswer(mission: AdventureMission, selected: string[]): boolean {
   if (selected.length !== mission.answer.length || new Set(selected).size !== selected.length) return false;
@@ -183,8 +210,12 @@ export function evaluateAdventureAnswer(mission: AdventureMission, selected: str
 
 export type AdventureAttempt = {
   firstCorrect: boolean;
+  /** First check was correct without opening a hint. */
+  firstIndependent: boolean;
   bestCorrect: boolean;
   attempts: number;
+  /** Number of submitted attempts where a hint was opened. */
+  hintsUsed: number;
   enjoyed: boolean | null;
   updatedAt: string;
 };
@@ -197,7 +228,10 @@ export function summarizeAdventure(attempts: Record<string, AdventureAttempt>) {
       world,
       practiced: recorded.length,
       firstTryCorrect: recorded.filter((item) => item.firstCorrect).length,
+      firstIndependent: recorded.filter((item) => item.firstIndependent).length,
       solvedWithPractice: recorded.filter((item) => item.bestCorrect).length,
+      revisedToCorrect: recorded.filter((item) => !item.firstCorrect && item.bestCorrect).length,
+      hintedAttempts: recorded.reduce((total, item) => total + item.hintsUsed, 0),
       enjoyed: recorded.filter((item) => item.enjoyed === true).length,
     };
   });
