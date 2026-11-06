@@ -125,7 +125,7 @@ export const appRouter = router({
   }),
   explorer: router({
     profiles: protectedProcedure.query(({ ctx }) => db.listExplorerProfilesForUser(ctx.user.id)),
-    features: publicProcedure.query(() => ({ aiFeedbackEnabled: process.env.EXPLORER_AI_FEEDBACK_ENABLED === "1" })),
+    features: publicProcedure.query(() => ({ aiFeedbackEnabled: process.env.EXPLORER_AI_FEEDBACK_ENABLED === "1", cloudSaveEnabled: process.env.EXPLORER_CLOUD_SAVE_ENABLED === "1" })),
     attempts: protectedProcedure.query(({ ctx }) => db.listExplorerAttemptsForUser(ctx.user.id)),
     createProfile: protectedProcedure.input(z.object({
       displayName: z.string().trim().min(1).max(80),
@@ -134,6 +134,7 @@ export const appRouter = router({
       consentVersion: z.literal("explorer-consent-v1"),
       guardianAcknowledged: z.literal(true),
     })).mutation(({ ctx, input }) => {
+      if (process.env.EXPLORER_CLOUD_SAVE_ENABLED !== "1") throw new TRPCError({ code: "FORBIDDEN", message: "Cloud profiles disabled pending guardian verification review" });
       // Consent record is self-declared. Email-OTP alone does NOT verify guardianship.
       const { guardianAcknowledged: _acknowledged, ...profile } = input;
       return db.createExplorerProfile({ userId: ctx.user.id, ...profile });
@@ -148,9 +149,15 @@ export const appRouter = router({
       evidenceJson: z.string().min(1).max(12000),
       observationJson: z.string().min(1).max(4000),
       startedAt: z.date(),
-    })).mutation(({ ctx, input }) => db.saveExplorerAttempt({ userId: ctx.user.id, ...input })),
+    })).mutation(({ ctx, input }) => {
+      if (process.env.EXPLORER_CLOUD_SAVE_ENABLED !== "1") throw new TRPCError({ code: "FORBIDDEN", message: "Cloud evidence upload disabled pending guardian verification review" });
+      return db.saveExplorerAttempt({ userId: ctx.user.id, ...input });
+    }),
     deleteProfile: protectedProcedure.input(z.object({ profileId: z.number().int().positive() })).mutation(async ({ ctx, input }) => { await db.softDeleteExplorerProfile(ctx.user.id, input.profileId); return { success: true as const }; }),
-    createShare: protectedProcedure.input(z.object({ profileId: z.number().int().positive(), completedCount: z.number().int().min(3).max(28), skills: z.array(z.enum(["planning", "evidence", "creativity", "explanation", "flexibility", "reflection"])).min(1).max(3), expiresInDays: z.union([z.literal(1), z.literal(7), z.literal(30)]).default(7) })).mutation(({ ctx, input }) => db.createExplorerShare({ userId: ctx.user.id, profileId: input.profileId, summaryJson: JSON.stringify({ completedCount: input.completedCount, skills: input.skills }), expiresAt: new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000) })),
+    createShare: protectedProcedure.input(z.object({ profileId: z.number().int().positive(), completedCount: z.number().int().min(3).max(28), skills: z.array(z.enum(["planning", "evidence", "creativity", "explanation", "flexibility", "reflection"])).min(1).max(3), expiresInDays: z.union([z.literal(1), z.literal(7), z.literal(30)]).default(7) })).mutation(({ ctx, input }) => {
+      if (process.env.EXPLORER_CLOUD_SAVE_ENABLED !== "1") throw new TRPCError({ code: "FORBIDDEN", message: "Public sharing disabled pending privacy review" });
+      return db.createExplorerShare({ userId: ctx.user.id, profileId: input.profileId, summaryJson: JSON.stringify({ completedCount: input.completedCount, skills: input.skills }), expiresAt: new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000) });
+    }),
     revokeShare: protectedProcedure.input(z.object({ shareId: z.number().int().positive() })).mutation(({ ctx, input }) => db.revokeExplorerShare(ctx.user.id, input.shareId)),
     getShare: publicProcedure.input(z.object({ token: z.string().regex(/^[A-Za-z0-9_-]{32,80}$/) })).query(({ input }) => db.getExplorerShareByToken(input.token)),
     feedback: protectedProcedure.input(z.object({
