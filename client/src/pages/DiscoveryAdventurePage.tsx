@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, RotateCcw, Sparkles, Undo2, Printer, LockKeyhole, Lightbulb } from "lucide-react";
-import { ADVENTURE_LOCALES, ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, summarizeAdventure, type AdventureAttempt, type AdventureLocale, type AdventureMission } from "@/data/discoveryAdventure";
+import { ADVENTURE_LOCALES, ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, summarizeAdventure, chooseAdventureNextPractice, type AdventureAttempt, type AdventureLocale, type AdventureMission } from "@/data/discoveryAdventure";
 import "./discoveryAdventure.css";
 
 const STORAGE_KEY = "aifs-discovery-adventure-v1";
@@ -23,6 +23,9 @@ const words = {
     print: "Print private snapshot", interestQuestion: "Did you enjoy this mission?", yes: "Yes, I enjoyed it", notNow: "Not this one",
     finish: "Worlds explored", completion: "All 9 missions attempted. Explorer badge unlocked — this is a demo milestone, not an accredited certificate.",
     initial: "Progress is saved locally only; deleting browser data clears it.", help: "Tap cards to build a sequence. All controls work with keyboard, too.",
+    nextPractice: "A useful next mission", nextReasonRetry: "This one was not solved yet. A fresh attempt may help.", nextReasonNew: "Try a new kind of challenge to gather more evidence.",
+    enjoymentHeading: "Learner-reported enjoyment", enjoymentNote: "You said you enjoyed activities in this world. This is an interest to explore, not a talent label.",
+    clearPractice: "Delete local practice", clearConfirm: "Delete this browser's Discovery Adventure results? This cannot be undone.",
     results: "Your progress", notScore: "Results describe only these practice activities. They do not establish natural talent or suitability for a field.",
   },
   hi: {
@@ -42,6 +45,9 @@ const words = {
     print: "निजी रिपोर्ट प्रिंट करें", interestQuestion: "क्या आपको यह मिशन पसंद आया?", yes: "हाँ, मज़ा आया", notNow: "खास नहीं",
     finish: "खोजी गई दुनिया", completion: "सभी 9 मिशन किए गए। एक्सप्लोरर बैज मिला — यह डेमो उपलब्धि है, मान्यता प्राप्त प्रमाणपत्र नहीं।",
     initial: "प्रगति केवल इस ब्राउज़र में है; ब्राउज़र डेटा मिटाने पर हट जाएगी।", help: "क्रम बनाने के लिए कार्ड चुनें। कीबोर्ड से भी चल सकता है।",
+    nextPractice: "अगला उपयोगी मिशन", nextReasonRetry: "यह अभी सही हल नहीं हुआ। एक नया प्रयास मदद कर सकता है।", nextReasonNew: "और सीखने के लिए नई गतिविधि आज़माएँ।",
+    enjoymentHeading: "विद्यार्थी ने खुद बताया कि क्या पसंद आया", enjoymentNote: "आपने इस दुनिया की गतिविधियाँ पसंद आने की बात कही। यह रुचि है, प्रतिभा का लेबल नहीं।",
+    clearPractice: "इस डिवाइस की प्रगति मिटाएँ", clearConfirm: "इस ब्राउज़र की Discovery Adventure प्रगति मिटाएँ? इसे वापस नहीं लाया जा सकेगा।",
     results: "आपकी प्रगति", notScore: "ये नतीजे केवल इन गतिविधियों से संबंधित हैं; जन्मजात प्रतिभा या किसी क्षेत्र की योग्यता नहीं बताते।",
   },
   hinglish: {
@@ -61,6 +67,9 @@ const words = {
     print: "Private snapshot print karo", interestQuestion: "Kya ye mission pasand aaya?", yes: "Haan, maza aaya", notNow: "Is baar nahi",
     finish: "Worlds explored", completion: "Saare 9 missions attempted! Explorer badge unlocked — ye demo milestone hai, accredited certificate nahi.",
     initial: "Progress local browser mein hai; browser data delete karne par hat jayegi.", help: "Sequence banane ke liye cards tap karo. Keyboard se bhi use kar sakte ho.",
+    nextPractice: "Next useful mission", nextReasonRetry: "Ye mission abhi solve nahi hua. Ek naya attempt useful hoga.", nextReasonNew: "More evidence ke liye new challenge try karo.",
+    enjoymentHeading: "Learner ne khud jo enjoy kiya", enjoymentNote: "Aapne is world ki activities enjoy karne ko bola. Ye interest hai, talent label nahi.",
+    clearPractice: "Local practice delete karo", clearConfirm: "Is browser ke Discovery Adventure results delete karein? Undo nahi ho sakta.",
     results: "Aapki progress", notScore: "Ye results sirf is practice se related hain, natural talent ya field suitability prove nahi karte.",
   },
 } as const;
@@ -114,6 +123,7 @@ export default function DiscoveryAdventurePage() {
   const current = ADVENTURE_MISSIONS.find((mission) => mission.id === activeId) ?? null;
   const visibleOptions = current ? optionOrder.map((id) => current.options.find((option) => option.id === id)).filter((item): item is AdventureMission["options"][number] => Boolean(item)) : [];
   const summary = useMemo(() => summarizeAdventure(attempts), [attempts]);
+  const suggestion = useMemo(() => chooseAdventureNextPractice(attempts), [attempts]);
   const totalAttempted = ADVENTURE_MISSIONS.filter((mission) => attempts[mission.id]).length;
 
   useEffect(() => {
@@ -188,6 +198,12 @@ export default function DiscoveryAdventurePage() {
   };
 
   const backToMap = () => { setActiveId(null); setShowReport(false); setSelected([]); setHintOpen(false); setChecked(null); };
+  const clearLocalPractice = () => {
+    if (!window.confirm(copy.clearConfirm)) return;
+    setAttempts({});
+    backToMap();
+    try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* storage optional */ }
+  };
   const selectedOptions = selected.map((id) => current?.options.find((option) => option.id === id)).filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   return (
@@ -284,9 +300,21 @@ export default function DiscoveryAdventurePage() {
                 <p className="da-report-observation">{item.practiced < 3 ? copy.noEvidence : item.firstIndependent >= 2 ? copy.high : copy.practice}</p>
               </article>)}
             </div>
+            {suggestion.mission && <div className="da-suggestion">
+              <span className="da-eyebrow"><Sparkles size={15} /> {copy.nextPractice}</span>
+              <h3>{suggestion.mission.title[locale]}</h3>
+              <p>{suggestion.isRetry ? copy.nextReasonRetry : copy.nextReasonNew}</p>
+              <button type="button" className="da-primary-action" onClick={() => openMission(suggestion.mission!)}>{copy.explore} <ArrowRight size={16} /></button>
+            </div>}
+            {suggestion.enjoyedWorld && <div className="da-enjoyed-note">
+              <span aria-hidden="true">{suggestion.enjoyedWorld.icon}</span><div><strong>{copy.enjoymentHeading}: {suggestion.enjoyedWorld.title[locale]}</strong><p>{copy.enjoymentNote}</p></div>
+            </div>}
             {totalAttempted === 9 && <div className="da-badge-note">🏅 {copy.completion}</div>}
             <div className="da-parent-note"><LockKeyhole size={22} /><div><strong>{copy.parent}</strong><p>{copy.reportHint}</p><p>{copy.notScore}</p></div></div>
-            <button type="button" className="da-secondary-action" onClick={() => window.print()}><Printer size={17} /> {copy.print}</button>
+            <div className="da-report-actions">
+              <button type="button" className="da-secondary-action" onClick={() => window.print()}><Printer size={17} /> {copy.print}</button>
+              {totalAttempted > 0 && <button type="button" className="da-delete-action" onClick={clearLocalPractice}>{copy.clearPractice}</button>}
+            </div>
           </section>
         ) : (
           <section className="da-map" aria-labelledby="da-worlds-heading">
@@ -308,7 +336,7 @@ export default function DiscoveryAdventurePage() {
                 );
               })}
             </div>
-            <div className="da-map-footer"><div><LockKeyhole size={21} /><p><strong>{copy.private}</strong><span>{copy.privateNote}</span></p></div><p>{copy.initial}</p><a href="/explorer">{copy.otherAges} <ArrowRight size={15} /></a></div>
+            <div className="da-map-footer"><div><LockKeyhole size={21} /><p><strong>{copy.private}</strong><span>{copy.privateNote}</span></p></div><p>{copy.initial}</p><a href="/explorer">{copy.otherAges} <ArrowRight size={15} /></a>{totalAttempted > 0 && <button type="button" className="da-delete-action" onClick={clearLocalPractice}>{copy.clearPractice}</button>}</div>
           </section>
         )}
       </main>
