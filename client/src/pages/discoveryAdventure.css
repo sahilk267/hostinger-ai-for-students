@@ -155,7 +155,7 @@
   .da-world-card p { min-height: 0; }
 }
 @media (max-width: 620px) {
-  .da-header, .da-shell, .da-footer { width: min(100% - 28px, 1160px); }
+  .da-header, .da-shell, .da-footer { width: min(calc(100% - 28px), 1160px); }
   .da-hero { display: block; min-height: auto; padding: 37px 6px 54px; }
   .da-hero h1 { font-size: clamp(37px, 9vw, 55px); }
   .da-planet-art { display: none; }
