@@ -15,6 +15,20 @@
 - External LLM-based Explorer coaching defaults OFF unless `EXPLORER_AI_FEEDBACK_ENABLED=1`; helps avoid unexpected API charges and external transfer of child submissions.
 - Previously added server checkpoints remain OFF unless `DISCOVERY_CHECKPOINTS_ENABLED=1`; they have no verified identity/certificate semantics.
 
+## Phase 7: reproducible real-MySQL CI verification
+
+A separate GitHub Actions job now boots an isolated **MySQL 8.0** service with an ephemeral `aifs_ci` database and no network path to production. It executes `server/auth.mysql.integration.test.ts` and `server/guardian.mysql.integration.test.ts` using the repository's actual database functions, not mocked responses.
+
+Covered behavior:
+- Competing OTP reservations for the same email key accept only one within cooldown.
+- Parallel verification of the same correct OTP consumes it once; replay fails.
+- Twelve parallel incorrect attempts cannot increment above five or unlock the correct OTP.
+- Expiry, cancellation, cooldown renewal, and stale-cookie rejection.
+- Exporting saved Explorer records is strictly scoped to account ID; another account's private answers must not leak.
+- Deleting a profile as the wrong account leaves it intact. Authorized deletion cascades through its attempts and public share-token rows.
+
+**Limitations:** The CI schema fixtures model the relevant existing MySQL tables; CI does not prove Hostinger DB schema compatibility, app-level cookie/proxy behavior, email provider deliverability, verified parental consent, or certificate eligibility. Production remains untouched. All tests contain an explicit `aifs_ci` database-name guard and are disabled in normal `pnpm test` runs.
+
 ## Release-blocking steps
 
 1. **Database backup** and staging database first. Review/apply `ops/auth-email-otp-hardening.sql`; it creates `authEmailChallenges`. The feature's TypeScript schema alone does **not** create a MySQL table. The previously documented `ops/discovery-checkpoint-preview.sql` is separate and optional; leave its flag OFF.
