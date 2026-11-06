@@ -60,6 +60,33 @@
 .da-languages { display: flex; align-items: center; gap: 7px; padding: 10px; background: #fff; box-shadow: 0 10px 40px rgba(17,30,63,.1); border: 1px solid var(--da-border); border-radius: 18px; width: fit-content; max-width: 100%; position: relative; margin: -1px 0 34px; }
 .da-languages button { border: 0; background: transparent; border-radius: 11px; color: #405373; padding: 9px 15px; font-size: 13px; font-weight: 800; }
 .da-languages button.is-active { background: #243c82; color: #fff; }
+/* Choose an age band without collecting exact date of birth or child identity. */
+.da-age-selector { display: grid; grid-template-columns: minmax(180px, .68fr) minmax(0, 2fr); gap: 22px; padding: 23px; border: 1px solid #cbd8f3; border-radius: 23px; background: #fff; box-shadow: 0 12px 34px rgba(20,38,89,.08); margin: 0 0 35px; }
+.da-age-intro { align-self: center; }
+.da-age-intro h2 { font-size: clamp(20px,2.2vw,27px); letter-spacing: -.04em; font-family: "Fraunces", Georgia, serif; margin-top: 7px; line-height: 1.23; }
+.da-age-buttons { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; }
+.da-age-button { display: grid; align-content: start; gap: 7px; text-align: left; padding: 15px 13px; min-height: 106px; border: 1.5px solid #dce5f6; background: #f8faff; border-radius: 14px; color: #263f65; }
+.da-age-button strong { font-size: 13px; line-height: 1.32; }
+.da-age-button small { font-size: 11px; line-height: 1.5; color: #64738e; }
+.da-age-button:hover:not(.is-selected) { background: #ecf4ff; border-color: #95b2e9; }
+.da-age-button.is-selected { border-color: #396ad7; box-shadow: inset 0 0 0 1px #396ad7; background: #ecf3ff; }
+.da-age-button.is-selected strong { color: #21469a; }
+.discovery-adventure[data-age-band="8-10"] .da-mint .da-world-illustration { background: linear-gradient(125deg,#e8fce8,#87d7a8); }
+.discovery-adventure[data-age-band="8-10"] .da-amber .da-world-illustration { background: linear-gradient(125deg,#fff2b1,#f6bd60); }
+.discovery-adventure[data-age-band="8-10"] .da-violet .da-world-illustration { background: linear-gradient(125deg,#ffdeed,#c5a9fc); }
+.discovery-adventure[data-age-band="8-10"] .da-world-icon { font-size: 95px; }
+.discovery-adventure[data-age-band="14-17"] .da-mint .da-world-illustration { background: linear-gradient(125deg,#adeddc,#599c95); }
+.discovery-adventure[data-age-band="14-17"] .da-amber .da-world-illustration { background: linear-gradient(125deg,#ffe0ad,#c78355); }
+.discovery-adventure[data-age-band="14-17"] .da-violet .da-world-illustration { background: linear-gradient(125deg,#d2cbf6,#8070be); }
+@media (max-width: 900px) {
+  .da-age-selector { grid-template-columns: 1fr; gap: 15px; }
+}
+@media (max-width: 620px) {
+  .da-age-selector { padding: 17px; border-radius: 17px; margin-bottom: 25px; }
+  .da-age-buttons { grid-template-columns: 1fr; }
+  .da-age-button { min-height: auto; padding: 13px 15px; }
+}
+
 .da-map, .da-play-panel, .da-report { position: relative; }
 .da-section-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 23px; }
 .da-section-heading h2 { font-family: "Fraunces", Georgia, serif; font-size: clamp(29px, 3.5vw, 42px); margin: 7px 0 0; letter-spacing: -.04em; }
