@@ -51,6 +51,29 @@
 - New automated tests cover completion eligibility, invalid timestamps, cross-age isolation, distinctions between independent/hinted/revised results and the no-remote-call contract.
 - **QA still required**: print-to-PDF on mobile, 320px layout, Hindi/Hinglish educational review, accessibility including screen readers, guardian review and shared-device reset behavior.
 
+## Phase 5 — server-held checkpoint preview (default OFF)
+This phase deliberately does **not** claim secure child identity verification, verified career aptitude, or certificate issuance. Existing email OTP authenticates an email account, NOT adult status or legal parent/guardian authority.
+
+**New experimental implementation**
+- `server/discoveryCheckpoints.ts` contains **nine distinct server-only questions**: three each for ages 8–10, 11–13 and 14–17, with authored English, Hindi and Hinglish text. Answer keys are not exposed in the Vite/browser bundle.
+- `server/routers.ts` exposes `discoveryCheckpoint.status` (public) and login-required `challenges`, `progress`, `submit` and `clear` procedures. All data/actions except status are guarded by `DISCOVERY_CHECKPOINTS_ENABLED=1`; disabled by default.
+- Submissions require `adultAcknowledged: true` (explicit self-attestation, **not verified consent or adulthood**). The site must not treat this as a legally sufficient guardian verification process.
+- `drizzle/schema.ts` has `discoveryCheckpoints` rows keyed by account ID plus challenge ID with an auto-delete foreign key; records contain only age band, challenge ID, attempt count and solved timestamp, not learner names, DOB, text answers or raw activity streams.
+- `server/db.ts` uses MySQL atomic upsert/counter operations for capped attempt tracking (12 attempts per account/challenge); it provides account-owned list and full deletion procedures. This is abuse-friction only; guessable MCQs are not secure examinations.
+- `/explorer/checkpoint` is a lazy-loaded, multilingual account-owned practice preview with login, a required acknowledgement checkbox and deletion controls. **This route is not advertised as a paid product.**
+- `ops/discovery-checkpoint-preview.sql` provides an explicit manual MySQL installation script. **This script has not been applied to any Hostinger database.** The production database must be backed up and the DDL reviewed/run before enabling the feature. This manual script is not entered into Drizzle's migration journal; coordinate future schema migrations to avoid duplicate DDL.
+- No PDF certificate issuer, signed public verification endpoint, student identity, guardian verified profile, payment flow, API model calls or external paid service was added.
+
+**Pre-enable security and operational blockers**
+1. Harden email-OTP authentication first (attempt limits, abuse prevention, token/cookie safeguards and CSRF review).
+2. Verify a compliant adult/guardian consent approach for identifiable children's educational records. Mere checkbox plus email-login is not identity verification.
+3. Verify MySQL schema in a non-production environment and run the provided DDL only after backup and review.
+4. Test server-only source separation in actual Vite production output, atomic updates, concurrent submissions, rate limits and account deletion. Max 12 checks is a soft brake, not proctoring security.
+5. Only enable `DISCOVERY_CHECKPOINTS_ENABLED=1` if the above review is completed and the risk accepted; default remains OFF.
+6. Never market the three-question preview as a certificate, aptitude score, official assessment or evidence of individual identity.
+
+**Next production work:** adult account verification/guardianship and appropriate consent, versioned assessment content delivered server-side, strong submission/auth protections, age-appropriate assessment validation, auditable issuance and revocable privacy-safe public verification. Only THEN should the commercial product offer verified completion certificates.
+
 ## Student and parent value
 The learner must actively decide, order or compare, then receives an explanation and the option to retry. The summary records **only observed performance in these nine practice tasks**. A self-report of enjoyment is not inferred from clicks or playtime.
 
