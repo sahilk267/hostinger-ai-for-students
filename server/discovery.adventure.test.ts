@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { ADVENTURE_LOCALES, ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, summarizeAdventure, type AdventureAttempt } from "../client/src/data/discoveryAdventure";
+import { ADVENTURE_LOCALES, ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, summarizeAdventure, chooseAdventureNextPractice, type AdventureAttempt } from "../client/src/data/discoveryAdventure";
 
 const page = readFileSync(resolve(process.cwd(), "client/src/pages/DiscoveryAdventurePage.tsx"), "utf8");
 const router = readFileSync(resolve(process.cwd(), "client/src/App.tsx"), "utf8");
@@ -78,6 +78,21 @@ describe("Discovery Adventure pilot", () => {
     expect(result[2]).toMatchObject({ practiced: 0, firstTryCorrect: 0, solvedWithPractice: 0, enjoyed: 0 });
   });
 
+  it("recommends unsolved practice before new content and never invents an interest", () => {
+    const [first, second] = ADVENTURE_MISSIONS;
+    const one: AdventureAttempt = { firstCorrect: false, firstIndependent: false, bestCorrect: false, attempts: 1, hintsUsed: 1, enjoyed: null, updatedAt: "2026-11-06" };
+    const next = chooseAdventureNextPractice({ [first.id]: one });
+    expect(next.mission?.id).toBe(first.id);
+    expect(next.isRetry).toBe(true);
+    expect(next.enjoyedWorld).toBeNull();
+    const afterSuccess = chooseAdventureNextPractice({ [first.id]: { ...one, bestCorrect: true, enjoyed: true } });
+    expect(afterSuccess.mission?.id).toBe(second.id);
+    expect(afterSuccess.isRetry).toBe(false);
+    expect(afterSuccess.enjoyedWorld?.id).toBe(first.world);
+    const allSolved = Object.fromEntries(ADVENTURE_MISSIONS.map((mission) => [mission.id, { ...one, bestCorrect: true }]));
+    expect(chooseAdventureNextPractice(allSolved).mission).toBeNull();
+  });
+
   it("is routed, accessible and explicitly avoids child profiling claims", () => {
     expect(router).toContain('path="/explorer/adventure"');
     expect(page).toContain('aria-live="polite"');
@@ -86,6 +101,8 @@ describe("Discovery Adventure pilot", () => {
     expect(page).toContain("shuffledAdventureOptions");
     expect(page).toContain("hintOpen");
     expect(page).toContain("firstIndependent");
+    expect(page).toContain("clearLocalPractice");
+    expect(page).toContain("chooseAdventureNextPractice");
     expect(page).toContain("not an accredited certificate");
     expect(page).not.toContain("createShare.mutate");
     expect(page).not.toContain("trpc.");
