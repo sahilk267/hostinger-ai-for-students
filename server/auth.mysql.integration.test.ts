@@ -18,7 +18,7 @@ run("email OTP persistence (real, isolated MySQL)", () => {
   const databaseUrl = process.env.DATABASE_URL;
   const dbName = databaseUrl ? new URL(databaseUrl).pathname.slice(1) : "";
   const safeTestDatabase = /^aifs_ci(?:_[a-z0-9_]+)?$/.test(dbName);
-  if (!safeTestDatabase) throw new Error("OTP integration tests require an isolated aifs_ci database");
+  if (process.env.RUN_MYSQL_INTEGRATION === "1" && !safeTestDatabase) throw new Error("OTP integration tests require an isolated aifs_ci database");
   const testUrl = databaseUrl!;
   let connection: mysql.Connection;
   const keys: string[] = [];
