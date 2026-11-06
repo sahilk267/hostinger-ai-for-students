@@ -102,6 +102,7 @@ export default function ExplorerPage() {
   const createProfile = trpc.explorer.createProfile.useMutation();
   const saveAttempt = trpc.explorer.saveAttempt.useMutation();
   const feedbackMutation = trpc.explorer.feedback.useMutation();
+  const explorerFeatures = trpc.explorer.features.useQuery(undefined, { retry: false });
 
   const missions = useMemo(
     () => (ageBand ? EXPLORER_PILOT_MISSIONS.filter((item) => item.ageBand === ageBand) : []),
@@ -242,10 +243,10 @@ export default function ExplorerPage() {
 
   const saveProfile = () => {
     if (!ageBand || !profileName.trim() || !consentConfirmed) {
-      toast.error("Add a display name and confirm parent consent before saving");
+      toast.error("Add a nickname and confirm adult/guardian responsibility before saving");
       return;
     }
-    createProfile.mutate({ displayName: profileName.trim(), ageBand, language: locale, consentVersion: "explorer-consent-v1" }, {
+    createProfile.mutate({ displayName: profileName.trim(), ageBand, language: locale, consentVersion: "explorer-consent-v1", guardianAcknowledged: true }, {
       onSuccess: (profile) => {
         setProfileId(profile.id);
         toast.success("Explorer profile saved to your account");
@@ -284,7 +285,7 @@ export default function ExplorerPage() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(nextRecords));
     if (profileId) {
       saveAttempt.mutate({ profileId, missionId: mission.id, attemptNumber, difficulty: "standard", language: locale, accessibilityMode: "standard", evidenceJson: JSON.stringify(evidence), observationJson: JSON.stringify({ skill: mission.skill, rubric: mission.rubric }), startedAt: new Date() });
-      if (aiFeedbackRequested) {
+      if (aiFeedbackRequested && explorerFeatures.data?.aiFeedbackEnabled) {
         feedbackMutation.mutate({ ageBand: mission.ageBand, skill: mission.skill, objective: mission.objective, rubric: mission.rubric, evidenceJson: JSON.stringify(evidence) }, { onSuccess: setAiFeedback, onError: () => toast.error("AI coaching is unavailable; showing the practice feedback instead") });
       }
     }
@@ -319,7 +320,7 @@ export default function ExplorerPage() {
             <p>You are signed in. To save Explorer evidence across devices, a parent or guardian should choose a nickname and confirm consent. No full name is needed.</p>
             <label htmlFor="post-auth-profile-name">Child nickname</label>
             <input id="post-auth-profile-name" value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="A nickname, not a full name" maxLength={80} autoFocus />
-            <label className="explorer-consent-check"><input type="checkbox" checked={consentConfirmed} onChange={(event) => setConsentConfirmed(event.target.checked)} /><span>I am the parent/guardian and consent to saving this learning profile.</span></label>
+            <label className="explorer-consent-check"><input type="checkbox" checked={consentConfirmed} onChange={(event) => setConsentConfirmed(event.target.checked)} /><span>I confirm I am an adult parent/guardian authorized to approve this learning profile. This is a self-declaration, not verified identity.</span></label>
             <button className="button button--primary" type="button" onClick={saveProfile} disabled={createProfile.isPending}>{createProfile.isPending ? "Saving profile…" : "Save profile and my progress"}</button>
             <button className="text-link" type="button" onClick={() => setShowProfilePrompt(false)}>Not now — keep this evidence on this device</button>
           </section>
@@ -357,7 +358,7 @@ export default function ExplorerPage() {
           <section className="explorer-lab" aria-labelledby="explorer-missions-heading">
             <div className="explorer-lab-top"><div><span className="mission-section-label">STEP 02 / CHOOSE A MISSION</span><h2 id="explorer-missions-heading">{copy.missionPickerTitle}</h2></div><button type="button" className="explorer-change-band" onClick={() => setAgeBand(null)}>Change age band</button></div>
             <div className="explorer-progress-strip"><div><strong>{completedCount} / 6</strong><span>missions completed</span></div><div className="explorer-progress-track"><span style={{ width: `${(completedCount / 6) * 100}%` }} /></div><p>Complete several different missions before treating any pattern as meaningful.</p></div>
-            {isAuthenticated && !profileId ? <div className="explorer-account-save"><div><span className="mission-section-label">OPTIONAL / PARENT SAVE</span><strong>Keep this lab across devices.</strong><p>Create one parent-controlled profile for this age band. Your child can still play as a guest.</p></div><div className="explorer-account-fields"><label><span>Child display name</span><input value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="A nickname, not a full name" maxLength={80} /></label><label className="explorer-consent-check"><input type="checkbox" checked={consentConfirmed} onChange={(event) => setConsentConfirmed(event.target.checked)} /><span>I am the parent/guardian and consent to saving this learning profile.</span></label><button type="button" className="explorer-save-profile" onClick={saveProfile} disabled={createProfile.isPending}>Save parent profile <ArrowRight size={15} /></button></div></div> : !isAuthenticated ? <div className="explorer-guest-save"><span>Playing as a guest? Evidence stays on this device.</span><LocalAuthDialog label="Sign in to save this lab" className="text-link" onVerified={handleVerified} /></div> : <div className="explorer-guest-save"><Check size={15} /> Parent profile connected; completed evidence can sync. <button type="button" className="text-link" onClick={() => { if (profileId) void syncLocalEvidence(profileId); }} disabled={isSyncingLocalEvidence || !profileId}>{isSyncingLocalEvidence ? "Syncing…" : "Sync completed evidence"}</button></div>}
+            {isAuthenticated && !profileId ? <div className="explorer-account-save"><div><span className="mission-section-label">OPTIONAL / PARENT SAVE</span><strong>Keep this lab across devices.</strong><p>Create one parent-controlled profile for this age band. Your child can still play as a guest.</p></div><div className="explorer-account-fields"><label><span>Child display name</span><input value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="A nickname, not a full name" maxLength={80} /></label><label className="explorer-consent-check"><input type="checkbox" checked={consentConfirmed} onChange={(event) => setConsentConfirmed(event.target.checked)} /><span>I confirm I am an adult parent/guardian authorized to approve this learning profile. This is a self-declaration, not verified identity.</span></label><button type="button" className="explorer-save-profile" onClick={saveProfile} disabled={createProfile.isPending}>Save parent profile <ArrowRight size={15} /></button></div></div> : !isAuthenticated ? <div className="explorer-guest-save"><span>Playing as a guest? Evidence stays on this device.</span><LocalAuthDialog label="Sign in to save this lab" className="text-link" onVerified={handleVerified} /></div> : <div className="explorer-guest-save"><Check size={15} /> Parent profile connected; completed evidence can sync. <button type="button" className="text-link" onClick={() => { if (profileId) void syncLocalEvidence(profileId); }} disabled={isSyncingLocalEvidence || !profileId}>{isSyncingLocalEvidence ? "Syncing…" : "Sync completed evidence"}</button></div>}
             <div className="explorer-mission-grid">
               {missions.map((item, index) => {
                 const done = Boolean(records[item.id]);
@@ -383,7 +384,7 @@ export default function ExplorerPage() {
                   <label className="explorer-choice-select"><span>{copy.choiceSaved} · {copy.optionalWriting}</span><select aria-label={copy.choiceSaved} value={playReason ?? ""} onChange={(event) => event.target.value && chooseReason(event.target.value)} disabled={Boolean(selectedRecord)}><option value="">{copy.choiceSaved}…</option>{copy.reasonOptions.map((reason) => <option key={reason} value={reason}>{reason}</option>)}<option value={ownReasonLabel[locale]}>{ownReasonLabel[locale]}</option></select></label>
                 </div>
                 <p className="explorer-evidence-intro">{copy.evidencePrompt}. Do not include private school, health or family details.</p>
-                {isAuthenticated && profileId && <label className="explorer-coaching-toggle"><input type="checkbox" checked={aiFeedbackRequested} onChange={(event) => setAiFeedbackRequested(event.target.checked)} disabled={Boolean(selectedRecord)} /><span>Give me optional AI coaching on this attempt. It will not create a label or prediction.</span></label>}
+                {isAuthenticated && profileId && explorerFeatures.data?.aiFeedbackEnabled && <label className="explorer-coaching-toggle"><input type="checkbox" checked={aiFeedbackRequested} onChange={(event) => setAiFeedbackRequested(event.target.checked)} disabled={Boolean(selectedRecord)} /><span>Give me optional AI coaching on this attempt. It will not create a label or prediction.</span></label>}
                 {showFeedback && <div className="explorer-feedback"><span><Check size={16} /> {aiFeedback ? "OPTIONAL AI COACHING" : "PRACTICE FEEDBACK"}</span><strong>{aiFeedback?.encouragement ?? mission.feedback.starter}</strong><p>{aiFeedback?.nextExperiment ?? mission.feedback.nextStep}</p>{aiFeedback && <p><strong>Reflect:</strong> {aiFeedback.reflectionQuestion}</p>}<small>{aiFeedback?.limitation ?? `Observed skill: ${mission.skill} · This is not a diagnosis or future prediction.`}</small></div>}
                 <div className="explorer-evidence-actions">{selectedRecord ? <><button type="button" className="explorer-reset" onClick={resetMission}>Try again</button><button type="button" className="explorer-share" onClick={() => copyShareText(mission)}><Share2 size={15} /> Share milestone</button></> : <button type="button" className="explorer-complete" onClick={completeMission}>Save progress & complete <Check size={16} /></button>}</div>
               </div>
