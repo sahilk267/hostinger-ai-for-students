@@ -30,6 +30,10 @@ jobs:
       - name: Check TypeScript
         run: pnpm check
       - name: Run tests
+        env:
+          JWT_SECRET: "CI-ONLY-NOT-A-PRODUCTION-SECRET-2026"
+          HOSTINGER_MAIL_API_TOKEN: "CI-DUMMY-TOKEN-NOT-VALID"
+          AUTH_MAIL_FROM: "auth@aiforstudents.in"
         run: pnpm test
       - name: Build production assets
         run: pnpm build
