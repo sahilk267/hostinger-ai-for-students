@@ -353,3 +353,41 @@ export async function cancelEmailLoginChallenge(emailKey: string, challengeId: s
     eq(authEmailChallenges.challengeId, challengeId),
   ));
 }
+
+
+/**
+ * Private data export: includes the account's originally submitted learning
+ * evidence, so "download my data" is not limited to the game score table.
+ */
+export async function exportExplorerRecordsForAccount(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const profiles = await db.select().from(explorerProfiles)
+    .where(eq(explorerProfiles.userId, userId));
+  const attempts = await db.select({
+    id: explorerAttempts.id,
+    profileId: explorerAttempts.profileId,
+    missionId: explorerAttempts.missionId,
+    attemptNumber: explorerAttempts.attemptNumber,
+    difficulty: explorerAttempts.difficulty,
+    language: explorerAttempts.language,
+    accessibilityMode: explorerAttempts.accessibilityMode,
+    evidenceJson: explorerAttempts.evidenceJson,
+    observationJson: explorerAttempts.observationJson,
+    startedAt: explorerAttempts.startedAt,
+    completedAt: explorerAttempts.completedAt,
+  }).from(explorerAttempts).innerJoin(explorerProfiles,
+    eq(explorerAttempts.profileId, explorerProfiles.id))
+    .where(eq(explorerProfiles.userId, userId));
+  const shares = await db.select({
+    id: explorerShares.id,
+    profileId: explorerShares.profileId,
+    summaryJson: explorerShares.summaryJson,
+    expiresAt: explorerShares.expiresAt,
+    revokedAt: explorerShares.revokedAt,
+    createdAt: explorerShares.createdAt,
+  }).from(explorerShares).innerJoin(explorerProfiles,
+    eq(explorerShares.profileId, explorerProfiles.id))
+    .where(eq(explorerProfiles.userId, userId));
+  return { profiles, attempts, shares };
+}
