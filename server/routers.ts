@@ -10,6 +10,7 @@ import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { sdk } from "./_core/sdk";
 import { invokeLLM } from "./_core/llm";
 import { sendAuthenticationCode, sendContactMessage } from "./mail";
+import { CHECKPOINT_POLICY, getCheckpoints, gradeCheckpoint } from "./discoveryCheckpoints";
 import { AUTH_EMAIL_CODE_COOKIE, canRequestEmailCode, clearEmailCodeChallenge, createEmailCodeChallenge, getEmailChallengeCookie, localEmailOpenId, normalizeEmail, verifyEmailCode } from "./authEmail";
 
 export const appRouter = router({
@@ -59,6 +60,53 @@ export const appRouter = router({
       return {
         success: true,
       } as const;
+    }),
+  }),
+  discoveryCheckpoint: router({
+    status: publicProcedure.query(({ ctx }) => ({
+      enabled: process.env.DISCOVERY_CHECKPOINTS_ENABLED === "1",
+      authenticated: Boolean(ctx.user),
+      disclaimer: "Account-owned practice preview only. Not a verified child identity, aptitude result or certificate.",
+    })),
+    challenges: protectedProcedure.input(z.object({
+      ageBand: z.enum(["8-10", "11-13", "14-17"]),
+      locale: z.enum(["en", "hi", "hinglish"]).default("en"),
+    })).query(({ input }) => {
+      if (process.env.DISCOVERY_CHECKPOINTS_ENABLED !== "1") throw new TRPCError({ code: "FORBIDDEN", message: "Secure checkpoint preview is not enabled" });
+      return { policy: CHECKPOINT_POLICY, challenges: getCheckpoints(input.ageBand, input.locale) };
+    }),
+    progress: protectedProcedure.query(async ({ ctx }) => {
+      if (process.env.DISCOVERY_CHECKPOINTS_ENABLED !== "1") throw new TRPCError({ code: "FORBIDDEN", message: "Secure checkpoint preview is not enabled" });
+      return db.listDiscoveryCheckpointsForAccount(ctx.user.id);
+    }),
+    submit: protectedProcedure.input(z.object({
+      ageBand: z.enum(["8-10", "11-13", "14-17"]),
+      challengeId: z.string().min(1).max(64),
+      answerId: z.string().min(1).max(4),
+      locale: z.enum(["en", "hi", "hinglish"]).default("en"),
+      /** Self-attestation is NOT verified parent/guardian consent. */
+      adultAcknowledged: z.literal(true),
+    })).mutation(async ({ ctx, input }) => {
+      if (process.env.DISCOVERY_CHECKPOINTS_ENABLED !== "1") throw new TRPCError({ code: "FORBIDDEN", message: "Secure checkpoint preview is not enabled" });
+      const result = gradeCheckpoint(input.ageBand, input.challengeId, input.answerId, input.locale);
+      if (!result) throw new TRPCError({ code: "BAD_REQUEST", message: "Unknown checkpoint or answer" });
+      const record = await db.submitDiscoveryCheckpoint({
+        userId: ctx.user.id, ageBand: input.ageBand, challengeId: input.challengeId, correct: result.correct,
+      });
+      return {
+        ...record,
+        correct: result.correct && record.solved && !record.limitReached,
+        explanation: record.limitReached ? "" : result.explanation,
+        policy: CHECKPOINT_POLICY,
+        notice: "Account-held practice only; no learner identity or official certificate verified.",
+      };
+    }),
+    clear: protectedProcedure.input(z.object({
+      confirm: z.literal("DELETE_MY_CHECKPOINTS"),
+    })).mutation(async ({ ctx }) => {
+      if (process.env.DISCOVERY_CHECKPOINTS_ENABLED !== "1") throw new TRPCError({ code: "FORBIDDEN", message: "Secure checkpoint preview is not enabled" });
+      await db.deleteDiscoveryCheckpointsForAccount(ctx.user.id);
+      return { success: true as const };
     }),
   }),
   explorer: router({
