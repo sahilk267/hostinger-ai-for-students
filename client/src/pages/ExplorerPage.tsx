@@ -331,6 +331,7 @@ export default function ExplorerPage() {
             <span className="mission-kicker"><Sparkles size={14} /> AI EXPLORER LAB · PILOT</span>
             <h1>See what you can <em>practice next.</em></h1>
             <p>Short, playful missions help learners make choices, explain thinking, revise ideas and build evidence of growth. This is an observation of practice—not a diagnosis or a prediction of who you will become.</p>
+            <a href="/explorer/adventure" className="button button--primary">Try the free 11–13 Discovery Adventure <ArrowRight size={16} /></a>
           </div>
           <div className="explorer-hero-note"><LockKeyhole size={18} /><strong>Private by default</strong><span>Your pilot evidence stays in this browser unless you choose to save or share it.</span></div>
         </section>
