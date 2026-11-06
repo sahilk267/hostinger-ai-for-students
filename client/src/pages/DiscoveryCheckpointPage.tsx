@@ -108,7 +108,7 @@ export default function DiscoveryCheckpointPage() {
           {isAuthenticated && !adultAcknowledged && <div className="dc-consent">
             <strong>{words.owner}</strong>
             <label><input type="checkbox" checked={adultAcknowledged} onChange={event=>setAdultAcknowledged(event.target.checked)}/><span>{words.consent}</span></label>
-            <button type="button" onClick={()=>setAdultAcknowledged(true)}>{words.start}</button>
+            <p className="dc-note">{words.start}: {words.consent}</p>
           </div>}
           {permitted && <>
             <div className="dc-stat"><strong>{words.progress} · {done}/3</strong><span>{done===3?words.complete:words.incomplete}</span></div>
