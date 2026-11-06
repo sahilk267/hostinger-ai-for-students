@@ -139,8 +139,8 @@ export default function ExplorerPage() {
   };
 
   useEffect(() => {
-    if (accountProfile) setProfileId(accountProfile.id);
-  }, [accountProfile]);
+    setProfileId(accountProfile?.id ?? null);
+  }, [accountProfile?.id, ageBand, isAuthenticated]);
 
   useEffect(() => {
     if (!mission) return;
