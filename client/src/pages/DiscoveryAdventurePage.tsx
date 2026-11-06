@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, RotateCcw, Sparkles, Undo2, Printer, LockKeyhole, Lightbulb } from "lucide-react";
 import { ADVENTURE_LOCALES, ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, summarizeAdventure, chooseAdventureNextPractice, type AdventureAttempt, type AdventureLocale, type AdventureMission } from "@/data/discoveryAdventure";
+import DiscoveryEvidenceScene from "@/components/DiscoveryEvidenceScene";
 import "./discoveryAdventure.css";
 
 const STORAGE_KEY = "aifs-discovery-adventure-v1";
@@ -236,6 +237,7 @@ export default function DiscoveryAdventurePage() {
               <div><span className="da-section-label">{current.world.toUpperCase()} · {copy.missions} {ADVENTURE_MISSIONS.filter((mission) => mission.world === current.world).findIndex((mission) => mission.id === current.id) + 1}/3</span><h2 id="da-mission-title">{current.title[locale]}</h2></div>
             </div>
             <p className="da-story">{current.story[locale]}</p>
+            <DiscoveryEvidenceScene missionId={current.id} locale={locale} />
             <h3 className="da-instruction">{current.instruction[locale]}</h3>
 
             {current.mode === "sequence" && (
