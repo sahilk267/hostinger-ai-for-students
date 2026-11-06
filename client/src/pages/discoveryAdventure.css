@@ -144,6 +144,45 @@
 .da-poster-scene > span { font-size: 32px; font-weight: 950; color: #4b4c97; letter-spacing: -.045em; }
 .da-poster-scene > div { font-size: 50px; }
 .da-poster-scene > small { font-size: 8px; opacity: .7; color: #526485; }
+
+/* Junior and teen evidence scenes: compact, CSS-only and descriptive for assistive tech. */
+.da-junior-scene { background: linear-gradient(135deg, #fff9e9, #f4fffb); }
+.da-teen-scene { background: linear-gradient(135deg, #f5f8ff, #eef2fc); }
+.da-garden-scene { display: flex; gap: 12px; justify-content: center; align-items: center; min-height: 143px; padding: 10px; border-radius: 14px; background: linear-gradient(135deg, #b3f6ca, #effee0); }
+.da-garden-scene > div { display: grid; place-items: center; gap: 8px; }
+.da-garden-scene > div span { font-size: clamp(43px, 7vw, 70px); }
+.da-garden-scene > div small { color: #2b6c49; font-size: 10px; font-weight: 900; letter-spacing: .04em; }
+.da-garden-path { color: #339168; font-size: clamp(17px, 4vw, 34px); letter-spacing: .1em; }
+.da-pattern-scene { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 7px; background: #edf2ff; border-radius: 13px; padding: 13px 9px; }
+.da-pattern-scene > div { display: grid; place-items: center; gap: 6px; background: white; border-radius: 12px; padding: 13px 1px; box-shadow: 0 2px 8px rgba(20,40,80,.07); }
+.da-pattern-scene > div span { font-size: clamp(18px, 4.3vw, 37px); }
+.da-pattern-scene > div small { font-weight: 900; color: #7385a2; font-size: 9px; }
+.da-notice-scene { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 23px 13px; border: 3px dashed #eab67d; border-radius: 14px; background: #ffeed1; text-align: center; }
+.da-notice-scene > span { font-size: 42px; }
+.da-notice-scene strong { color: #a7472b; font-size: clamp(16px, 3.5vw, 29px); }
+.da-notice-scene small { color: #915d38; font-size: 11px; font-weight: 800; }
+.da-sample-scene { display: grid; gap: 10px; text-align: center; justify-items: center; border-radius: 13px; padding: 22px 11px; background: #e8f7ff; }
+.da-sample-scene > strong { letter-spacing: .1em; color: #285780; font-size: 12px; }
+.da-sample-icons { display: flex; justify-content: center; flex-wrap: wrap; max-width: 370px; gap: 11px; font-size: clamp(22px, 4vw, 34px); }
+.da-sample-scene > small { color: #335d7c; font-weight: 800; }
+.da-missing-sample { border: 1px solid #f0c49b; border-radius: 8px; padding: 9px 12px; color: #98552f; background: #fff6eb; font-size: 11px; font-weight: 850; }
+.da-app-scene { max-width: 380px; margin: 0 auto; background: white; border: 2px solid #d4dff5; box-shadow: 0 6px 18px rgba(23,56,104,.1); border-radius: 15px; padding: 15px; display: grid; justify-items: center; gap: 10px; }
+.da-app-scene > span { width: 100%; border-bottom: 1px solid #dce7f7; padding: 5px; color: #456180; font-size: 11px; font-weight: 800; }
+.da-app-scene > div { font-size: 51px; }
+.da-app-scene strong { border-radius: 8px; background: #3964b1; color: white; padding: 11px 18px; font-size: 12px; }
+.da-app-scene > small { font-size: 10px; color: #98603a; font-weight: 800; }
+.da-comparison-scene { display: grid; gap: 13px; background: #f3f7ff; padding: 21px 16px; border-radius: 13px; }
+.da-comparison-scene > div { position: relative; display: grid; grid-template-columns: minmax(85px,1fr) 35px; align-items: center; gap: 5px; font-weight: 800; font-size: 13px; color: #3b5679; }
+.da-comparison-scene > div i { grid-column: 1 / -1; height: 11px; border-radius: 6px; background: #597fe1; display: block; }
+.da-comparison-scene > div:nth-child(2) i { background: #59ad99; }
+.da-comparison-scene > div strong { text-align: right; font-size: 16px; }
+.da-comparison-scene > small { text-align: center; color: #5d6f8b; font-size: 10px; }
+@media (max-width: 430px) {
+  .da-pattern-scene { gap: 3px; padding: 10px 4px; }
+  .da-pattern-scene > div { border-radius: 7px; padding: 11px 0; }
+  .da-garden-path { letter-spacing: 0; }
+}
+
 .da-instruction { font-size: 19px; font-weight: 850; margin: 25px 0 18px; }
 .da-sequence-area { background: #f6f8ff; border: 1px dashed #a9b9dc; border-radius: 18px; padding: 18px; margin-bottom: 17px; }
 .da-sequence-title { color: #536a98; text-transform: uppercase; font-size: 11px; font-weight: 900; letter-spacing: .1em; margin-bottom: 10px; }
