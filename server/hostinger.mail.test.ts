@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-describe("Hostinger Mail API credential", () => {
+// Live account test: opt in explicitly; never contact a real mailbox during routine CI.
+const describeLiveMail = process.env.RUN_HOSTINGER_LIVE_MAIL_TEST === "1" ? describe : describe.skip;
+describeLiveMail("Hostinger Mail API credential", () => {
   it("authenticates against the current-account endpoint", async () => {
     const token = process.env.HOSTINGER_MAIL_API_TOKEN;
     expect(token, "HOSTINGER_MAIL_API_TOKEN must be configured").toBeTruthy();
