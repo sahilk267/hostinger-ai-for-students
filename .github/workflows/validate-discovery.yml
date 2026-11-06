@@ -37,6 +37,8 @@ jobs:
         run: pnpm test
       - name: Build production assets
         run: pnpm build
+      - name: Smoke built application without a database or external mail
+        run: node ops/smoke-built-app.mjs
 
   mysql-integration:
     name: Real MySQL auth and guardian integrity checks
