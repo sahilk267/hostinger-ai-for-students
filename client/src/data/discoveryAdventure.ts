@@ -54,6 +54,25 @@ export const ADVENTURE_WORLDS: {
   },
 ];
 
+
+/** World descriptions are age-appropriate; not a generic label on identical content. */
+const AGE_WORLD_DESCRIPTIONS: Record<"8-10" | "14-17", Record<AdventureWorldId, Localized>> = {
+  "8-10": {
+    logic: t("Guide friendly robots, spot patterns and try new routes.", "रोबोट को रास्ता दिखाएँ, पैटर्न समझें और नए रास्ते अपनाएँ।", "Friendly robots guide karo, patterns pakdo aur new routes try karo."),
+    mystery: t("Solve a missing-book puzzle and check surprising school news.", "गुम किताब के सुराग ढूँढें और स्कूल की ख़बर जाँचें।", "Missing book clues solve karo aur school news check karo."),
+    creator: t("Build helpful inventions and make games fair for friends.", "मददगार आविष्कार बनाएँ और दोस्तों के लिए खेल बेहतर करें।", "Helpful inventions banao aur friends ke liye fair games design karo."),
+  },
+  "14-17": {
+    logic: t("Handle real constraints, trade-offs and project dependencies.", "असल बाधाएँ, विकल्प और परियोजना की निर्भरताएँ समझें।", "Real constraints, trade-offs aur project dependencies handle karo."),
+    mystery: t("Investigate causal claims, survey bias and questionable AI citations.", "कारण संबंध, सर्वे पक्षपात और AI के संदिग्ध स्रोत जाँचें।", "Causal claims, survey bias aur AI citations investigate karo."),
+    creator: t("Design accessible tools, verification workflows and evidence-led revisions.", "सुलभ टूल, जाँच प्रक्रियाएँ और प्रमाण-आधारित सुधार बनाएँ।", "Accessible tools, verification workflows aur evidence-led revisions design karo."),
+  },
+};
+
+export function describeAdventureWorld(world: typeof ADVENTURE_WORLDS[number], ageBand: AdventureAgeBand, locale: AdventureLocale) {
+  return ageBand === "11-13" ? world.description[locale] : AGE_WORLD_DESCRIPTIONS[ageBand][world.id][locale];
+}
+
 export type AdventureMission = {
   id: string;
   ageBand: AdventureAgeBand;
