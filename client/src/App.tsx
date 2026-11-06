@@ -26,6 +26,7 @@ import PilotReviewPage from "./pages/PilotReviewPage";
 import DiscoveryLabPage from "./pages/DiscoveryLabPage";
 const DiscoveryAdventurePage = lazy(() => import("./pages/DiscoveryAdventurePage"));
 const DiscoveryCheckpointPage = lazy(() => import("./pages/DiscoveryCheckpointPage"));
+const GuardianRecordsPage = lazy(() => import("./pages/GuardianRecordsPage"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -44,6 +45,7 @@ function Router() {
       <Route path="/progress" component={ProgressPage} />
       <Route path="/certificate" component={CertificatePage} />
       <Route path="/account" component={AccountPage} />
+      <Route path="/guardian" component={GuardianRecordsPage} />
       <Route path="/topics" component={TopicsPage} />
       <Route path="/learn" component={LearnPage} />
       <Route path="/study" component={StudyPage} />
