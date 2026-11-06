@@ -145,6 +145,16 @@
 .da-report-card dt { font-size: 11px; color: #64718a; }
 .da-report-card dd { font-size: 13px; font-weight: 850; }
 .da-report-observation { font-size: 12px; color: #4f6192; font-weight: 750; line-height: 1.5; margin-top: 13px; }
+.da-suggestion { margin: 23px 0 16px; background: #eaf5ff; border: 1px solid #bcd4ef; border-radius: 17px; padding: 20px; }
+.da-suggestion h3 { margin: 10px 0 6px; font-family: "Fraunces", Georgia, serif; font-size: 21px; }
+.da-suggestion p { font-size: 13px; line-height: 1.6; color: #47617f; margin-bottom: 14px; }
+.da-enjoyed-note { display: flex; align-items: flex-start; gap: 12px; background: #f7f0ff; padding: 16px; border-radius: 14px; margin: 14px 0; }
+.da-enjoyed-note > span { font-size: 29px; }
+.da-enjoyed-note strong { font-size: 13px; }
+.da-enjoyed-note p { color: #5b5477; font-size: 12px; line-height: 1.6; margin-top: 6px; }
+.da-report-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 13px; }
+.da-delete-action { border: 1px solid #e1c5c5; border-radius: 11px; padding: 11px 13px; background: #fff; color: #913e3e; font-size: 12px; font-weight: 800; }
+.da-delete-action:hover { background: #fff1f1; }
 .da-badge-note { border: 1px solid #f5d795; border-radius: 13px; padding: 15px; margin: 18px 0; background: #fff8e5; font-size: 13px; font-weight: 740; }
 .da-parent-note { display: flex; align-items: flex-start; gap: 13px; padding: 19px; border-radius: 15px; background: #eff6f9; margin: 23px 0; color: #364e6e; }
 .da-parent-note strong { color: #1b3956; }
