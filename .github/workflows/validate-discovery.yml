@@ -39,6 +39,8 @@ jobs:
         run: pnpm build
       - name: Smoke built application without a database or external mail
         run: node ops/smoke-built-app.mjs
+      - name: Verify Hostinger PR-preview separation guardrails
+        run: node --test ops/preview-safety.test.mjs
 
   mysql-integration:
     name: Real MySQL auth and guardian integrity checks
