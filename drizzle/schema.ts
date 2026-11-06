@@ -111,3 +111,19 @@ export const discoveryCheckpoints = mysqlTable("discoveryCheckpoints", {
 }, (table) => ({
   accountChallengeUnique: uniqueIndex("discoveryCheckpoints_user_challenge_unique").on(table.userId, table.challengeId),
 }));
+
+
+/**
+ * Database-enforced, one-time email login challenges.
+ * Only HMAC email identifiers and HMAC code digests are stored; no OTP plaintext.
+ * An email identifier is UNIQUE so cooldown applies across Node processes.
+ */
+export const authEmailChallenges = mysqlTable("authEmailChallenges", {
+  emailKey: varchar("emailKey", { length: 64 }).primaryKey(),
+  challengeId: varchar("challengeId", { length: 64 }).notNull().unique(),
+  codeHash: varchar("codeHash", { length: 64 }).notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  requestedAt: timestamp("requestedAt").defaultNow().notNull(),
+  attempts: int("attempts").default(0).notNull(),
+  consumedAt: timestamp("consumedAt"),
+});
