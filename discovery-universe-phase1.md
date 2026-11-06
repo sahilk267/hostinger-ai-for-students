@@ -9,6 +9,17 @@
 - Local-only session outcomes, including **first attempt**, **eventually solved**, and **explicitly reported enjoyment**, with a printable private practice summary.
 - New entry points on the home page and existing Explorer page. No changes to authenticated Explorer evidence or account data.
 
+## Phase 2 usability and evidence-integrity improvements in this draft PR
+- Mission options are shuffled per play session. Ordered answers are never shown correctly from top to bottom by accident.
+- Nine localized optional learning hints help children recover; first-attempt correctness, **first attempt without hint**, retries and hint-assisted attempts are separately recorded.
+- Browser report now distinguishes **first unassisted solutions** from **later solutions after an incorrect first try**, without presenting them as talent, aptitude or psychological measurements.
+- Parent snapshot offers a next practice mission: first retry an unsolved task; otherwise try an unattempted task. The only interest suggestion is based on a learner's explicit yes/no enjoyment response, not inferred behavior.
+- Local results can be deleted from the adventure interface on shared devices after confirmation.
+- Four missions now have lightweight, original educational visual evidence: map, an *illustrative misleading-axis chart*, fictional social claim and unclear poster. These are examples, not real-world survey data.
+- Added regression tests for randomized option order, multilingual hints, report counts, next-step selection and visual-scene presence.
+
+**No automated test result or browser QA is asserted by this document.** Re-run `pnpm check`, `pnpm test`, `pnpm build`, accessibility QA and educator review after every change.
+
 ## Student and parent value
 The learner must actively decide, order or compare, then receives an explanation and the option to retry. The summary records **only observed performance in these nine practice tasks**. A self-report of enjoyment is not inferred from clicks or playtime.
 
