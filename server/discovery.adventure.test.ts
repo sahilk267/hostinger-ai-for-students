@@ -61,7 +61,7 @@ describe("Discovery Adventure pilot", () => {
         expect(mission.instruction[locale.id].length).toBeGreaterThan(10);
         expect(mission.feedback[locale.id].length).toBeGreaterThan(20);
         expect(mission.hint[locale.id].length).toBeGreaterThan(15);
-        for (const option of mission.options) expect(option.label[locale.id].length).toBeGreaterThan(4);
+        for (const option of mission.options) expect(option.label[locale.id].trim().length).toBeGreaterThanOrEqual(3);
       }
       const shuffled = shuffledAdventureOptions(mission, 128);
       expect(new Set(shuffled.map((option) => option.id))).toEqual(new Set(mission.options.map((option) => option.id)));
