@@ -96,6 +96,27 @@
 .da-section-label { font-size: 11px; font-weight: 900; color: #526a84; letter-spacing: .12em; }
 .da-play-heading h2 { font-size: clamp(26px, 3.4vw, 39px); line-height: 1.2; letter-spacing: -.04em; font-family: "Fraunces", Georgia, serif; margin: 5px 0 0; }
 .da-story { font-size: 17px; color: #425371; line-height: 1.65; margin: 16px 0; }
+.da-evidence-scene { margin: 19px 0 22px; padding: 14px; border-radius: 18px; border: 1px solid #dae5f4; background: #fbfdff; }
+.da-evidence-scene figcaption { display: grid; gap: 5px; padding: 4px 4px 13px; }
+.da-evidence-scene figcaption strong { font-size: 14px; color: #254777; }
+.da-evidence-scene figcaption span { font-size: 12px; line-height: 1.55; color: #586982; }
+.da-chart-svg { display: block; margin-inline: auto; width: min(100%, 530px); height: auto; }
+.da-rover-board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; max-width: 310px; margin: 5px auto 9px; }
+.da-rover-tile { aspect-ratio: 1; background: linear-gradient(130deg, #c7f0e7, #b7ddf3); border: 1px solid #9bbacf; border-radius: 12px; display: grid; place-items: center; align-content: center; gap: 3px; }
+.da-rover-tile > span:not(.da-tile-dot) { font-size: clamp(22px, 4vw, 30px); }
+.da-rover-tile small { font-weight: 900; font-size: 9px; color: #344f74; }
+.da-rover-tile.is-blocked { background: #f6b9b6; }
+.da-rover-tile.is-start { background: #d2baff; }
+.da-rover-tile.is-goal { background: #ffe7a2; }
+.da-tile-dot { width: 5px; height: 5px; border-radius: 50%; background: #7bb9b1; }
+.da-post-scene { background: linear-gradient(150deg,#273769,#573a84); border-radius: 15px; text-align: center; padding: 23px 15px; color: #fff; }
+.da-post-scene > span { font-size: 10px; letter-spacing: .12em; font-weight: 800; color: #f6d1b0; }
+.da-post-scene p { font-size: clamp(20px, 3.7vw, 32px); font-weight: 950; letter-spacing: -.04em; line-height: 1.25; margin: 17px 0; color: #fff; }
+.da-post-scene small { color: #ffd9bf; font-weight: 700; font-size: 11px; }
+.da-poster-scene { background: linear-gradient(145deg,#dfeafc,#f6e1fb); border-radius: 14px; padding: 16px; min-height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; }
+.da-poster-scene > span { font-size: 32px; font-weight: 950; color: #4b4c97; letter-spacing: -.045em; }
+.da-poster-scene > div { font-size: 50px; }
+.da-poster-scene > small { font-size: 8px; opacity: .7; color: #526485; }
 .da-instruction { font-size: 19px; font-weight: 850; margin: 25px 0 18px; }
 .da-sequence-area { background: #f6f8ff; border: 1px dashed #a9b9dc; border-radius: 18px; padding: 18px; margin-bottom: 17px; }
 .da-sequence-title { color: #536a98; text-transform: uppercase; font-size: 11px; font-weight: 900; letter-spacing: .1em; margin-bottom: 10px; }
