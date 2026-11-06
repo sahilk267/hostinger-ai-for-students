@@ -8,7 +8,8 @@ const run = process.env.RUN_MYSQL_INTEGRATION === "1" ? describe : describe.skip
 run("Explorer guardian data integrity (real MySQL)", () => {
   const url = process.env.DATABASE_URL;
   if (process.env.RUN_MYSQL_INTEGRATION === "1" &&
-    (!url || !/^aifs_ci(?:_[a-z0-9_]+)?$/.test(new URL(url).pathname.slice(1)))) {
+    (!url || !/^aifs_ci(?:_[a-z0-9_]+)?$/.test(new URL(url).pathname.slice(1))
+      || !["127.0.0.1", "localhost"].includes(new URL(url).hostname))) {
     throw new Error("Guardian tests must use an isolated aifs_ci database");
   }
   let connection: mysql.Connection;
