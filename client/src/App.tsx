@@ -25,6 +25,7 @@ import ExplorerSharePage from "./pages/ExplorerSharePage";
 import PilotReviewPage from "./pages/PilotReviewPage";
 import DiscoveryLabPage from "./pages/DiscoveryLabPage";
 const DiscoveryAdventurePage = lazy(() => import("./pages/DiscoveryAdventurePage"));
+const DiscoveryCheckpointPage = lazy(() => import("./pages/DiscoveryCheckpointPage"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/mission" component={MissionPage} />
       <Route path="/journey" component={JourneyPage} />
       <Route path="/explorer/adventure" component={DiscoveryAdventurePage} />
+      <Route path="/explorer/checkpoint" component={DiscoveryCheckpointPage} />
       <Route path="/explorer" component={ExplorerPage} />
       <Route path="/explorer/report" component={ExplorerReportPage} />
       <Route path="/explorer/share/:token" component={ExplorerSharePage} />
