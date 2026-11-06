@@ -1,9 +1,9 @@
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, isNull, sql, gt, lt, ne, desc } from "drizzle-orm";
 import { createHash, randomBytes } from "node:crypto";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, discoveryCheckpoints, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
+import { InsertUser, authEmailChallenges, discoveryCheckpoints, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
 import { ENV, describeDatabaseConfig } from './_core/env';
-import { gt, desc } from "drizzle-orm";
+
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -288,4 +288,58 @@ export async function deleteDiscoveryCheckpointsForAccount(userId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
   await db.delete(discoveryCheckpoints).where(eq(discoveryCheckpoints.userId, userId));
+}
+
+/** Reserve one pending OTP per email; the cooldown update is atomic across processes. */
+export async function reserveEmailLoginChallenge(input: {
+  emailKey: string; challengeId: string; codeHash: string; now: Date; expiresAt: Date;
+}): Promise<boolean> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const cooldownCutoff = new Date(input.now.getTime() - 60_000);
+  const r = authEmailChallenges;
+  await db.insert(r).values({
+    emailKey: input.emailKey, challengeId: input.challengeId, codeHash: input.codeHash,
+    expiresAt: input.expiresAt, requestedAt: input.now, attempts: 0,
+  }).onDuplicateKeyUpdate({ set: {
+    // Compare requestedAt BEFORE modifying it; field order matters in MySQL.
+    challengeId: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, ${input.challengeId}, ${r.challengeId})`,
+    codeHash: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, ${input.codeHash}, ${r.codeHash})`,
+    expiresAt: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, ${input.expiresAt}, ${r.expiresAt})`,
+    attempts: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, 0, ${r.attempts})`,
+    consumedAt: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, NULL, ${r.consumedAt})`,
+    requestedAt: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, ${input.now}, ${r.requestedAt})`,
+  }});
+  const records = await db.select({ challengeId: r.challengeId }).from(r)
+    .where(eq(r.emailKey, input.emailKey)).limit(1);
+  return records[0]?.challengeId === input.challengeId;
+}
+
+/** Only the correct code can atomically consume a live challenge, at most once. */
+export async function consumeEmailLoginChallenge(input: {
+  emailKey: string; challengeId: string; codeHash: string; now: Date;
+}): Promise<boolean> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const r = authEmailChallenges;
+  const live = and(eq(r.emailKey, input.emailKey), eq(r.challengeId, input.challengeId),
+    isNull(r.consumedAt), gt(r.expiresAt, input.now), lt(r.attempts, 5));
+  const [accepted] = await db.update(r).set({
+    attempts: sql`${r.attempts} + 1`, consumedAt: input.now,
+  }).where(and(live, eq(r.codeHash, input.codeHash)));
+  if (accepted.affectedRows === 1) return true;
+  // Wrong answer increments an atomically bounded counter without consuming the challenge.
+  await db.update(r).set({ attempts: sql`${r.attempts} + 1` })
+    .where(and(live, ne(r.codeHash, input.codeHash)));
+  return false;
+}
+
+/** If mail delivery fails, invalidate only the reservation created by that request. */
+export async function cancelEmailLoginChallenge(emailKey: string, challengeId: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(authEmailChallenges).where(and(
+    eq(authEmailChallenges.emailKey, emailKey),
+    eq(authEmailChallenges.challengeId, challengeId),
+  ));
 }
