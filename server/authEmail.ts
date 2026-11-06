@@ -1,93 +1,83 @@
-import { createHash, createHmac, randomInt, timingSafeEqual } from "node:crypto";
-import type { Response } from "express";
+import { createHash, createHmac, randomBytes, randomInt } from "node:crypto";
+import type { Request, Response } from "express";
 import { ENV } from "./_core/env";
+import { getSessionCookieOptions } from "./_core/cookies";
+import { cancelEmailLoginChallenge, consumeEmailLoginChallenge, reserveEmailLoginChallenge } from "./db";
 
 export const AUTH_EMAIL_CODE_COOKIE = "ai_students_email_challenge";
+export const EMAIL_CODE_TTL_MINUTES = 10;
+const CODE_TTL_MS = EMAIL_CODE_TTL_MINUTES * 60_000;
 
 export function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
 }
 
-/** Stable local identity that does not put the learner's email in the openId column. */
+/** Stable local identity that does not put the email address into openId. */
 export function localEmailOpenId(email: string) {
-  return `email:${createHash("sha256").update(normalizeEmail(email)).digest("hex").slice(0, 56)}`;
+  return "email:" + createHash("sha256").update(normalizeEmail(email)).digest("hex").slice(0, 56);
 }
-const CODE_TTL_MS = 10 * 60 * 1000;
-const REQUEST_COOLDOWN_MS = 30 * 1000;
-const recentRequests = new Map<string, number>();
-
-type Challenge = { email: string; digest: string; expiresAt: number };
-
 function signingKey() {
-  if (!ENV.cookieSecret) throw new Error("JWT secret is not configured");
+  if (!ENV.cookieSecret || ENV.cookieSecret.length < 32) {
+    throw new Error("JWT_SECRET must be configured with at least 32 characters");
+  }
   return ENV.cookieSecret;
 }
-
-function digest(email: string, code: string) {
-  return createHmac("sha256", signingKey()).update(`${email}:${code}`).digest("hex");
+function emailKey(email: string) {
+  return createHmac("sha256", signingKey()).update("email:" + normalizeEmail(email)).digest("hex");
+}
+function codeHash(key: string, challengeId: string, code: string) {
+  return createHmac("sha256", signingKey()).update("code:" + key + ":" + challengeId + ":" + code).digest("hex");
 }
 
-export function canRequestEmailCode(email: string) {
+/** Opaque cookie value: random database identifier, never an encoded code/hash/email. */
+export async function createEmailCodeChallenge(email: string, req: Request, response: Response) {
   const normalizedEmail = normalizeEmail(email);
-  const now = Date.now();
-  const previous = recentRequests.get(normalizedEmail);
-  if (previous && now - previous < REQUEST_COOLDOWN_MS) return false;
-  recentRequests.set(normalizedEmail, now);
-  recentRequests.forEach((timestamp, key) => {
-    if (now - timestamp > CODE_TTL_MS) recentRequests.delete(key);
-  });
-  return true;
-}
-
-export function createEmailCodeChallenge(email: string, response: Response) {
-  const normalizedEmail = normalizeEmail(email);
+  const key = emailKey(normalizedEmail);
+  const challengeId = randomBytes(32).toString("base64url");
   const code = String(randomInt(100000, 1000000));
-  const challenge: Challenge = { email: normalizedEmail, digest: digest(normalizedEmail, code), expiresAt: Date.now() + CODE_TTL_MS };
-  response.cookie(AUTH_EMAIL_CODE_COOKIE, Buffer.from(JSON.stringify(challenge)).toString("base64url"), {
-    httpOnly: true,
-    sameSite: "none",
-    secure: true,
-    path: "/",
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + CODE_TTL_MS);
+  const reserved = await reserveEmailLoginChallenge({
+    emailKey: key, challengeId, codeHash: codeHash(key, challengeId, code),
+    now, expiresAt,
+  });
+  if (!reserved) return null;
+  response.cookie(AUTH_EMAIL_CODE_COOKIE, challengeId, {
+    ...getSessionCookieOptions(req),
     maxAge: CODE_TTL_MS,
   });
-  return { code, expiresInMinutes: CODE_TTL_MS / 60000 };
+  return {
+    code, expiresInMinutes: EMAIL_CODE_TTL_MINUTES,
+    email: normalizedEmail, emailKey: key, challengeId,
+  };
 }
 
 export function getEmailChallengeCookie(request: { headers?: { cookie?: string }; cookies?: Record<string, string> }) {
-  const parsedCookie = request.cookies?.[AUTH_EMAIL_CODE_COOKIE];
-  if (parsedCookie) return parsedCookie;
-
+  const value = request.cookies?.[AUTH_EMAIL_CODE_COOKIE];
+  if (value) return value;
   const header = request.headers?.cookie;
   if (!header) return undefined;
   for (const part of header.split(";")) {
     const separator = part.indexOf("=");
     if (separator < 0) continue;
-    const name = part.slice(0, separator).trim();
-    if (name !== AUTH_EMAIL_CODE_COOKIE) continue;
+    if (part.slice(0, separator).trim() !== AUTH_EMAIL_CODE_COOKIE) continue;
     const value = part.slice(separator + 1).trim();
-    try {
-      return decodeURIComponent(value);
-    } catch {
-      return value;
-    }
+    try { return decodeURIComponent(value); } catch { return value; }
   }
   return undefined;
 }
 
-export function verifyEmailCode(email: string, code: string, cookieValue?: string) {
-  const normalizedEmail = normalizeEmail(email);
-  if (!cookieValue) return false;
-  try {
-    const challenge = JSON.parse(Buffer.from(cookieValue, "base64url").toString("utf8")) as Challenge;
-    if (challenge.email !== normalizedEmail || challenge.expiresAt < Date.now()) return false;
-    const expected = Buffer.from(challenge.digest, "hex");
-    const actual = Buffer.from(digest(normalizedEmail, code), "hex");
-    return expected.length === actual.length && timingSafeEqual(expected, actual);
-  } catch {
-    return false;
-  }
+export async function verifyEmailCode(email: string, code: string, cookieValue?: string) {
+  if (!cookieValue || !/^[A-Za-z0-9_-]{43}$/.test(cookieValue) || !/^\d{6}$/.test(code)) return false;
+  const key = emailKey(email);
+  return consumeEmailLoginChallenge({
+    emailKey: key, challengeId: cookieValue,
+    codeHash: codeHash(key, cookieValue, code), now: new Date(),
+  });
 }
-
-export function clearEmailCodeChallenge(response: Response) {
-  response.clearCookie(AUTH_EMAIL_CODE_COOKIE, { path: "/", secure: true, sameSite: "none" });
+export async function cancelEmailCodeChallenge(email: string, challengeId: string) {
+  return cancelEmailLoginChallenge(emailKey(email), challengeId);
+}
+export function clearEmailCodeChallenge(response: Response, req: Request) {
+  response.clearCookie(AUTH_EMAIL_CODE_COOKIE, getSessionCookieOptions(req));
 }
