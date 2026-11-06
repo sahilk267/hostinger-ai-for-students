@@ -236,3 +236,14 @@ export function summarizeAdventure(attempts: Record<string, AdventureAttempt>) {
     };
   });
 }
+
+
+/** Suggestions are transparent practice navigation, not a validated aptitude or career inference. */
+export function chooseAdventureNextPractice(attempts: Record<string, AdventureAttempt>) {
+  const retry = ADVENTURE_MISSIONS.find((mission) => attempts[mission.id] && !attempts[mission.id].bestCorrect);
+  const next = retry ?? ADVENTURE_MISSIONS.find((mission) => !attempts[mission.id]) ?? null;
+  const explicitlyEnjoyed = summarizeAdventure(attempts)
+    .filter((item) => item.enjoyed > 0)
+    .sort((a, b) => b.enjoyed - a.enjoyed)[0] ?? null;
+  return { mission: next, isRetry: Boolean(retry), enjoyedWorld: explicitlyEnjoyed?.world ?? null };
+}
