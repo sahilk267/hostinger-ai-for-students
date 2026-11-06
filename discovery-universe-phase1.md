@@ -20,6 +20,27 @@
 
 **No automated test result or browser QA is asserted by this document.** Re-run `pnpm check`, `pnpm test`, `pnpm build`, accessibility QA and educator review after every change.
 
+## Phase 3 — age-specific learning adventures (this PR)
+- Added a three-way **age-band selector**: 8–10 Junior Adventurers, 11–13 Skill Detectives (existing pilot preserved), 14–17 Future Builders.
+- A new authored catalog supplies **18 genuinely different missions** (9 per new age band), resulting in 27 bilingual/trilingual pilot missions overall: three reusable worlds × three scenarios per age band.
+- Junior tasks use concrete robots, patterns, school notices and inclusive playground choices; teen tasks use project dependencies, evidence quality, causal reasoning, survey bias, accessibility and human review of AI outputs.
+- All new missions have authored English, Hindi and Hinglish text, feedback and optional hints; no runtime LLM is used.
+- The same engine supports ordered cards, one-choice and two-choice problems with shuffled option layouts.
+- Ages have **different world descriptions and visual treatments**, plus new authored CSS evidence scenes: watering robot, pattern trail, missing-source notice, survey sampling, accessible app and correlation comparison.
+- Practice records persist only on this browser, keyed by unique mission ID. **Only the selected age band's missions enter its snapshot or next-practice suggestions.** Never compare scores across ages or use this demo as a validated aptitude/career predictor.
+- The age choice is a broad preference, not a date of birth, and does not create a child profile.
+- Original 5–7 and 14–17 age-band Explorer missions remain at `/explorer`. **A dedicated 5–7 audio-first adventure remains future work** and is not implied by this PR.
+- The original free 11–13 demo continues to use its nine original mission IDs, preserving existing browser-local progress.
+
+### Phase 3 acceptance checklist
+1. Confirm all **27 mission contracts**, correct localized strings, age selection and age-isolated reports in CI.
+2. Test real phone layouts at 320–400px, Hindi line wrapping and focus visibility.
+3. Confirm answers from one age band do not appear in any other age band's parent summary.
+4. Test changing age band during report review, after returning to the map and after refresh.
+5. Educational and language reviewers should verify age appropriateness and factual validity.
+6. Do not treat the nine scenarios per band as a norm-referenced or diagnostic test; no career, IQ or fixed talent claims.
+7. Keep actual parent accounts, payment collection and verified completion certificates disabled until legal, security and content review.
+
 ## Student and parent value
 The learner must actively decide, order or compare, then receives an explanation and the option to retry. The summary records **only observed performance in these nine practice tasks**. A self-report of enjoyment is not inferred from clicks or playtime.
 
