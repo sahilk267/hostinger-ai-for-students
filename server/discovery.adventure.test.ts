@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { ADVENTURE_LOCALES, ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, summarizeAdventure, chooseAdventureNextPractice, type AdventureAttempt } from "../client/src/data/discoveryAdventure";
+import { ADVENTURE_LOCALES, ADVENTURE_AGE_BANDS, ADVENTURE_MISSIONS, ALL_ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, summarizeAdventure, chooseAdventureNextPractice, getAgeAdventureMissions, type AdventureAttempt } from "../client/src/data/discoveryAdventure";
 
 const page = readFileSync(resolve(process.cwd(), "client/src/pages/DiscoveryAdventurePage.tsx"), "utf8");
 const router = readFileSync(resolve(process.cwd(), "client/src/App.tsx"), "utf8");
@@ -15,6 +15,56 @@ describe("Discovery Adventure pilot", () => {
     expect(new Set(ADVENTURE_MISSIONS.map((mission) => mission.id)).size).toBe(9);
     for (const world of ADVENTURE_WORLDS) {
       expect(ADVENTURE_MISSIONS.filter((mission) => mission.world === world.id)).toHaveLength(3);
+    }
+  });
+
+
+  it("has 27 original missions across 3 age bands, without leaking progress across ages", () => {
+    expect(ADVENTURE_AGE_BANDS.map((item) => item.id)).toEqual(["8-10", "11-13", "14-17"]);
+    expect(ALL_ADVENTURE_MISSIONS).toHaveLength(27);
+    expect(new Set(ALL_ADVENTURE_MISSIONS.map((mission) => mission.id)).size).toBe(27);
+    for (const band of ADVENTURE_AGE_BANDS) {
+      const missions = getAgeAdventureMissions(band.id);
+      expect(missions).toHaveLength(9);
+      for (const world of ADVENTURE_WORLDS) {
+        expect(missions.filter((mission) => mission.world === world.id)).toHaveLength(3);
+      }
+      for (const locale of ADVENTURE_LOCALES) {
+        expect(band.label[locale.id].length).toBeGreaterThan(8);
+        expect(band.tagline[locale.id].length).toBeGreaterThan(12);
+      }
+    }
+    const junior = getAgeAdventureMissions("8-10")[0];
+    const teenager = getAgeAdventureMissions("14-17")[0];
+    expect(junior.story.en).not.toBe(teenager.story.en);
+    const a: AdventureAttempt = { firstCorrect: true, firstIndependent: true, bestCorrect: true, attempts: 1, hintsUsed: 0, enjoyed: true, updatedAt: "2026-11-06" };
+    const mixed = { [junior.id]: a, [teenager.id]: a };
+    expect(summarizeAdventure(mixed, "8-10").reduce((sum, world) => sum + world.practiced, 0)).toBe(1);
+    expect(summarizeAdventure(mixed, "14-17").reduce((sum, world) => sum + world.practiced, 0)).toBe(1);
+    expect(summarizeAdventure(mixed, "11-13").reduce((sum, world) => sum + world.practiced, 0)).toBe(0);
+    expect(chooseAdventureNextPractice(mixed, "8-10").mission?.ageBand).toBe("8-10");
+    expect(chooseAdventureNextPractice(mixed, "14-17").mission?.ageBand).toBe("14-17");
+  });
+
+  it("keeps all 27 age-specific missions playable and fully localized", () => {
+    for (const mission of ALL_ADVENTURE_MISSIONS) {
+      expect(mission.options.length).toBeGreaterThanOrEqual(3);
+      expect(new Set(mission.options.map((option) => option.id)).size).toBe(mission.options.length);
+      expect(new Set(mission.answer).size).toBe(mission.answer.length);
+      expect(mission.answer.length).toBeLessThanOrEqual(mission.options.length);
+      expect(evaluateAdventureAnswer(mission, mission.answer)).toBe(true);
+      expect(evaluateAdventureAnswer(mission, ["wrong-id"])).toBe(false);
+      for (const locale of ADVENTURE_LOCALES) {
+        expect(mission.title[locale.id].length).toBeGreaterThan(5);
+        expect(mission.story[locale.id].length).toBeGreaterThan(20);
+        expect(mission.instruction[locale.id].length).toBeGreaterThan(10);
+        expect(mission.feedback[locale.id].length).toBeGreaterThan(20);
+        expect(mission.hint[locale.id].length).toBeGreaterThan(15);
+        for (const option of mission.options) expect(option.label[locale.id].length).toBeGreaterThan(4);
+      }
+      const shuffled = shuffledAdventureOptions(mission, 128);
+      expect(new Set(shuffled.map((option) => option.id))).toEqual(new Set(mission.options.map((option) => option.id)));
+      if (mission.mode === "sequence") expect(shuffled.map((option) => option.id)).not.toEqual(mission.answer);
     }
   });
 
@@ -104,6 +154,9 @@ describe("Discovery Adventure pilot", () => {
     expect(page).toContain("firstIndependent");
     expect(page).toContain("clearLocalPractice");
     expect(page).toContain("chooseAdventureNextPractice");
+    expect(page).toContain("chooseBand");
+    expect(page).toContain("getAgeAdventureMissions");
+    expect(page).toContain("bandCopy.label[locale]");
     expect(page).toContain("not an accredited certificate");
     expect(page).not.toContain("createShare.mutate");
     expect(page).not.toContain("trpc.");
