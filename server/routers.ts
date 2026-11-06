@@ -125,13 +125,19 @@ export const appRouter = router({
   }),
   explorer: router({
     profiles: protectedProcedure.query(({ ctx }) => db.listExplorerProfilesForUser(ctx.user.id)),
+    features: publicProcedure.query(() => ({ aiFeedbackEnabled: process.env.EXPLORER_AI_FEEDBACK_ENABLED === "1" })),
     attempts: protectedProcedure.query(({ ctx }) => db.listExplorerAttemptsForUser(ctx.user.id)),
     createProfile: protectedProcedure.input(z.object({
       displayName: z.string().trim().min(1).max(80),
       ageBand: z.enum(["5-7", "8-10", "11-13", "14-17"]),
       language: z.string().trim().min(2).max(32).default("en"),
       consentVersion: z.literal("explorer-consent-v1"),
-    })).mutation(({ ctx, input }) => db.createExplorerProfile({ userId: ctx.user.id, ...input })),
+      guardianAcknowledged: z.literal(true),
+    })).mutation(({ ctx, input }) => {
+      // Consent record is self-declared. Email-OTP alone does NOT verify guardianship.
+      const { guardianAcknowledged: _acknowledged, ...profile } = input;
+      return db.createExplorerProfile({ userId: ctx.user.id, ...profile });
+    }),
     saveAttempt: protectedProcedure.input(z.object({
       profileId: z.number().int().positive(),
       missionId: z.string().trim().min(1).max(80),
@@ -154,6 +160,9 @@ export const appRouter = router({
       rubric: z.array(z.string().trim().min(1).max(180)).min(3).max(5),
       evidenceJson: z.string().trim().min(1).max(6000),
     })).mutation(async ({ input }) => {
+      if (process.env.EXPLORER_AI_FEEDBACK_ENABLED !== "1") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Optional external AI coaching is disabled to protect privacy and avoid paid inference costs" });
+      }
       try {
         const response = await invokeLLM({
           messages: [
