@@ -112,7 +112,7 @@ describe("Discovery Adventure pilot", () => {
     expect(page).toContain("DiscoveryEvidenceScene");
     expect(scene).toContain('missionId === "chart-trap"');
     expect(scene).toContain('missionId === "rover-rescue"');
-    expect(scene).toContain('missionId === "poster-upgrade"');
+    expect(scene).toContain('id === "poster-upgrade"');
     expect(scene).toContain('missionId === "viral-claim"');
     expect(scene).toContain("not real survey data");
     expect(scene).not.toContain("fetch(");
