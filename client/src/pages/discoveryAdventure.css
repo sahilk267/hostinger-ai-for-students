@@ -113,6 +113,11 @@
 .da-choice-marker { flex: 0 0 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: #e8edfa; color: #315c9c; font-weight: 900; }
 .da-choice.is-selected .da-choice-marker { background: #315cd6; color: #fff; }
 .da-help { font-size: 12px; color: #657694; margin: 13px 0; }
+.da-hint-area { margin: 17px 0 20px; }
+.da-hint-button { display: inline-flex; align-items: center; gap: 8px; background: #fff6e4; border: 1px solid #e7c78d; border-radius: 11px; padding: 11px 14px; font-size: 13px; font-weight: 800; color: #755017; }
+.da-hint-button:hover:not(:disabled) { background: #ffebc3; }
+.da-hint-text { margin-top: 11px; padding: 13px 15px; background: #fff9eb; border-left: 3px solid #cc9c4c; border-radius: 8px; color: #69512b; line-height: 1.6; font-size: 13px; }
+.da-play-panel:focus, .da-report:focus { outline: none; }
 .da-primary-action, .da-secondary-action { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 13px; padding: 14px 19px; font-size: 13px; font-weight: 850; text-align: center; }
 .da-primary-action { border: 1px solid #244bcc; background: #264cce; color: #fff; box-shadow: 0 8px 19px rgba(45,73,185,.19); }
 .da-primary-action:hover:not(:disabled) { background: #193cae; }
