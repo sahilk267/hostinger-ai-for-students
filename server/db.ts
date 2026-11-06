@@ -1,6 +1,6 @@
 import { and, eq, isNull, sql, gt, lt, ne, desc } from "drizzle-orm";
 import { EXPLORER_PILOT_MISSIONS } from "../client/src/data/explorerLab";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, createHmac, randomBytes } from "node:crypto";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, authEmailChallenges, discoveryCheckpoints, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
 import { ENV, describeDatabaseConfig } from './_core/env';
@@ -143,6 +143,13 @@ export async function deleteLearningProgressForUser(userId: number) {
 export async function deleteUserAccount(userId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
+  const account = await db.select({ email: users.email }).from(users).where(eq(users.id, userId)).limit(1);
+  if (account[0]?.email && ENV.cookieSecret) {
+    const emailKey = createHmac("sha256", ENV.cookieSecret)
+      .update("email:" + account[0].email.trim().toLowerCase()).digest("hex");
+    await db.delete(authEmailChallenges).where(eq(authEmailChallenges.emailKey, emailKey));
+  }
+  // Foreign keys cascade account-owned checkpoint records, profiles, attempts and shares.
   await db.delete(users).where(eq(users.id, userId));
 }
 
