@@ -1,7 +1,7 @@
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { createHash, randomBytes } from "node:crypto";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
+import { InsertUser, discoveryCheckpoints, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
 import { ENV, describeDatabaseConfig } from './_core/env';
 import { gt, desc } from "drizzle-orm";
 
@@ -236,3 +236,56 @@ export async function softDeleteExplorerProfile(userId: number, profileId: numbe
   await db.update(explorerProfiles).set({ deletedAt: new Date() }).where(and(eq(explorerProfiles.id, profileId), eq(explorerProfiles.userId, userId)));
 }
 
+
+/** Account-owned server-checked preview. These records do not identify a learner. */
+export async function listDiscoveryCheckpointsForAccount(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  return db.select({
+    ageBand: discoveryCheckpoints.ageBand,
+    challengeId: discoveryCheckpoints.challengeId,
+    attempts: discoveryCheckpoints.attempts,
+    solvedAt: discoveryCheckpoints.solvedAt,
+  }).from(discoveryCheckpoints).where(eq(discoveryCheckpoints.userId, userId));
+}
+
+export async function submitDiscoveryCheckpoint(input: {
+  userId: number;
+  ageBand: "8-10" | "11-13" | "14-17";
+  challengeId: string;
+  correct: boolean;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const MAX_CHECKS = 12;
+  // One atomic statement per attempt, even on shared hosting with multiple processes.
+  // The per-account challenge unique index serializes concurrent upserts in MySQL.
+  await db.insert(discoveryCheckpoints).values({
+    userId: input.userId,
+    ageBand: input.ageBand,
+    challengeId: input.challengeId,
+    attempts: 1,
+    solvedAt: input.correct ? new Date() : null,
+  }).onDuplicateKeyUpdate({
+    set: {
+      attempts: sql`LEAST(${discoveryCheckpoints.attempts} + 1, ${MAX_CHECKS + 1})`,
+      ...(input.correct ? {
+        solvedAt: sql`CASE WHEN ${discoveryCheckpoints.attempts} < ${MAX_CHECKS} THEN COALESCE(${discoveryCheckpoints.solvedAt}, CURRENT_TIMESTAMP) ELSE ${discoveryCheckpoints.solvedAt} END`,
+      } : {}),
+    },
+  });
+  const rows = await db.select({
+    attempts: discoveryCheckpoints.attempts,
+    solvedAt: discoveryCheckpoints.solvedAt,
+  }).from(discoveryCheckpoints).where(and(
+    eq(discoveryCheckpoints.userId, input.userId),
+    eq(discoveryCheckpoints.challengeId, input.challengeId),
+  )).limit(1);
+  return { attempts: rows[0]?.attempts ?? 0, solved: Boolean(rows[0]?.solvedAt), limitReached: (rows[0]?.attempts ?? 0) > MAX_CHECKS };
+}
+
+export async function deleteDiscoveryCheckpointsForAccount(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.delete(discoveryCheckpoints).where(eq(discoveryCheckpoints.userId, userId));
+}
