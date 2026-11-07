@@ -124,6 +124,8 @@ function readSavedTransfers(): Record<string, TransferAttempt> {
       safe[challenge.id] = {
         attempts: Math.min(item.attempts, 100),
         firstCorrect: item.firstCorrect && item.solved,
+        firstDecisionCorrect: typeof item.firstDecisionCorrect === "boolean" ? item.firstDecisionCorrect : undefined,
+        firstReasonCorrect: typeof item.firstReasonCorrect === "boolean" ? item.firstReasonCorrect : undefined,
         solved: item.solved,
         updatedAt: typeof item.updatedAt === "string" ? item.updatedAt : "",
       };

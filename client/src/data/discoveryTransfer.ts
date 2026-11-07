@@ -146,11 +146,21 @@ export type TransferAttempt = {
   firstCorrect: boolean;
   solved: boolean;
   updatedAt: string;
+  /** First submitted pair only; absent in older browser records. Never store selected answers. */
+  firstDecisionCorrect?: boolean;
+  firstReasonCorrect?: boolean;
 };
+
+/** Diagnose the two independent parts without exposing the answer key. */
+export function gradeTransferChallenge(challenge: TransferChallenge, decision: string, reason: string) {
+  const decisionCorrect = challenge.decisions.some(option => option.id === decision)
+    && decision === challenge.correctDecision;
+  const reasonCorrect = challenge.reasons.some(option => option.id === reason)
+    && reason === challenge.correctReason;
+  return { decisionCorrect, reasonCorrect, correct: decisionCorrect && reasonCorrect };
+}
 export function evaluateTransferChallenge(challenge: TransferChallenge, decision: string, reason: string): boolean {
-  return challenge.decisions.some(option => option.id === decision)
-    && challenge.reasons.some(option => option.id === reason)
-    && decision === challenge.correctDecision && reason === challenge.correctReason;
+  return gradeTransferChallenge(challenge, decision, reason).correct;
 }
 export function submitTransferAttempt(
   previous: TransferAttempt | undefined,
@@ -160,11 +170,13 @@ export function submitTransferAttempt(
   at: string,
 ): TransferAttempt {
   if (previous?.solved) return previous;
-  const correct = evaluateTransferChallenge(challenge, decision, reason);
+  const grade = gradeTransferChallenge(challenge, decision, reason);
   return {
     attempts: Math.min((previous?.attempts ?? 0) + 1, 100),
-    firstCorrect: previous ? previous.firstCorrect : correct,
-    solved: Boolean(previous?.solved || correct),
+    firstCorrect: previous ? previous.firstCorrect : grade.correct,
+    firstDecisionCorrect: previous ? previous.firstDecisionCorrect : grade.decisionCorrect,
+    firstReasonCorrect: previous ? previous.firstReasonCorrect : grade.reasonCorrect,
+    solved: Boolean(previous?.solved || grade.correct),
     updatedAt: at,
   };
 }
@@ -184,6 +196,10 @@ export function summarizeTransfer(ageBand: AdventureAgeBand, saved: Record<strin
     solved,
     firstTry: independent,
     improved: entries.filter(row => row.attempt?.solved && !row.attempt.firstCorrect).length,
+    firstActionToRevisit: entries.filter(row => row.attempt?.firstDecisionCorrect === false).length,
+    firstReasonToRevisit: entries.filter(row => row.attempt?.firstReasonCorrect === false).length,
+    firstPairKnown: entries.filter(row => typeof row.attempt?.firstDecisionCorrect === "boolean"
+      && typeof row.attempt?.firstReasonCorrect === "boolean").length,
     completed,
     completedAt: completed && valid ? new Date(Math.max(...timestamps)).toISOString() : null,
     entries,

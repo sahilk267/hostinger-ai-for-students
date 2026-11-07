@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import { buildAdventurePracticeReport } from "../client/src/data/discoveryReport";
 import { ADVENTURE_AGE_BANDS, getAgeAdventureMissions, type AdventureAttempt } from "../client/src/data/discoveryAdventure";
 import {
-  getTransferChallenges, evaluateTransferChallenge, submitTransferAttempt, summarizeTransfer,
+  getTransferChallenges, evaluateTransferChallenge, gradeTransferChallenge, submitTransferAttempt, summarizeTransfer,
   TRANSFER_CHALLENGES, TRANSFER_POLICY_VERSION,
   type TransferAttempt,
 } from "../client/src/data/discoveryTransfer";
@@ -60,6 +60,35 @@ describe("Discovery transfer assessment & private completion journey", () => {
         expect(result).toBe(decision.id===item.correctDecision && reason.id===item.correctReason);
       }
     }
+  });
+
+  it("diagnoses action and explanation separately without saving chosen option IDs", () => {
+    for (const item of TRANSFER_CHALLENGES) {
+      const wrongAction = item.decisions.find(option => option.id !== item.correctDecision)!.id;
+      const wrongReason = item.reasons.find(option => option.id !== item.correctReason)!.id;
+      expect(gradeTransferChallenge(item, wrongAction, item.correctReason))
+        .toEqual({decisionCorrect: false, reasonCorrect: true, correct: false});
+      expect(gradeTransferChallenge(item, item.correctDecision, wrongReason))
+        .toEqual({decisionCorrect: true, reasonCorrect: false, correct: false});
+      expect(gradeTransferChallenge(item, wrongAction, wrongReason))
+        .toEqual({decisionCorrect: false, reasonCorrect: false, correct: false});
+      const first = submitTransferAttempt(undefined, item, item.correctDecision, wrongReason, "2026-11-07T10:00:00Z");
+      expect(first).toMatchObject({firstDecisionCorrect:true, firstReasonCorrect:false, firstCorrect:false});
+      const revised = submitTransferAttempt(first, item, item.correctDecision, item.correctReason, "2026-11-07T11:00:00Z");
+      expect(revised).toMatchObject({solved:true, firstDecisionCorrect:true, firstReasonCorrect:false});
+      expect("decision" in revised).toBe(false);
+      expect("reason" in revised).toBe(false);
+    }
+  });
+
+  it("keeps legacy records compatible and never fabricates old diagnostic evidence", () => {
+    const challenge = getTransferChallenges("11-13")[0];
+    const legacy: TransferAttempt = {attempts:2,firstCorrect:false,solved:false,updatedAt:"2026-11-07T10:00:00Z"};
+    const revised = submitTransferAttempt(legacy,challenge,challenge.correctDecision,challenge.correctReason,"2026-11-07T11:00:00Z");
+    expect(revised.firstDecisionCorrect).toBeUndefined();
+    expect(revised.firstReasonCorrect).toBeUndefined();
+    const report = summarizeTransfer("11-13",{[challenge.id]:revised});
+    expect(report).toMatchObject({solved:1,firstPairKnown:0,firstActionToRevisit:0,firstReasonToRevisit:0});
   });
 
   it("records first-try accuracy separately from eventual completion and ignores repeats after success", () => {
@@ -125,6 +154,8 @@ describe("Discovery transfer assessment & private completion journey", () => {
     expect(ui).toContain("world.guidance.activity[locale]");
     expect(transferUi).toContain('type="radio"');
     expect(transferUi).toContain("evaluateTransferChallenge");
+    expect(transferUi).toContain("copy.noSpoiler");
+    expect(transferUi).toContain("(result?.correct || alreadySolved)");
     expect(page).toContain("TRANSFER_STORAGE_KEY");
     expect(page).toContain("setTransfers({})");
     expect(page).toContain("practiceSolved !== 9");

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, BadgeCheck, BrainCircuit, CheckCircle2, CircleHelp, RotateCcw, ShieldCheck, Sparkles } from "lucide-react";
 import { ADVENTURE_AGE_BANDS, type AdventureAgeBand, type AdventureLocale } from "@/data/discoveryAdventure";
-import { evaluateTransferChallenge, getTransferChallenges, submitTransferAttempt, summarizeTransfer, type TransferAttempt } from "@/data/discoveryTransfer";
+import { evaluateTransferChallenge, gradeTransferChallenge, getTransferChallenges, submitTransferAttempt, summarizeTransfer, type TransferAttempt } from "@/data/discoveryTransfer";
 import "./discoveryCompletion.css";
 
 const words = {
@@ -18,6 +18,10 @@ const words = {
     first: "First-try solutions", completed: "All three transfer challenges solved!",
     note: "Both the decision and its explanation must be correct. A retry counts as improvement, not as a first-try solution.",
     parent: "Try this together at home", progress: "Challenges solved", done: "Already solved",
+    reviewBoth: "Recheck the action AND why it helps. Try a different pair.",
+    reviewAction: "Revisit the action. Think about the next practical step.",
+    reviewReason: "Revisit the reason. Does it explain why your action works?",
+    noSpoiler: "The worked explanation appears after both parts are solved, so you can try again independently.",
   },
   hi: {
     eyebrow: "अगला स्तर · सीखी बातें लागू करें",
@@ -32,6 +36,10 @@ const words = {
     first: "पहले प्रयास में सही", completed: "तीनों नई चुनौतियाँ हल हुईं!",
     note: "निर्णय और कारण दोनों सही चाहिए। फिर प्रयास में सही होना सुधार है, पहली बार सही होना नहीं।",
     parent: "घर पर साथ में आज़माएँ", progress: "हल हुई चुनौतियाँ", done: "पहले से हल है",
+    reviewBoth: "निर्णय और उसका कारण दोनों फिर जाँचें। एक नया जोड़ा चुनें।",
+    reviewAction: "निर्णय दोबारा सोचें। अगला उपयोगी कदम क्या है?",
+    reviewReason: "कारण दोबारा सोचें। यह निर्णय क्यों मदद करेगा?",
+    noSpoiler: "दोनों हिस्से सही होने के बाद पूरा समाधान दिखेगा, ताकि आप खुद फिर कोशिश कर सकें।",
   },
   hinglish: {
     eyebrow: "NEXT LEVEL · JO SEEKHA USE APPLY KARO",
@@ -46,6 +54,10 @@ const words = {
     first: "First-try solutions", completed: "Saare 3 transfer challenges solve ho gaye!",
     note: "Decision aur reason dono correct chahiye. Retry improvement hai, first-try success nahi.",
     parent: "Ghar par saath try karo", progress: "Challenges solved", done: "Already solved",
+    reviewBoth: "Action aur reason dono phir check karo. Naya pair try karo.",
+    reviewAction: "Action revise karo. Practical next step kya hoga?",
+    reviewReason: "Reason revise karo. Kya ye explain karta hai ki action helpful kyon hai?",
+    noSpoiler: "Dono parts solve hone ke baad hi full explanation dikhega, taaki aap khud retry kar sako.",
   },
 } as const;
 
@@ -62,7 +74,7 @@ export default function DiscoveryTransferAssessment({ ageBand, locale, saved, on
   const [active, setActive] = useState(0);
   const [decision, setDecision] = useState("");
   const [reason, setReason] = useState("");
-  const [result, setResult] = useState<boolean | null>(null);
+  const [result, setResult] = useState<ReturnType<typeof gradeTransferChallenge> | null>(null);
   const current = challenges[active];
   const copy = words[locale];
   const summary = summarizeTransfer(ageBand, saved);
@@ -81,7 +93,7 @@ export default function DiscoveryTransferAssessment({ ageBand, locale, saved, on
     if (!decision || !reason || alreadySolved || result !== null) return;
     const correct = evaluateTransferChallenge(current, decision, reason);
     onSave(current.id, submitTransferAttempt(saved[current.id], current, decision, reason, new Date().toISOString()));
-    setResult(correct);
+    setResult({ ...gradeTransferChallenge(current, decision, reason), correct });
   };
   const goNext = () => {
     const next = challenges.findIndex((challenge, index) => index > active && !saved[challenge.id]?.solved);
@@ -128,13 +140,18 @@ export default function DiscoveryTransferAssessment({ ageBand, locale, saved, on
       </fieldset>
 
       {result === null && !alreadySolved && <button type="button" className="da-primary-action" onClick={check} disabled={!decision || !reason}>{copy.check}<ArrowRight size={17} /></button>}
-      {(result !== null || alreadySolved) && <div className={"dc-transfer-feedback" + (result === false ? " is-revise" : "")} role="status" aria-live="polite">
-        <strong>{result === false ? <RotateCcw size={18}/> : <BadgeCheck size={19}/>} {result === false ? copy.retry : copy.correct}</strong>
-        <p><b>{copy.answer}:</b> {current.explanation[locale]}</p>
-        <p><b>{copy.parent}:</b> {current.parentActivity[locale]}</p>
+      {(result !== null || alreadySolved) && <div className={"dc-transfer-feedback" + (result?.correct === false ? " is-revise" : "")} role="status" aria-live="polite">
+        <strong>{result?.correct === false ? <RotateCcw size={18}/> : <BadgeCheck size={19}/>} {result?.correct === false ? copy.retry : copy.correct}</strong>
+        {(result?.correct || alreadySolved) ? <>
+          <p><b>{copy.answer}:</b> {current.explanation[locale]}</p>
+          <p><b>{copy.parent}:</b> {current.parentActivity[locale]}</p>
+        </> : <>
+          <p>{!result.decisionCorrect && !result.reasonCorrect ? copy.reviewBoth : !result.decisionCorrect ? copy.reviewAction : copy.reviewReason}</p>
+          <p className="dc-transfer-no-spoiler">{copy.noSpoiler}</p>
+        </>}
         <div className="dc-transfer-feedback-actions">
-          {result === false && <button className="da-secondary-action" type="button" onClick={() => {setDecision("");setReason("");setResult(null)}}><RotateCcw size={16}/>{copy.retryButton}</button>}
-          {(result === true || alreadySolved) && <button className="da-primary-action" type="button" onClick={goNext}>{summary.completed ? copy.report : copy.next}<ArrowRight size={16}/></button>}
+          {result?.correct === false && <button className="da-secondary-action" type="button" onClick={() => {setDecision("");setReason("");setResult(null)}}><RotateCcw size={16}/>{copy.retryButton}</button>}
+          {(result?.correct === true || alreadySolved) && <button className="da-primary-action" type="button" onClick={goNext}>{summary.completed ? copy.report : copy.next}<ArrowRight size={16}/></button>}
         </div>
       </div>}
     </article>
