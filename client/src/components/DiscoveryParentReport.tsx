@@ -189,6 +189,21 @@ export default function DiscoveryParentReport({ ageBand, locale, attempts, trans
         </div>
       </div>
 
+      <section className="dc-assessment-overview" aria-labelledby="dc-assessment-overview-title">
+        <div className="dc-assessment-heading"><span className="dc-assessment-icon"><BrainCircuit size={25}/></span><div>
+          <span className="dc-completion-eyebrow">NEXT LEVEL · ACTION + REASON</span>
+          <h3 id="dc-assessment-overview-title">{copy.assessmentTitle}</h3><p>{copy.assessmentIntro}</p>
+        </div></div>
+        <div className="dc-assessment-stats">
+          <div><strong>{report.transfer.solved}/{report.transfer.total}</strong><span>{copy.assessmentProgress}</span></div>
+          <div><strong>{report.transfer.firstTry}/{report.transfer.total}</strong><span>{copy.assessmentFirst}</span></div>
+        </div>
+        <div className="dc-progress"><span style={{width: (report.transfer.solved / Math.max(report.transfer.total,1)*100)+"%"}}/></div>
+        {report.completed ? <button type="button" className="da-primary-action" onClick={onStartAssessment}>
+          {report.transfer.attempted ? copy.assessmentContinue : copy.assessmentStart} <ArrowRight size={17}/>
+        </button> : <p className="dc-assessment-lock"><LockKeyhole size={17}/>{copy.assessmentLocked}</p>}
+      </section>
+
       <section aria-labelledby="da-world-report-heading" className="da-world-evidence">
         <h3 id="da-world-report-heading">{copy.byWorld}</h3>
         <div className="da-report-grid">
@@ -211,6 +226,16 @@ export default function DiscoveryParentReport({ ageBand, locale, attempts, trans
         </div>
       </section>
 
+      <section className="dc-parent-guidance" aria-labelledby="dc-improvement-heading">
+        <div className="dc-guidance-head"><BookOpen size={25}/><div><h3 id="dc-improvement-heading">{copy.improvementHeading}</h3><p>{copy.guidanceNote}</p></div></div>
+        <div className="dc-guidance-grid">{report.worldDetails.map(world => <article className="dc-guidance-card" key={world.id}>
+          <div className="dc-guidance-card-title"><span aria-hidden="true">{world.icon}</span><h4>{world.title[locale]}</h4></div>
+          <strong>{copy.observation}</strong><p>{world.guidance.observation[locale]}</p>
+          {world.transfer?.attempt && <p className="dc-guidance-transfer">{copy.assessmentProgress}: {world.transfer.attempt.solved ? "✓ 1/1" : "0/1"}</p>}
+          <strong>{copy.nextAtHome}</strong><p>{world.guidance.activity[locale]}</p>
+        </article>)}</div>
+      </section>
+
       <section className="da-parent-conversation" aria-labelledby="da-conversation-heading">
         <div className="da-panel-heading"><span>💬</span><div><h3 id="da-conversation-heading">{copy.parent}</h3><p>{copy.parentNote}</p></div></div>
         {report.worldDetails.map((world) => <p key={world.id}><strong>{world.title[locale]}:</strong> {world.familyPrompt[locale]}</p>)}
@@ -227,13 +252,14 @@ export default function DiscoveryParentReport({ ageBand, locale, attempts, trans
         <button className="da-primary-action" type="button" onClick={() => onOpen(report.nextMission!)}>{copy.open}<ArrowRight size={16} /></button>
       </section>}
 
-      <section className={"da-local-milestone" + (report.completed ? " is-earned" : "")} aria-label={report.completed ? copy.completed : copy.pending}>
+      <section className={"da-local-milestone dc-showcase-section" + (report.showcaseReady ? " is-earned" : "")} aria-label={copy.showcaseTitle}>
         <div className="da-milestone-symbol"><Award size={36} aria-hidden="true" /></div>
         <div>
           <span className="da-eyebrow">DISCOVERY UNIVERSE · LOCAL PRACTICE MILESTONE</span>
-          <h3>{report.completed ? copy.completed : copy.pending}</h3>
-          <p>{report.completed ? copy.earned : remaining + " " + copy.remaining + ". " + copy.noClaim}</p>
-          {completedDate && <p><strong>{copy.issued}:</strong> {completedDate}</p>}
+          <h3>{copy.showcaseTitle}</h3>
+          <p>{report.showcaseReady ? copy.showcaseReady : copy.showcasePending}</p>
+          <p>{copy.milestoneOnly}</p>
+          {report.showcaseReady && <button className="da-primary-action" type="button" onClick={() => setShowMilestone(true)}><Award size={17}/>{copy.showcaseButton}</button>}
           <strong className="da-noncredential">{copy.notCredential}</strong>
         </div>
       </section>
