@@ -129,7 +129,7 @@ export default function Home() {
               <p className="hero-lede">A clear, useful place for students and curious learners to understand AI, build better habits and get unstuck—without handing over the work that makes learning matter.</p>
               <div className="hero-actions">
                 <a href="/mission" className="button button--primary">Solve a real task <ArrowUpRight size={16} /></a>
-                <a href="#prompts" className="text-link">Browse prompts <ChevronRight size={16} /></a><a href="/journey" className="text-link">Start 30-day journey <ChevronRight size={16} /></a><a href="/explorer" className="text-link">Explore your strengths <ChevronRight size={16} /></a>
+                <a href="#prompts" className="text-link">Browse prompts <ChevronRight size={16} /></a><a href="/journey" className="text-link">Start 30-day journey <ChevronRight size={16} /></a><a href="/explorer/adventure" className="text-link">Try Discovery Adventure <ChevronRight size={16} /></a>
               </div>
               <div className="hero-note"><span className="note-pin" /> No hype. No shortcuts. Just useful next steps.</div>
             </div>

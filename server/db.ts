@@ -1,9 +1,10 @@
-import { and, eq, isNull } from "drizzle-orm";
-import { createHash, randomBytes } from "node:crypto";
+import { and, eq, isNull, sql, gt, lt, ne, desc } from "drizzle-orm";
+import { EXPLORER_PILOT_MISSIONS } from "../client/src/data/explorerLab";
+import { createHash, createHmac, randomBytes } from "node:crypto";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
+import { InsertUser, authEmailChallenges, discoveryCheckpoints, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
 import { ENV, describeDatabaseConfig } from './_core/env';
-import { gt, desc } from "drizzle-orm";
+
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -142,6 +143,13 @@ export async function deleteLearningProgressForUser(userId: number) {
 export async function deleteUserAccount(userId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
+  const account = await db.select({ email: users.email }).from(users).where(eq(users.id, userId)).limit(1);
+  if (account[0]?.email && ENV.cookieSecret) {
+    const emailKey = createHmac("sha256", ENV.cookieSecret)
+      .update("email:" + account[0].email.trim().toLowerCase()).digest("hex");
+    await db.delete(authEmailChallenges).where(eq(authEmailChallenges.emailKey, emailKey));
+  }
+  // Foreign keys cascade account-owned checkpoint records, profiles, attempts and shares.
   await db.delete(users).where(eq(users.id, userId));
 }
 
@@ -166,6 +174,10 @@ export async function createExplorerProfile(input: {
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
+  // Prevent accidental proliferation of identifying child profiles on shared accounts.
+  const active = await db.select({ id: explorerProfiles.id }).from(explorerProfiles)
+    .where(and(eq(explorerProfiles.userId, input.userId), isNull(explorerProfiles.deletedAt)));
+  if (active.length >= 5) throw new Error("Maximum five learner profiles per account");
   const now = new Date();
   const [created] = await db.insert(explorerProfiles).values({ ...input, consentAt: now });
   return { id: Number(created.insertId), ...input, consentAt: now };
@@ -187,6 +199,10 @@ export async function saveExplorerAttempt(input: {
   if (!db) throw new Error("Database is not available");
   const profile = await db.select().from(explorerProfiles).where(and(eq(explorerProfiles.id, input.profileId), eq(explorerProfiles.userId, input.userId), isNull(explorerProfiles.deletedAt))).limit(1);
   if (!profile[0]) throw new Error("Explorer profile not found");
+  const authoredMission = EXPLORER_PILOT_MISSIONS.find((mission) => mission.id === input.missionId);
+  if (!authoredMission || authoredMission.ageBand !== profile[0].ageBand) {
+    throw new Error("Mission does not belong to this learner's age band");
+  }
   const [created] = await db.insert(explorerAttempts).values({
     profileId: input.profileId,
     missionId: input.missionId,
@@ -233,6 +249,152 @@ export async function revokeExplorerShare(userId: number, shareId: number) {
 export async function softDeleteExplorerProfile(userId: number, profileId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
-  await db.update(explorerProfiles).set({ deletedAt: new Date() }).where(and(eq(explorerProfiles.id, profileId), eq(explorerProfiles.userId, userId)));
+  // Permanent account-owned deletion, cascading to evidence and share tokens.
+  await db.delete(explorerProfiles).where(and(eq(explorerProfiles.id, profileId), eq(explorerProfiles.userId, userId)));
 }
 
+
+/** Account-owned server-checked preview. These records do not identify a learner. */
+export async function listDiscoveryCheckpointsForAccount(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  return db.select({
+    ageBand: discoveryCheckpoints.ageBand,
+    challengeId: discoveryCheckpoints.challengeId,
+    attempts: discoveryCheckpoints.attempts,
+    solvedAt: discoveryCheckpoints.solvedAt,
+  }).from(discoveryCheckpoints).where(eq(discoveryCheckpoints.userId, userId));
+}
+
+export async function submitDiscoveryCheckpoint(input: {
+  userId: number;
+  ageBand: "8-10" | "11-13" | "14-17";
+  challengeId: string;
+  correct: boolean;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const MAX_CHECKS = 12;
+  // One atomic statement per attempt, even on shared hosting with multiple processes.
+  // The per-account challenge unique index serializes concurrent upserts in MySQL.
+  await db.insert(discoveryCheckpoints).values({
+    userId: input.userId,
+    ageBand: input.ageBand,
+    challengeId: input.challengeId,
+    attempts: 1,
+    solvedAt: input.correct ? new Date() : null,
+  }).onDuplicateKeyUpdate({
+    set: {
+      attempts: sql`LEAST(${discoveryCheckpoints.attempts} + 1, ${MAX_CHECKS + 1})`,
+      ...(input.correct ? {
+        solvedAt: sql`CASE WHEN ${discoveryCheckpoints.attempts} < ${MAX_CHECKS} THEN COALESCE(${discoveryCheckpoints.solvedAt}, CURRENT_TIMESTAMP) ELSE ${discoveryCheckpoints.solvedAt} END`,
+      } : {}),
+    },
+  });
+  const rows = await db.select({
+    attempts: discoveryCheckpoints.attempts,
+    solvedAt: discoveryCheckpoints.solvedAt,
+  }).from(discoveryCheckpoints).where(and(
+    eq(discoveryCheckpoints.userId, input.userId),
+    eq(discoveryCheckpoints.challengeId, input.challengeId),
+  )).limit(1);
+  return { attempts: rows[0]?.attempts ?? 0, solved: Boolean(rows[0]?.solvedAt), limitReached: (rows[0]?.attempts ?? 0) > MAX_CHECKS };
+}
+
+export async function deleteDiscoveryCheckpointsForAccount(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.delete(discoveryCheckpoints).where(eq(discoveryCheckpoints.userId, userId));
+}
+
+/** Reserve one pending OTP per email; the cooldown update is atomic across processes. */
+export async function reserveEmailLoginChallenge(input: {
+  emailKey: string; challengeId: string; codeHash: string; now: Date; expiresAt: Date;
+}): Promise<boolean> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const cooldownCutoff = new Date(input.now.getTime() - 60_000);
+  const r = authEmailChallenges;
+  await db.insert(r).values({
+    emailKey: input.emailKey, challengeId: input.challengeId, codeHash: input.codeHash,
+    expiresAt: input.expiresAt, requestedAt: input.now, attempts: 0,
+  }).onDuplicateKeyUpdate({ set: {
+    // Compare requestedAt BEFORE modifying it; field order matters in MySQL.
+    challengeId: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, ${input.challengeId}, ${r.challengeId})`,
+    codeHash: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, ${input.codeHash}, ${r.codeHash})`,
+    expiresAt: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, ${input.expiresAt}, ${r.expiresAt})`,
+    attempts: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, 0, ${r.attempts})`,
+    consumedAt: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, NULL, ${r.consumedAt})`,
+    requestedAt: sql`IF(${r.requestedAt} <= ${cooldownCutoff}, ${input.now}, ${r.requestedAt})`,
+  }});
+  const records = await db.select({ challengeId: r.challengeId }).from(r)
+    .where(eq(r.emailKey, input.emailKey)).limit(1);
+  return records[0]?.challengeId === input.challengeId;
+}
+
+/** Only the correct code can atomically consume a live challenge, at most once. */
+export async function consumeEmailLoginChallenge(input: {
+  emailKey: string; challengeId: string; codeHash: string; now: Date;
+}): Promise<boolean> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const r = authEmailChallenges;
+  const live = and(eq(r.emailKey, input.emailKey), eq(r.challengeId, input.challengeId),
+    isNull(r.consumedAt), gt(r.expiresAt, input.now), lt(r.attempts, 5));
+  const [accepted] = await db.update(r).set({
+    attempts: sql`${r.attempts} + 1`, consumedAt: input.now,
+  }).where(and(live, eq(r.codeHash, input.codeHash)));
+  if (accepted.affectedRows === 1) return true;
+  // Wrong answer increments an atomically bounded counter without consuming the challenge.
+  await db.update(r).set({ attempts: sql`${r.attempts} + 1` })
+    .where(and(live, ne(r.codeHash, input.codeHash)));
+  return false;
+}
+
+/** If mail delivery fails, invalidate only the reservation created by that request. */
+export async function cancelEmailLoginChallenge(emailKey: string, challengeId: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(authEmailChallenges).where(and(
+    eq(authEmailChallenges.emailKey, emailKey),
+    eq(authEmailChallenges.challengeId, challengeId),
+  ));
+}
+
+
+/**
+ * Private data export: includes the account's originally submitted learning
+ * evidence, so "download my data" is not limited to the game score table.
+ */
+export async function exportExplorerRecordsForAccount(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const profiles = await db.select().from(explorerProfiles)
+    .where(eq(explorerProfiles.userId, userId));
+  const attempts = await db.select({
+    id: explorerAttempts.id,
+    profileId: explorerAttempts.profileId,
+    missionId: explorerAttempts.missionId,
+    attemptNumber: explorerAttempts.attemptNumber,
+    difficulty: explorerAttempts.difficulty,
+    language: explorerAttempts.language,
+    accessibilityMode: explorerAttempts.accessibilityMode,
+    evidenceJson: explorerAttempts.evidenceJson,
+    observationJson: explorerAttempts.observationJson,
+    startedAt: explorerAttempts.startedAt,
+    completedAt: explorerAttempts.completedAt,
+  }).from(explorerAttempts).innerJoin(explorerProfiles,
+    eq(explorerAttempts.profileId, explorerProfiles.id))
+    .where(eq(explorerProfiles.userId, userId));
+  const shares = await db.select({
+    id: explorerShares.id,
+    profileId: explorerShares.profileId,
+    summaryJson: explorerShares.summaryJson,
+    expiresAt: explorerShares.expiresAt,
+    revokedAt: explorerShares.revokedAt,
+    createdAt: explorerShares.createdAt,
+  }).from(explorerShares).innerJoin(explorerProfiles,
+    eq(explorerShares.profileId, explorerProfiles.id))
+    .where(eq(explorerProfiles.userId, userId));
+  return { profiles, attempts, shares };
+}

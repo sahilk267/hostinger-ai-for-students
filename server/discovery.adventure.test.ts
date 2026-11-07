@@ -1,0 +1,180 @@
+import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { ADVENTURE_LOCALES, ADVENTURE_AGE_BANDS, ADVENTURE_MISSIONS, ALL_ADVENTURE_MISSIONS, ADVENTURE_WORLDS, evaluateAdventureAnswer, shuffledAdventureOptions, summarizeAdventure, chooseAdventureNextPractice, getAgeAdventureMissions, type AdventureAttempt } from "../client/src/data/discoveryAdventure";
+
+const page = readFileSync(resolve(process.cwd(), "client/src/pages/DiscoveryAdventurePage.tsx"), "utf8");
+const router = readFileSync(resolve(process.cwd(), "client/src/App.tsx"), "utf8");
+const css = readFileSync(resolve(process.cwd(), "client/src/pages/discoveryAdventure.css"), "utf8");
+const scene = readFileSync(resolve(process.cwd(), "client/src/components/DiscoveryEvidenceScene.tsx"), "utf8");
+const ageScene = readFileSync(resolve(process.cwd(), "client/src/components/DiscoveryAgeEvidenceScene.tsx"), "utf8");
+
+describe("Discovery Adventure pilot", () => {
+  it("covers three worlds with three unique missions each", () => {
+    expect(ADVENTURE_WORLDS).toHaveLength(3);
+    expect(ADVENTURE_MISSIONS).toHaveLength(9);
+    expect(new Set(ADVENTURE_MISSIONS.map((mission) => mission.id)).size).toBe(9);
+    for (const world of ADVENTURE_WORLDS) {
+      expect(ADVENTURE_MISSIONS.filter((mission) => mission.world === world.id)).toHaveLength(3);
+    }
+  });
+
+
+  it("has 27 original missions across 3 age bands, without leaking progress across ages", () => {
+    expect(ADVENTURE_AGE_BANDS.map((item) => item.id)).toEqual(["8-10", "11-13", "14-17"]);
+    expect(ALL_ADVENTURE_MISSIONS).toHaveLength(27);
+    expect(new Set(ALL_ADVENTURE_MISSIONS.map((mission) => mission.id)).size).toBe(27);
+    for (const band of ADVENTURE_AGE_BANDS) {
+      const missions = getAgeAdventureMissions(band.id);
+      expect(missions).toHaveLength(9);
+      for (const world of ADVENTURE_WORLDS) {
+        expect(missions.filter((mission) => mission.world === world.id)).toHaveLength(3);
+      }
+      for (const locale of ADVENTURE_LOCALES) {
+        expect(band.label[locale.id].length).toBeGreaterThan(8);
+        expect(band.tagline[locale.id].length).toBeGreaterThan(12);
+      }
+    }
+    const junior = getAgeAdventureMissions("8-10")[0];
+    const teenager = getAgeAdventureMissions("14-17")[0];
+    expect(junior.story.en).not.toBe(teenager.story.en);
+    const a: AdventureAttempt = { firstCorrect: true, firstIndependent: true, bestCorrect: true, attempts: 1, hintsUsed: 0, enjoyed: true, updatedAt: "2026-11-06" };
+    const mixed = { [junior.id]: a, [teenager.id]: a };
+    expect(summarizeAdventure(mixed, "8-10").reduce((sum, world) => sum + world.practiced, 0)).toBe(1);
+    expect(summarizeAdventure(mixed, "14-17").reduce((sum, world) => sum + world.practiced, 0)).toBe(1);
+    expect(summarizeAdventure(mixed, "11-13").reduce((sum, world) => sum + world.practiced, 0)).toBe(0);
+    expect(chooseAdventureNextPractice(mixed, "8-10").mission?.ageBand).toBe("8-10");
+    expect(chooseAdventureNextPractice(mixed, "14-17").mission?.ageBand).toBe("14-17");
+  });
+
+  it("keeps all 27 age-specific missions playable and fully localized", () => {
+    for (const mission of ALL_ADVENTURE_MISSIONS) {
+      expect(mission.options.length).toBeGreaterThanOrEqual(3);
+      expect(new Set(mission.options.map((option) => option.id)).size).toBe(mission.options.length);
+      expect(new Set(mission.answer).size).toBe(mission.answer.length);
+      expect(mission.answer.length).toBeLessThanOrEqual(mission.options.length);
+      expect(evaluateAdventureAnswer(mission, mission.answer)).toBe(true);
+      expect(evaluateAdventureAnswer(mission, ["wrong-id"])).toBe(false);
+      for (const locale of ADVENTURE_LOCALES) {
+        expect(mission.title[locale.id].length).toBeGreaterThan(5);
+        expect(mission.story[locale.id].length).toBeGreaterThan(20);
+        expect(mission.instruction[locale.id].length).toBeGreaterThan(10);
+        expect(mission.feedback[locale.id].length).toBeGreaterThan(20);
+        expect(mission.hint[locale.id].length).toBeGreaterThan(15);
+        for (const option of mission.options) expect(option.label[locale.id].trim().length).toBeGreaterThanOrEqual(3);
+      }
+      const shuffled = shuffledAdventureOptions(mission, 128);
+      expect(new Set(shuffled.map((option) => option.id))).toEqual(new Set(mission.options.map((option) => option.id)));
+      if (mission.mode === "sequence") expect(shuffled.map((option) => option.id)).not.toEqual(mission.answer);
+    }
+  });
+
+  it("provides meaningful English, Hindi and Hinglish strings for all playable content", () => {
+    expect(ADVENTURE_LOCALES.map((locale) => locale.id)).toEqual(["hinglish", "hi", "en"]);
+    for (const mission of ADVENTURE_MISSIONS) {
+      for (const locale of ADVENTURE_LOCALES) {
+        expect(mission.title[locale.id].length).toBeGreaterThan(5);
+        expect(mission.story[locale.id].length).toBeGreaterThan(20);
+        expect(mission.instruction[locale.id].length).toBeGreaterThan(10);
+        expect(mission.feedback[locale.id].length).toBeGreaterThan(20);
+        expect(mission.hint[locale.id].length).toBeGreaterThan(15);
+        for (const option of mission.options) expect(option.label[locale.id].length).toBeGreaterThan(4);
+      }
+    }
+  });
+
+  it("has validated answer contracts and supports sequence, single and multi modes", () => {
+    expect(new Set(ADVENTURE_MISSIONS.map((mission) => mission.mode))).toEqual(new Set(["sequence", "single", "multi"]));
+    for (const mission of ADVENTURE_MISSIONS) {
+      expect(mission.options.length).toBeGreaterThanOrEqual(3);
+      expect(new Set(mission.options.map((item) => item.id)).size).toBe(mission.options.length);
+      expect(mission.answer.length).toBeGreaterThan(0);
+      expect(evaluateAdventureAnswer(mission, mission.answer)).toBe(true);
+      expect(evaluateAdventureAnswer(mission, [...mission.answer, mission.answer[0]])).toBe(false);
+      expect(evaluateAdventureAnswer(mission, ["not-an-option"])).toBe(false);
+      if (mission.mode === "single") expect(mission.answer).toHaveLength(1);
+      if (mission.mode === "multi") {
+        expect(mission.answer.length).toBeGreaterThan(1);
+        expect(evaluateAdventureAnswer(mission, [...mission.answer].reverse())).toBe(true);
+      }
+      if (mission.mode === "sequence") {
+        expect(mission.answer.length).toBeGreaterThan(1);
+        expect(evaluateAdventureAnswer(mission, [...mission.answer].reverse())).toBe(false);
+      }
+    }
+  });
+
+  it("shuffles option cards deterministically without accidentally revealing ordered answers", () => {
+    for (const mission of ADVENTURE_MISSIONS) {
+      const reordered = shuffledAdventureOptions(mission, 197);
+      expect(reordered).toHaveLength(mission.options.length);
+      expect(new Set(reordered.map((item) => item.id))).toEqual(new Set(mission.options.map((item) => item.id)));
+      expect(shuffledAdventureOptions(mission, 197)).toEqual(reordered);
+      if (mission.mode === "sequence") {
+        expect(reordered.map((item) => item.id)).not.toEqual(mission.answer);
+        expect(evaluateAdventureAnswer(mission, reordered.map((item) => item.id))).toBe(false);
+      }
+    }
+  });
+
+  it("summarizes only observed mission attempts, independent practice and explicit enjoyment", () => {
+    const first = ADVENTURE_MISSIONS[0];
+    const second = ADVENTURE_MISSIONS[1];
+    const records: Record<string, AdventureAttempt> = {
+      [first.id]: { firstCorrect: true, firstIndependent: true, bestCorrect: true, attempts: 1, hintsUsed: 0, enjoyed: true, updatedAt: "2026-11-06" },
+      [second.id]: { firstCorrect: false, firstIndependent: false, bestCorrect: true, attempts: 2, hintsUsed: 1, enjoyed: null, updatedAt: "2026-11-06" },
+    };
+    const result = summarizeAdventure(records);
+    expect(result[0]).toMatchObject({ practiced: 2, firstTryCorrect: 1, firstIndependent: 1, revisedToCorrect: 1, hintedAttempts: 1, solvedWithPractice: 2, enjoyed: 1 });
+    expect(result[1]).toMatchObject({ practiced: 0, firstTryCorrect: 0, solvedWithPractice: 0, enjoyed: 0 });
+    expect(result[2]).toMatchObject({ practiced: 0, firstTryCorrect: 0, solvedWithPractice: 0, enjoyed: 0 });
+  });
+
+  it("recommends unsolved practice before new content and never invents an interest", () => {
+    const [first, second] = ADVENTURE_MISSIONS;
+    const one: AdventureAttempt = { firstCorrect: false, firstIndependent: false, bestCorrect: false, attempts: 1, hintsUsed: 1, enjoyed: null, updatedAt: "2026-11-06" };
+    const next = chooseAdventureNextPractice({ [first.id]: one });
+    expect(next.mission?.id).toBe(first.id);
+    expect(next.isRetry).toBe(true);
+    expect(next.enjoyedWorld).toBeNull();
+    const afterSuccess = chooseAdventureNextPractice({ [first.id]: { ...one, bestCorrect: true, enjoyed: true } });
+    expect(afterSuccess.mission?.id).toBe(second.id);
+    expect(afterSuccess.isRetry).toBe(false);
+    expect(afterSuccess.enjoyedWorld?.id).toBe(first.world);
+    const allSolved = Object.fromEntries(ADVENTURE_MISSIONS.map((mission) => [mission.id, { ...one, bestCorrect: true }]));
+    expect(chooseAdventureNextPractice(allSolved).mission).toBeNull();
+  });
+
+  it("is routed, accessible and explicitly avoids child profiling claims", () => {
+    expect(router).toContain('path="/explorer/adventure"');
+    expect(page).toContain('aria-live="polite"');
+    expect(page).toContain("aria-pressed");
+    expect(page).toContain("localStorage");
+    expect(page).toContain("shuffledAdventureOptions");
+    expect(page).toContain("hintOpen");
+    expect(page).toContain("firstIndependent");
+    expect(page).toContain("clearLocalPractice");
+    expect(page).toContain("<DiscoveryParentReport");
+    expect(page).toContain("chooseBand");
+    expect(page).toContain("getAgeAdventureMissions");
+    expect(page).toContain("bandCopy.label[locale]");
+    expect(page).toContain("not an accredited certificate");
+    expect(page).not.toContain("createShare.mutate");
+    expect(page).not.toContain("trpc.");
+    expect(css).toContain("prefers-reduced-motion: reduce");
+    expect(css).toContain("@media print");
+    expect(page).toContain("DiscoveryEvidenceScene");
+    expect(scene).toContain('missionId === "chart-trap"');
+    expect(scene).toContain('missionId === "rover-rescue"');
+    expect(scene).toContain('id === "poster-upgrade"');
+    expect(scene).toContain('missionId === "viral-claim"');
+    expect(scene).toContain("not real survey data");
+    expect(scene).not.toContain("fetch(");
+    expect(page).toContain("DiscoveryAgeEvidenceScene");
+    for (const id of ["garden-robot-8-10", "pattern-patrol-8-10", "weather-poster-8-10", "sample-bias-14-17", "accessible-study-app-14-17", "correlation-check-14-17"]) {
+      expect(ageScene).toContain(id);
+    }
+    expect(ageScene).toContain("Fictional survey");
+    expect(ageScene).not.toContain("fetch(");
+  });
+});

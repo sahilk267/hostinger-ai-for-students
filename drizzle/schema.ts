@@ -93,3 +93,37 @@ export const explorerShares = mysqlTable("explorerShares", {
 
 export type ExplorerShare = typeof explorerShares.$inferSelect;
 export type InsertExplorerShare = typeof explorerShares.$inferInsert;
+
+/**
+ * Account-owned proof of participation in a server-checked practice preview.
+ * No child identity, answers, free-text evidence, DOB or claims of accreditation.
+ * Opt-in adult acknowledgement required for mutation; NOT guardian verification.
+ */
+export const discoveryCheckpoints = mysqlTable("discoveryCheckpoints", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  ageBand: mysqlEnum("ageBand", ["8-10", "11-13", "14-17"]).notNull(),
+  challengeId: varchar("challengeId", { length: 64 }).notNull(),
+  attempts: int("attempts").default(0).notNull(),
+  solvedAt: timestamp("solvedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  accountChallengeUnique: uniqueIndex("discoveryCheckpoints_user_challenge_unique").on(table.userId, table.challengeId),
+}));
+
+
+/**
+ * Database-enforced, one-time email login challenges.
+ * Only HMAC email identifiers and HMAC code digests are stored; no OTP plaintext.
+ * An email identifier is UNIQUE so cooldown applies across Node processes.
+ */
+export const authEmailChallenges = mysqlTable("authEmailChallenges", {
+  emailKey: varchar("emailKey", { length: 64 }).primaryKey(),
+  challengeId: varchar("challengeId", { length: 64 }).notNull().unique(),
+  codeHash: varchar("codeHash", { length: 64 }).notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  requestedAt: timestamp("requestedAt").defaultNow().notNull(),
+  attempts: int("attempts").default(0).notNull(),
+  consumedAt: timestamp("consumedAt"),
+});
