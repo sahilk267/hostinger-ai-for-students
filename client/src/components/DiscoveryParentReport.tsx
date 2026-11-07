@@ -1,4 +1,7 @@
-import { ArrowLeft, ArrowRight, Award, CheckCircle2, FileText, LockKeyhole, Printer, RotateCcw, Sparkles, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, ArrowRight, Award, CheckCircle2, FileText, LockKeyhole, Printer, RotateCcw, Sparkles, Trash2, BrainCircuit, BookOpen } from "lucide-react";
+import DiscoveryMilestone from "./DiscoveryMilestone";
+import type { TransferAttempt } from "@/data/discoveryTransfer";
 import {
   PRACTICE_STATUS_LABELS,
   buildAdventurePracticeReport,
@@ -39,6 +42,13 @@ const ui = {
     back: "Back to world map", noClaim: "No completion milestone is awarded for simply opening or attempting every activity.",
     noteAll: "Shared-device reminder: records from multiple children can mix in this browser. Clear them before another learner.",
     skill: "Practice area",
+    assessmentTitle: "Apply your thinking in new situations", assessmentIntro: "Three fresh situations need both a decision and a supporting reason.",
+    assessmentLocked: "Solve all nine practice missions to unlock these new scenarios.", assessmentStart: "Start Thinking Challenge", assessmentContinue: "Continue Thinking Challenge",
+    assessmentFirst: "First-try transfer solutions", assessmentProgress: "New challenges solved",
+    improvementHeading: "Where to focus next · 10-minute activities", observation: "What the practice shows", nextAtHome: "Try this at home",
+    guidanceNote: "Based only on these few practice attempts. Not a diagnosis, talent label, career recommendation or prediction of future success.",
+    showcaseTitle: "Private completion showcase", showcaseReady: "Your 12-task local learning milestone is ready.", showcasePending: "Solve nine practice missions and three transfer challenges to open the showcase.", showcaseButton: "View printable learning milestone",
+    milestoneOnly: "Private browser-local practice recognition, not an official credential.",
   },
   hi: {
     eyebrow: "निजी सीखने का रिकॉर्ड · डेमो",
@@ -72,6 +82,13 @@ const ui = {
     back: "दुनिया के नक्शे पर वापस", noClaim: "सिर्फ सभी गतिविधियाँ खोलने या आज़माने से उपलब्धि नहीं मिलेगी।",
     noteAll: "साझा डिवाइस पर अलग बच्चों के परिणाम मिल सकते हैं। अगले विद्यार्थी से पहले मिटाएँ।",
     skill: "अभ्यास क्षेत्र",
+    assessmentTitle: "नए हालात में सोच आज़माएँ", assessmentIntro: "तीन नई चुनौतियों में निर्णय और उसका कारण दोनों चुनें।",
+    assessmentLocked: "नई चुनौतियाँ खोलने के लिए सभी नौ अभ्यास मिशन हल करें।", assessmentStart: "सोचने की चुनौती शुरू करें", assessmentContinue: "सोचने की चुनौती जारी रखें",
+    assessmentFirst: "पहली बार नई चुनौती सही", assessmentProgress: "हल हुई नई चुनौतियाँ",
+    improvementHeading: "आगे किस पर ध्यान दें · 10 मिनट की गतिविधियाँ", observation: "इस अभ्यास में क्या दिखा", nextAtHome: "घर पर आज़माएँ",
+    guidanceNote: "केवल इन कुछ प्रयासों पर आधारित है। यह जन्मजात क्षमता, करियर या भविष्य की सफलता की भविष्यवाणी नहीं है।",
+    showcaseTitle: "निजी पूर्णता प्रदर्शन", showcaseReady: "आपकी 12 कार्यों की स्थानीय उपलब्धि तैयार है।", showcasePending: "प्रदर्शन के लिए नौ मिशन और तीन नई चुनौतियाँ हल करें।", showcaseButton: "प्रिंट होने वाली उपलब्धि देखें",
+    milestoneOnly: "ब्राउज़र के अभ्यास का रिकॉर्ड, आधिकारिक प्रमाणपत्र नहीं।",
   },
   hinglish: {
     eyebrow: "PRIVATE LEARNING EVIDENCE · DEMO",
@@ -105,6 +122,13 @@ const ui = {
     back: "World map par wapas", noClaim: "Sirf saare missions attempt karne se milestone unlock nahi hoga.",
     noteAll: "Shared device par alag students ka record mix ho sakta hai. Next learner se pehle clear karo.",
     skill: "Practice area",
+    assessmentTitle: "New situations mein thinking apply karo", assessmentIntro: "3 fresh scenarios mein action aur reason dono correct choose karo.",
+    assessmentLocked: "Saare 9 practice missions solve karne ke baad unlock hoga.", assessmentStart: "Thinking Challenge start karo", assessmentContinue: "Thinking Challenge continue karo",
+    assessmentFirst: "First-try transfer solutions", assessmentProgress: "New challenges solved",
+    improvementHeading: "Next focus · 10-minute activities", observation: "Practice mein kya observe hua", nextAtHome: "Ghar par try karo",
+    guidanceNote: "Sirf few practice attempts par based hai. Ye talent, field-fit ya future career prediction nahi.",
+    showcaseTitle: "Private completion showcase", showcaseReady: "12-task local milestone ready hai.", showcasePending: "9 missions aur 3 new challenges solve karne par unlock hoga.", showcaseButton: "Printable learning milestone dekho",
+    milestoneOnly: "Browser-local recognition, official certificate nahi.",
   },
 } as const;
 
@@ -112,27 +136,30 @@ type Props = {
   ageBand: AdventureAgeBand;
   locale: AdventureLocale;
   attempts: Record<string, AdventureAttempt>;
+  transfers: Record<string, TransferAttempt>;
+  onStartAssessment: () => void;
   onBack: () => void;
   onClear: () => void;
   onOpen: (mission: AdventureMission) => void;
 };
 
-export default function DiscoveryParentReport({ ageBand, locale, attempts, onBack, onClear, onOpen }: Props) {
-  const report = buildAdventurePracticeReport(ageBand, attempts);
+export default function DiscoveryParentReport({ ageBand, locale, attempts, transfers, onStartAssessment, onBack, onClear, onOpen }: Props) {
+  const [showMilestone, setShowMilestone] = useState(false);
+  const report = buildAdventurePracticeReport(ageBand, attempts, transfers);
   const copy = ui[locale];
   const band = ADVENTURE_AGE_BANDS.find((item) => item.id === ageBand);
-  const remaining = report.total - report.solved;
-  const completedDate = report.completedAt
-    ? new Intl.DateTimeFormat(locale === "hi" ? "hi-IN" : "en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(report.completedAt))
-    : null;
 
+
+  if (showMilestone && report.showcaseReady) {
+    return <DiscoveryMilestone locale={locale} ageBand={ageBand} report={report} onBack={() => setShowMilestone(false)} />;
+  }
   return (
     <section className="da-parent-report" id="da-report-panel" tabIndex={-1} aria-labelledby="da-parent-report-title">
       <div className="da-report-toolbar">
         <button type="button" className="da-text-button" onClick={onBack}><ArrowLeft size={16} /> {copy.back}</button>
         <div className="da-report-controls">
           <button type="button" className="da-secondary-action" onClick={() => window.print()}><Printer size={16} /> {copy.print}</button>
-          {report.attempted > 0 && <button type="button" className="da-delete-action" onClick={onClear}><Trash2 size={15} /> {copy.clear}</button>}
+          {(report.attempted > 0 || report.transfer.attempted > 0) && <button type="button" className="da-delete-action" onClick={onClear}><Trash2 size={15} /> {copy.clear}</button>}
         </div>
       </div>
 
