@@ -1,5 +1,22 @@
 import { describe, expect, it, vi } from "vitest";
 
+const { reserveEmailLoginChallenge, consumeEmailLoginChallenge, cancelEmailLoginChallenge } = vi.hoisted(() => {
+  const records = new Map<string, { id: string; hash: string; used: boolean }>();
+  return {
+    reserveEmailLoginChallenge: vi.fn(async (input: { emailKey: string; challengeId: string; codeHash: string }) => {
+      records.set(input.emailKey, { id: input.challengeId, hash: input.codeHash, used: false });
+      return true;
+    }),
+    consumeEmailLoginChallenge: vi.fn(async (input: { emailKey: string; challengeId: string; codeHash: string }) => {
+      const entry = records.get(input.emailKey);
+      if (!entry || entry.used || entry.id !== input.challengeId || entry.hash !== input.codeHash) return false;
+      entry.used = true;
+      return true;
+    }),
+    cancelEmailLoginChallenge: vi.fn().mockResolvedValue(undefined),
+  };
+});
+
 const { sendAuthenticationCode, upsertUser, getUserByOpenId, mergeGuestProgressForUser } = vi.hoisted(() => ({
   sendAuthenticationCode: vi.fn().mockResolvedValue(undefined),
   upsertUser: vi.fn().mockResolvedValue(undefined),
@@ -8,7 +25,7 @@ const { sendAuthenticationCode, upsertUser, getUserByOpenId, mergeGuestProgressF
 }));
 
 vi.mock("./mail", () => ({ sendAuthenticationCode }));
-vi.mock("./db", () => ({ upsertUser, getUserByOpenId, mergeGuestProgressForUser }));
+vi.mock("./db", () => ({ upsertUser, getUserByOpenId, mergeGuestProgressForUser, reserveEmailLoginChallenge, consumeEmailLoginChallenge, cancelEmailLoginChallenge }));
 
 import { COOKIE_NAME } from "@shared/const";
 import { appRouter } from "./routers";

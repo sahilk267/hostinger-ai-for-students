@@ -1,0 +1,81 @@
+name: Validate Discovery Universe
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: TypeScript, tests and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.24.0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check TypeScript
+        run: pnpm check
+      - name: Run tests
+        env:
+          JWT_SECRET: "CI-ONLY-NOT-A-PRODUCTION-SECRET-2026"
+          HOSTINGER_MAIL_API_TOKEN: "CI-DUMMY-TOKEN-NOT-VALID"
+          AUTH_MAIL_FROM: "auth@aiforstudents.in"
+        run: pnpm test
+      - name: Build production assets
+        run: pnpm build
+      - name: Smoke built application without a database or external mail
+        run: node ops/smoke-built-app.mjs
+      - name: Verify Hostinger PR-preview separation guardrails
+        run: node --test ops/preview-safety.test.mjs
+
+  mysql-integration:
+    name: Real MySQL auth and guardian integrity checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: local-ci-only
+          MYSQL_DATABASE: aifs_ci
+          MYSQL_USER: aifs_ci
+          MYSQL_PASSWORD: ci-test-only
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -plocal-ci-only"
+          --health-interval=5s --health-timeout=3s --health-retries=20
+    env:
+      DATABASE_URL: mysql://aifs_ci:ci-test-only@127.0.0.1:3306/aifs_ci
+      JWT_SECRET: CI-ONLY-NOT-A-PRODUCTION-SECRET-2026
+      RUN_MYSQL_INTEGRATION: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.24.0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check OTP and guardian records against real MySQL
+        run: pnpm exec vitest run server/auth.mysql.integration.test.ts server/guardian.mysql.integration.test.ts

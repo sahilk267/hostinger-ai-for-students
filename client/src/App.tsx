@@ -2,6 +2,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
+import { lazy, Suspense } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
@@ -18,10 +19,15 @@ import ContactPage from "./pages/ContactPage";
 import MissionPage from "./pages/MissionPage";
 import JourneyPage from "./pages/JourneyPage";
 import ExplorerPage from "./pages/ExplorerPage";
+
 import ExplorerReportPage from "./pages/ExplorerReportPage";
 import ExplorerSharePage from "./pages/ExplorerSharePage";
 import PilotReviewPage from "./pages/PilotReviewPage";
 import DiscoveryLabPage from "./pages/DiscoveryLabPage";
+const DiscoveryAdventurePage = lazy(() => import("./pages/DiscoveryAdventurePage"));
+const DiscoveryCheckpointPage = lazy(() => import("./pages/DiscoveryCheckpointPage"));
+const GuardianRecordsPage = lazy(() => import("./pages/GuardianRecordsPage"));
+
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -30,6 +36,8 @@ function Router() {
       <Route path="/play" component={GamePage} />
       <Route path="/mission" component={MissionPage} />
       <Route path="/journey" component={JourneyPage} />
+      <Route path="/explorer/adventure" component={DiscoveryAdventurePage} />
+      <Route path="/explorer/checkpoint" component={DiscoveryCheckpointPage} />
       <Route path="/explorer" component={ExplorerPage} />
       <Route path="/explorer/report" component={ExplorerReportPage} />
       <Route path="/explorer/share/:token" component={ExplorerSharePage} />
@@ -37,6 +45,7 @@ function Router() {
       <Route path="/progress" component={ProgressPage} />
       <Route path="/certificate" component={CertificatePage} />
       <Route path="/account" component={AccountPage} />
+      <Route path="/guardian" component={GuardianRecordsPage} />
       <Route path="/topics" component={TopicsPage} />
       <Route path="/learn" component={LearnPage} />
       <Route path="/study" component={StudyPage} />
@@ -55,7 +64,7 @@ export default function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster position="bottom-right" />
-          <Router />
+          <Suspense fallback={<div role="status" style={{ padding: "3rem", textAlign: "center" }}>Opening Discovery Adventure…</div>}><Router /></Suspense>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
