@@ -4,9 +4,12 @@ import { ADVENTURE_LOCALES, ADVENTURE_AGE_BANDS, ALL_ADVENTURE_MISSIONS, ADVENTU
 import DiscoveryEvidenceScene from "@/components/DiscoveryEvidenceScene";
 import DiscoveryAgeEvidenceScene from "@/components/DiscoveryAgeEvidenceScene";
 import DiscoveryParentReport from "@/components/DiscoveryParentReport";
+import DiscoveryTransferAssessment from "@/components/DiscoveryTransferAssessment";
+import { TRANSFER_CHALLENGES, summarizeTransfer, type TransferAttempt } from "@/data/discoveryTransfer";
 import "./discoveryAdventure.css";
 
 const STORAGE_KEY = "aifs-discovery-adventure-v1";
+const TRANSFER_STORAGE_KEY = "aifs-discovery-transfer-v1";
 const LOCALE_KEY = "aifs-explorer-locale";
 const AGE_KEY = "aifs-discovery-adventure-age-band";
 const words = {
@@ -30,6 +33,7 @@ const words = {
     nextPractice: "A useful next mission", nextReasonRetry: "This one was not solved yet. A fresh attempt may help.", nextReasonNew: "Try a new kind of challenge to gather more evidence.",
     enjoymentHeading: "Learner-reported enjoyment", enjoymentNote: "You said you enjoyed activities in this world. This is an interest to explore, not a talent label.",
     clearPractice: "Delete all local age-band practice", clearConfirm: "Delete results for ALL age bands on this browser? This cannot be undone.",
+    assessmentCta: "The Thinking Challenge", assessmentSummary: "Three fresh situations · choose an action and explain why", assessmentLocked: "Solve all nine missions to unlock this level", assessmentOpen: "Start new challenges",
     results: "Your progress", notScore: "Results describe only these practice activities. They do not establish natural talent or suitability for a field.",
   },
   hi: {
@@ -52,6 +56,7 @@ const words = {
     nextPractice: "अगला उपयोगी मिशन", nextReasonRetry: "यह अभी सही हल नहीं हुआ। एक नया प्रयास मदद कर सकता है।", nextReasonNew: "और सीखने के लिए नई गतिविधि आज़माएँ।",
     enjoymentHeading: "विद्यार्थी ने खुद बताया कि क्या पसंद आया", enjoymentNote: "आपने इस दुनिया की गतिविधियाँ पसंद आने की बात कही। यह रुचि है, प्रतिभा का लेबल नहीं।",
     clearPractice: "सभी उम्र की स्थानीय प्रगति मिटाएँ", clearConfirm: "इस ब्राउज़र में सभी आयु वर्ग के परिणाम मिटाएँ? यह वापस नहीं होगा।",
+    assessmentCta: "सोचने की चुनौती", assessmentSummary: "तीन नए हालात · निर्णय और उसका कारण चुनें", assessmentLocked: "सभी नौ मिशन हल करने पर खुलेगा", assessmentOpen: "नई चुनौती शुरू करें",
     results: "आपकी प्रगति", notScore: "ये नतीजे केवल इन गतिविधियों से संबंधित हैं; जन्मजात प्रतिभा या किसी क्षेत्र की योग्यता नहीं बताते।",
   },
   hinglish: {
@@ -74,6 +79,7 @@ const words = {
     nextPractice: "Next useful mission", nextReasonRetry: "Ye mission abhi solve nahi hua. Ek naya attempt useful hoga.", nextReasonNew: "More evidence ke liye new challenge try karo.",
     enjoymentHeading: "Learner ne khud jo enjoy kiya", enjoymentNote: "Aapne is world ki activities enjoy karne ko bola. Ye interest hai, talent label nahi.",
     clearPractice: "Sab age groups ka local data delete karo", clearConfirm: "Is browser ke ALL age-band results delete karein? Undo nahi ho sakta.",
+    assessmentCta: "Thinking Challenge", assessmentSummary: "3 new situations · action aur reason dono choose karo", assessmentLocked: "9 missions solve hone par unlock", assessmentOpen: "New challenges start karo",
     results: "Aapki progress", notScore: "Ye results sirf is practice se related hain, natural talent ya field suitability prove nahi karte.",
   },
 } as const;
@@ -104,6 +110,28 @@ function readSaved(): Record<string, AdventureAttempt> {
   }
 }
 
+function readSavedTransfers(): Record<string, TransferAttempt> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw: unknown = JSON.parse(window.localStorage.getItem(TRANSFER_STORAGE_KEY) || "{}");
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+    const input = raw as Record<string, unknown>;
+    const safe: Record<string, TransferAttempt> = {};
+    for (const challenge of TRANSFER_CHALLENGES) {
+      const item = input[challenge.id] as Partial<TransferAttempt> | undefined;
+      if (!item || !Number.isInteger(item.attempts) || !item.attempts || item.attempts < 0
+        || typeof item.firstCorrect !== "boolean" || typeof item.solved !== "boolean") continue;
+      safe[challenge.id] = {
+        attempts: Math.min(item.attempts, 100),
+        firstCorrect: item.firstCorrect,
+        solved: item.solved,
+        updatedAt: typeof item.updatedAt === "string" ? item.updatedAt : "",
+      };
+    }
+    return safe;
+  } catch { return {}; }
+}
+
 function initialLocale(): AdventureLocale {
   if (typeof window === "undefined") return "hinglish";
   try {
@@ -127,6 +155,8 @@ export default function DiscoveryAdventurePage() {
   const [locale, setLocale] = useState<AdventureLocale>(initialLocale);
   const [ageBand, setAgeBand] = useState<AdventureAgeBand>(initialBand);
   const [attempts, setAttempts] = useState<Record<string, AdventureAttempt>>(readSaved);
+  const [transfers, setTransfers] = useState<Record<string, TransferAttempt>>(readSavedTransfers);
+  const [showAssessment, setShowAssessment] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [optionOrder, setOptionOrder] = useState<string[]>([]);
@@ -139,17 +169,23 @@ export default function DiscoveryAdventurePage() {
   const bandCopy = ADVENTURE_AGE_BANDS.find((band) => band.id === ageBand)!;
   const visibleOptions = current ? optionOrder.map((id) => current.options.find((option) => option.id === id)).filter((item): item is AdventureMission["options"][number] => Boolean(item)) : [];
   const totalAttempted = availableMissions.filter((mission) => attempts[mission.id]).length;
+  const practiceSolved = availableMissions.filter((mission) => attempts[mission.id]?.bestCorrect).length;
+  const transferSummary = summarizeTransfer(ageBand, transfers);
 
   useEffect(() => {
     try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(attempts)); } catch { /* storage disabled; play still works */ }
   }, [attempts]);
 
   useEffect(() => {
-    if (activeId || showReport) {
-      const focusTarget = document.getElementById(activeId ? "da-play-panel" : "da-report-panel");
+    if (activeId || showReport || showAssessment) {
+      const focusTarget = document.getElementById(activeId ? "da-play-panel" : showAssessment ? "da-transfer-panel" : "da-report-panel");
       focusTarget?.focus();
     }
-  }, [activeId, showReport]);
+  }, [activeId, showReport, showAssessment]);
+
+  useEffect(() => {
+    try { window.localStorage.setItem(TRANSFER_STORAGE_KEY, JSON.stringify(transfers)); } catch { /* optional local storage */ }
+  }, [transfers]);
 
   const changeLocale = (next: AdventureLocale) => {
     setLocale(next);
@@ -161,6 +197,7 @@ export default function DiscoveryAdventurePage() {
     setActiveId(null);
     setSelected([]);
     setChecked(null);
+    setShowAssessment(false);
     setShowReport(false);
     setHintOpen(false);
     try { window.localStorage.setItem(AGE_KEY, next); } catch { /* preference only */ }
@@ -168,6 +205,7 @@ export default function DiscoveryAdventurePage() {
 
   const openMission = (mission: AdventureMission) => {
     setActiveId(mission.id);
+    setShowAssessment(false);
     setOptionOrder(shuffledAdventureOptions(mission, Date.now() ^ Math.floor(Math.random() * 1000000)).map((option) => option.id));
     setSelected([]);
     setHintOpen(false);
@@ -221,12 +259,20 @@ export default function DiscoveryAdventurePage() {
     else { setActiveId(null); setShowReport(true); }
   };
 
-  const backToMap = () => { setActiveId(null); setShowReport(false); setSelected([]); setHintOpen(false); setChecked(null); };
+  const backToMap = () => { setActiveId(null); setShowReport(false); setShowAssessment(false); setSelected([]); setHintOpen(false); setChecked(null); };
+  const startAssessment = () => {
+    if (practiceSolved !== 9) return;
+    setActiveId(null); setShowReport(false); setShowAssessment(true);
+  };
+  const openReport = () => {
+    setActiveId(null); setShowAssessment(false); setShowReport(true);
+  };
   const clearLocalPractice = () => {
     if (!window.confirm(copy.clearConfirm)) return;
     setAttempts({});
+    setTransfers({});
     backToMap();
-    try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* storage optional */ }
+    try { window.localStorage.removeItem(STORAGE_KEY); window.localStorage.removeItem(TRANSFER_STORAGE_KEY); } catch { /* storage optional */ }
   };
   const selectedOptions = selected.map((id) => current?.options.find((option) => option.id === id)).filter((item): item is NonNullable<typeof item> => Boolean(item));
 
@@ -251,7 +297,7 @@ export default function DiscoveryAdventurePage() {
         <nav className="da-languages" aria-label="Choose language">
           {ADVENTURE_LOCALES.map((language) => <button type="button" key={language.id} aria-pressed={locale === language.id} className={locale === language.id ? "is-active" : ""} onClick={() => changeLocale(language.id)}>{language.label}</button>)}
         </nav>
-        {!current && <section className="da-age-selector" aria-labelledby="da-age-title">
+        {!current && !showAssessment && <section className="da-age-selector" aria-labelledby="da-age-title">
           <div className="da-age-intro"><span className="da-eyebrow">✦ {copy.age}</span><h2 id="da-age-title">{copy.agePrompt}</h2></div>
           <div className="da-age-buttons" role="group" aria-label={copy.agePrompt}>
             {ADVENTURE_AGE_BANDS.map((band) => <button type="button" key={band.id} className={"da-age-button" + (ageBand === band.id ? " is-selected" : "")} aria-pressed={ageBand === band.id} onClick={() => chooseBand(band.id)}>
@@ -322,11 +368,18 @@ export default function DiscoveryAdventurePage() {
               </div>
             )}
           </section>
+        ) : showAssessment ? (
+          <DiscoveryTransferAssessment key={ageBand} ageBand={ageBand} locale={locale} saved={transfers}
+            onBack={backToMap}
+            onSave={(id, record) => setTransfers(previous => ({ ...previous, [id]: record }))}
+            onReport={openReport} />
         ) : showReport ? (
           <DiscoveryParentReport
             ageBand={ageBand}
             locale={locale}
             attempts={attempts}
+            transfers={transfers}
+            onStartAssessment={startAssessment}
             onBack={backToMap}
             onClear={clearLocalPractice}
             onOpen={openMission}
@@ -351,6 +404,14 @@ export default function DiscoveryAdventurePage() {
                 );
               })}
             </div>
+            <section className="dc-map-assessment" aria-label={copy.assessmentCta}>
+              <div className="dc-map-assessment-symbol" aria-hidden="true">✦</div>
+              <div><span className="dc-completion-eyebrow">NEXT LEVEL · {transferSummary.solved}/3</span>
+                <h3>{copy.assessmentCta}</h3><p>{copy.assessmentSummary}</p>
+                {practiceSolved !== 9 && <small>{copy.assessmentLocked} ({practiceSolved}/9)</small>}
+              </div>
+              <button type="button" className="da-primary-action" disabled={practiceSolved !== 9} onClick={startAssessment}>{copy.assessmentOpen} <ArrowRight size={17}/></button>
+            </section>
             <div className="da-map-footer"><div><LockKeyhole size={21} /><p><strong>{copy.private}</strong><span>{copy.privateNote}</span></p></div><p>{copy.initial}</p><a href="/explorer">{copy.otherAges} <ArrowRight size={15} /></a>{totalAttempted > 0 && <button type="button" className="da-delete-action" onClick={clearLocalPractice}>{copy.clearPractice}</button>}</div>
           </section>
         )}
