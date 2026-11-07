@@ -145,10 +145,10 @@ export default function DiscoveryTransferAssessment({ ageBand, locale, saved, on
         {(result?.correct || alreadySolved) ? <>
           <p><b>{copy.answer}:</b> {current.explanation[locale]}</p>
           <p><b>{copy.parent}:</b> {current.parentActivity[locale]}</p>
-        </> : <>
+        </> : result ? <>
           <p>{!result.decisionCorrect && !result.reasonCorrect ? copy.reviewBoth : !result.decisionCorrect ? copy.reviewAction : copy.reviewReason}</p>
           <p className="dc-transfer-no-spoiler">{copy.noSpoiler}</p>
-        </>}
+        </> : null}
         <div className="dc-transfer-feedback-actions">
           {result?.correct === false && <button className="da-secondary-action" type="button" onClick={() => {setDecision("");setReason("");setResult(null)}}><RotateCcw size={16}/>{copy.retryButton}</button>}
           {(result?.correct === true || alreadySolved) && <button className="da-primary-action" type="button" onClick={goNext}>{summary.completed ? copy.report : copy.next}<ArrowRight size={16}/></button>}
