@@ -95,7 +95,7 @@ function readSaved(): Record<string, AdventureAttempt> {
       if (item && typeof item.firstCorrect === "boolean" && typeof item.bestCorrect === "boolean" && Number.isInteger(item.attempts) && item.attempts > 0) {
         safe[mission.id] = {
           firstCorrect: item.firstCorrect,
-          firstIndependent: typeof item.firstIndependent === "boolean" ? item.firstIndependent : item.firstCorrect,
+          firstIndependent: typeof item.firstIndependent === "boolean" ? item.firstIndependent && item.firstCorrect : false,
           bestCorrect: item.bestCorrect,
           attempts: Math.min(item.attempts, 1000),
           hintsUsed: Number.isInteger(item.hintsUsed) && item.hintsUsed >= 0 ? Math.min(item.hintsUsed, 1000) : 0,
@@ -123,7 +123,7 @@ function readSavedTransfers(): Record<string, TransferAttempt> {
         || typeof item.firstCorrect !== "boolean" || typeof item.solved !== "boolean") continue;
       safe[challenge.id] = {
         attempts: Math.min(item.attempts, 100),
-        firstCorrect: item.firstCorrect,
+        firstCorrect: item.firstCorrect && item.solved,
         solved: item.solved,
         updatedAt: typeof item.updatedAt === "string" ? item.updatedAt : "",
       };
@@ -297,7 +297,7 @@ export default function DiscoveryAdventurePage() {
         <nav className="da-languages" aria-label="Choose language">
           {ADVENTURE_LOCALES.map((language) => <button type="button" key={language.id} aria-pressed={locale === language.id} className={locale === language.id ? "is-active" : ""} onClick={() => changeLocale(language.id)}>{language.label}</button>)}
         </nav>
-        {!current && !showAssessment && <section className="da-age-selector" aria-labelledby="da-age-title">
+        {!current && !showAssessment && !showReport && <section className="da-age-selector" aria-labelledby="da-age-title">
           <div className="da-age-intro"><span className="da-eyebrow">✦ {copy.age}</span><h2 id="da-age-title">{copy.agePrompt}</h2></div>
           <div className="da-age-buttons" role="group" aria-label={copy.agePrompt}>
             {ADVENTURE_AGE_BANDS.map((band) => <button type="button" key={band.id} className={"da-age-button" + (ageBand === band.id ? " is-selected" : "")} aria-pressed={ageBand === band.id} onClick={() => chooseBand(band.id)}>
