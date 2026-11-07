@@ -19,6 +19,8 @@ const words = {
     print: "Print this private milestone", back: "Back to family report",
     age: "Learning group", achievement: "Discovery Practice Finisher",
     explain: "A moment to celebrate effort and thoughtful revision—not a rank or intelligence score.",
+    keepGoing: "Your next chapter", familyPlan: "Keep building these skills with three short family activities, ordered by this browser's practice evidence.",
+    openPlan: "Open my family growth plan",
   },
   hi: {
     edition: "डिस्कवरी यूनिवर्स · सीखने की झलक",
@@ -34,6 +36,8 @@ const words = {
     print: "निजी उपलब्धि प्रिंट करें", back: "परिवार की रिपोर्ट देखें",
     age: "सीखने का समूह", achievement: "डिस्कवरी अभ्यास पूरा किया",
     explain: "प्रयास और सुधार का उत्सव—रैंकिंग या बुद्धि के अंक नहीं।",
+    keepGoing: "आगे क्या करें", familyPlan: "इस ब्राउज़र के अभ्यास के अनुसार तय की गई तीन छोटी पारिवारिक गतिविधियों से सीख जारी रखें।",
+    openPlan: "परिवार का अभ्यास प्लान देखें",
   },
   hinglish: {
     edition: "DISCOVERY UNIVERSE · LEARNING SHOWCASE",
@@ -49,6 +53,8 @@ const words = {
     print: "Private milestone print karo", back: "Family report par wapas",
     age: "Learning group", achievement: "Discovery Practice Finisher",
     explain: "Effort aur thoughtful revision celebrate karo—ye rank ya IQ score nahi hai.",
+    keepGoing: "Next chapter", familyPlan: "Browser ke practice evidence ke basis par ordered 3 family activities se continue karo.",
+    openPlan: "Family growth plan dekho",
   },
 } as const;
 
@@ -98,5 +104,9 @@ export default function DiscoveryMilestone({ locale, ageBand, report, onBack }: 
         <div className="dc-certificate-disclaimer"><ShieldAlert size={18}/><div><strong>{copy.disclaimer}</strong><p>{copy.foot}</p></div></div>
       </div>
     </article>
+    <div className="dc-certificate-next">
+      <div><strong><Sparkles size={18}/>{copy.keepGoing}</strong><p>{copy.familyPlan}</p></div>
+      <button className="da-secondary-action" type="button" onClick={onBack}>{copy.openPlan}<ArrowLeft size={16}/></button>
+    </div>
   </section>;
 }

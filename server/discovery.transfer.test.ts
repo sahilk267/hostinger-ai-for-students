@@ -151,7 +151,8 @@ describe("Discovery transfer assessment & private completion journey", () => {
     expect(comp).not.toContain("trpc.");
     expect(ui).toContain("showcaseReady");
     expect(ui).toContain("onStartAssessment");
-    expect(ui).toContain("world.guidance.activity[locale]");
+    expect(ui).toContain("step.activity[locale]");
+    expect(ui).toContain("report.growthPlan");
     expect(transferUi).toContain('type="radio"');
     expect(transferUi).toContain("evaluateTransferChallenge");
     expect(transferUi).toContain("copy.noSpoiler");

@@ -45,6 +45,46 @@ const FAMILY_PROMPTS: Record<AdventureWorldId, Localized> = {
   ),
 };
 
+/** Three short practice sessions, prioritised from observed task evidence only. */
+type GrowthFocus = "retry" | "reason" | "action" | "transfer" | "explore" | "stretch";
+const GROWTH_PRIORITY: Record<GrowthFocus, number> = {
+  retry: 0, reason: 1, action: 2, transfer: 3, explore: 4, stretch: 5,
+};
+const GROWTH_WORDS: Record<GrowthFocus, {
+  label: Localized; observation: Localized; coaching: Localized;
+}> = {
+  retry: {
+    label: t("Revisit an unfinished mission", "अधूरा मिशन फिर करें", "Unfinished mission retry karo"),
+    observation: t("At least one mission here is still unsolved.", "इस दुनिया का कम-से-कम एक मिशन अभी सही हल नहीं हुआ।", "Is world ka at least ek mission unsolved hai."),
+    coaching: t("Ask which step felt difficult before giving a hint; let the learner retry.", "संकेत देने से पहले पूछें कि कौन-सा कदम मुश्किल था, फिर दोबारा कोशिश करने दें।", "Hint se pehle poochho kaunsa step tough tha, phir retry karne do."),
+  },
+  reason: {
+    label: t("Explain the why", "कारण समझाने का अभ्यास", "Reason explain karne ki practice"),
+    observation: t("The first new-situation answer needed a better supporting reason, even if it was solved later.", "नई परिस्थिति में पहले प्रयास के कारण को सुधारना पड़ा, भले बाद में सही हुआ।", "Fresh scenario mein first reason revise karna pada, chahe baad mein solve hua."),
+    coaching: t("Ask for two possible reasons. Which one actually explains why the decision helps?", "दो कारण पूछें। कौन-सा कारण बताता है कि यह निर्णय क्यों मदद करेगा?", "Do possible reasons poochho. Kaunsa actually explain karta hai ki decision helpful kyon hai?"),
+  },
+  action: {
+    label: t("Choose a useful action", "उपयोगी निर्णय चुनने का अभ्यास", "Useful action choose karna"),
+    observation: t("The first new-situation action needed revision, even if it was solved later.", "नई परिस्थिति में पहले प्रयास का निर्णय बदलना पड़ा, भले बाद में सही हुआ।", "Fresh scenario mein first action revise karna pada, even if baad mein solved."),
+    coaching: t("Compare two actions and ask which is realistic with the time and tools available.", "दो तरीकों की तुलना करें। उपलब्ध समय और साधनों में कौन-सा व्यावहारिक है?", "Do actions compare karo: available time aur tools mein kaunsa practical hai?"),
+  },
+  transfer: {
+    label: t("Complete a new scenario", "नई परिस्थिति को पूरा करें", "Fresh scenario complete karo"),
+    observation: t("The unfamiliar reasoning challenge has been tried but is not yet solved.", "नई तर्क चुनौती का प्रयास हुआ है, लेकिन अभी सही हल नहीं हुआ।", "Fresh reasoning challenge attempt hua hai, abhi solve nahi hua."),
+    coaching: t("Review the situation together, then retry the action AND the supporting reason.", "स्थिति साथ में पढ़ें, फिर निर्णय और कारण दोनों फिर चुनें।", "Situation saath review karo, phir action aur reason dono retry karo."),
+  },
+  explore: {
+    label: t("Try a new example", "नया उदाहरण आज़माएँ", "Naya example try karo"),
+    observation: t("Some tasks or the fresh challenge have not yet been tried; there is not enough evidence for a judgement.", "कुछ अभ्यास या नई चुनौती अभी नहीं की गई; निष्कर्ष के लिए पर्याप्त जानकारी नहीं है।", "Kuch tasks ya fresh challenge pending hain; judgement ke liye evidence kam hai."),
+    coaching: t("Let the learner predict what may happen, try it, then explain what surprised them.", "पहले अनुमान पूछें, फिर आज़माएँ और जानें कि क्या अलग निकला।", "Pehle prediction poochho, try karwao, phir surprise kya tha discuss karo."),
+  },
+  stretch: {
+    label: t("Stretch with a new example", "नए उदाहरण से आगे बढ़ें", "New example se stretch karo"),
+    observation: t("The recorded tasks here were solved. A different situation will test whether the idea transfers.", "इस दुनिया के दर्ज कार्य हल हुए। नया उदाहरण देखेगा कि सीखी बात दूसरी जगह लागू होती है या नहीं।", "Is world ke recorded tasks solved hain; new situation se transfer check hoga."),
+    coaching: t("Change one condition in the activity. Ask whether the original solution still works and why.", "गतिविधि की एक शर्त बदलें। पूछें, पुराना हल अब भी क्यों काम करेगा या नहीं?", "Activity ki ek condition badlo: old solution ab bhi work karega? Kyon?"),
+  },
+};
+
 export const COMPLETION_POLICY_VERSION = "local-practice-transfer-v2";
 
 /** This is a non-accredited, unverifiable LOCAL practice milestone. */
@@ -94,6 +134,30 @@ export function buildAdventurePracticeReport(ageBand: AdventureAgeBand, attempts
     };
   });
 
+  // Do not interpret missing legacy first-pair diagnostics as incorrect answers.
+  // Every age band has one session per world; a priority is not a learner ability label.
+  const growthPlan = worldDetails.map(world => {
+    const unfinished = world.entries.some(row => row.status === "needs_retry");
+    const firstReason = world.transfer?.attempt?.firstReasonCorrect;
+    const firstAction = world.transfer?.attempt?.firstDecisionCorrect;
+    const focus: GrowthFocus = unfinished ? "retry"
+      : firstReason === false ? "reason"
+      : firstAction === false ? "action"
+      : world.transfer?.attempt && !world.transfer.attempt.solved ? "transfer"
+      : world.solved < 3 || !world.transfer?.attempt ? "explore"
+      : "stretch";
+    return {
+      id: world.id, icon: world.icon, title: world.title, focus,
+      label: GROWTH_WORDS[focus].label,
+      observation: GROWTH_WORDS[focus].observation,
+      coaching: GROWTH_WORDS[focus].coaching,
+      activity: world.guidance.activity,
+      familyPrompt: world.familyPrompt,
+      priority: GROWTH_PRIORITY[focus],
+    };
+  }).sort((a, b) => a.priority - b.priority)
+    .map(({ priority, ...step }) => step);
+
   const nextMission = entries.find((row) => row.status === "needs_retry")?.mission
     ?? entries.find((row) => row.status === "not_started")?.mission
     ?? null;
@@ -118,6 +182,7 @@ export function buildAdventurePracticeReport(ageBand: AdventureAgeBand, attempts
     showcaseCompletedAt,
     entries,
     worldDetails,
+    growthPlan,
     nextMission,
   };
 }

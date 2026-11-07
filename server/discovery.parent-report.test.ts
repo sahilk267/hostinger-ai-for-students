@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ALL_ADVENTURE_MISSIONS, getAgeAdventureMissions, type AdventureAttempt } from "../client/src/data/discoveryAdventure";
 import { buildAdventurePracticeReport, classifyAdventureMission, COMPLETION_POLICY_VERSION, getAdventureSkillLabel } from "../client/src/data/discoveryReport";
+import { getTransferChallenges, type TransferAttempt } from "../client/src/data/discoveryTransfer";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -64,6 +65,47 @@ describe("Discovery Adventure parent report and completion eligibility", () => {
     expect(classifyAdventureMission(records[revised.id])).toBe("solved_after_practice");
     expect(classifyAdventureMission(records[wrong.id])).toBe("needs_retry");
     expect(classifyAdventureMission(undefined)).toBe("not_started");
+  });
+
+  it("orders a practical three-session plan by unsolved work and first-pair reasoning evidence", () => {
+    const missions = getAgeAdventureMissions("11-13");
+    const records = Object.fromEntries(missions.map(mission => [mission.id, record()]));
+    const mysteryChallenge = getTransferChallenges("11-13").find(item => item.world === "mystery")!;
+    const transfers: Record<string, TransferAttempt> = {
+      [mysteryChallenge.id]: {
+        attempts: 2, firstCorrect: false, solved: true,
+        firstDecisionCorrect: true, firstReasonCorrect: false,
+        updatedAt: "2026-11-07T10:00:00.000Z",
+      },
+    };
+    const reasonPlan = buildAdventurePracticeReport("11-13", records, transfers).growthPlan;
+    expect(reasonPlan).toHaveLength(3);
+    expect(reasonPlan[0]).toMatchObject({id:"mystery",focus:"reason"});
+    expect(reasonPlan[0].coaching.hi.length).toBeGreaterThan(15);
+    for(const step of reasonPlan) {
+      expect(step.activity.en.length).toBeGreaterThan(20);
+      expect(step.familyPrompt.hinglish.length).toBeGreaterThan(20);
+      expect(step.label.hi.length).toBeGreaterThan(4);
+    }
+    const unfinished = missions.find(mission => mission.world === "creator")!;
+    records[unfinished.id] = record({firstCorrect:false,firstIndependent:false,bestCorrect:false});
+    const retryPlan = buildAdventurePracticeReport("11-13",records,transfers).growthPlan;
+    expect(retryPlan.map(step => step.focus)).toEqual(["retry","reason","explore"]);
+    expect(retryPlan[0].id).toBe("creator");
+    const empty = buildAdventurePracticeReport("14-17",{},{}).growthPlan;
+    expect(empty).toHaveLength(3);
+    expect(empty.every(step => step.focus === "explore")).toBe(true);
+  });
+
+  it("never treats old transfer records without first-pair diagnostics as mistakes", () => {
+    const all = Object.fromEntries(getAgeAdventureMissions("8-10").map(item => [item.id,record()]));
+    const question = getTransferChallenges("8-10").find(item => item.world === "logic")!;
+    const legacy: Record<string, TransferAttempt> = {
+      [question.id]: {attempts:3,firstCorrect:false,solved:true,updatedAt:"2026-11-07T10:00:00.000Z"},
+    };
+    const report = buildAdventurePracticeReport("8-10",all,legacy);
+    expect(report.growthPlan.find(step => step.id === "logic")?.focus).toBe("stretch");
+    expect(report.growthPlan[0].focus).toBe("explore");
   });
 
   it("never claims a completion timestamp based on missing or invalid browser dates", () => {

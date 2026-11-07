@@ -45,7 +45,8 @@ const ui = {
     assessmentTitle: "Apply your thinking in new situations", assessmentIntro: "Three fresh situations need both a decision and a supporting reason.",
     assessmentLocked: "Solve all nine practice missions to unlock these new scenarios.", assessmentStart: "Start Thinking Challenge", assessmentContinue: "Continue Thinking Challenge",
     assessmentFirst: "First-try transfer solutions", assessmentProgress: "New challenges solved",
-    improvementHeading: "Where to focus next · 10-minute activities", observation: "What the practice shows", nextAtHome: "Try this at home",
+    improvementHeading: "Your 3-session family growth plan", observation: "What we observed", nextAtHome: "10-minute home activity",
+    session: "Session", guidanceCoach: "Parent coaching tip", guidanceAsk: "Ask your learner",
     guidanceNote: "Based only on these few practice attempts. Not a diagnosis, talent label, career recommendation or prediction of future success.",
     showcaseTitle: "Private completion showcase", showcaseReady: "Your 12-task local learning milestone is ready.", showcasePending: "Solve nine practice missions and three transfer challenges to open the showcase.", showcaseButton: "View printable learning milestone",
     milestoneOnly: "Private browser-local practice recognition, not an official credential.",
@@ -85,7 +86,8 @@ const ui = {
     assessmentTitle: "नए हालात में सोच आज़माएँ", assessmentIntro: "तीन नई चुनौतियों में निर्णय और उसका कारण दोनों चुनें।",
     assessmentLocked: "नई चुनौतियाँ खोलने के लिए सभी नौ अभ्यास मिशन हल करें।", assessmentStart: "सोचने की चुनौती शुरू करें", assessmentContinue: "सोचने की चुनौती जारी रखें",
     assessmentFirst: "पहली बार नई चुनौती सही", assessmentProgress: "हल हुई नई चुनौतियाँ",
-    improvementHeading: "आगे किस पर ध्यान दें · 10 मिनट की गतिविधियाँ", observation: "इस अभ्यास में क्या दिखा", nextAtHome: "घर पर आज़माएँ",
+    improvementHeading: "परिवार के लिए 3 अभ्यास सत्र", observation: "क्या देखा गया", nextAtHome: "घर पर 10 मिनट का अभ्यास",
+    session: "सत्र", guidanceCoach: "अभिभावक के लिए सुझाव", guidanceAsk: "विद्यार्थी से पूछें",
     guidanceNote: "केवल इन कुछ प्रयासों पर आधारित है। यह जन्मजात क्षमता, करियर या भविष्य की सफलता की भविष्यवाणी नहीं है।",
     showcaseTitle: "निजी पूर्णता प्रदर्शन", showcaseReady: "आपकी 12 कार्यों की स्थानीय उपलब्धि तैयार है।", showcasePending: "प्रदर्शन के लिए नौ मिशन और तीन नई चुनौतियाँ हल करें।", showcaseButton: "प्रिंट होने वाली उपलब्धि देखें",
     milestoneOnly: "ब्राउज़र के अभ्यास का रिकॉर्ड, आधिकारिक प्रमाणपत्र नहीं।",
@@ -125,7 +127,8 @@ const ui = {
     assessmentTitle: "New situations mein thinking apply karo", assessmentIntro: "3 fresh scenarios mein action aur reason dono correct choose karo.",
     assessmentLocked: "Saare 9 practice missions solve karne ke baad unlock hoga.", assessmentStart: "Thinking Challenge start karo", assessmentContinue: "Thinking Challenge continue karo",
     assessmentFirst: "First-try transfer solutions", assessmentProgress: "New challenges solved",
-    improvementHeading: "Next focus · 10-minute activities", observation: "Practice mein kya observe hua", nextAtHome: "Ghar par try karo",
+    improvementHeading: "Family ka 3-session growth plan", observation: "Practice mein kya dekha", nextAtHome: "10-minute home activity",
+    session: "Session", guidanceCoach: "Parent coaching tip", guidanceAsk: "Learner se poochho",
     guidanceNote: "Sirf few practice attempts par based hai. Ye talent, field-fit ya future career prediction nahi.",
     showcaseTitle: "Private completion showcase", showcaseReady: "12-task local milestone ready hai.", showcasePending: "9 missions aur 3 new challenges solve karne par unlock hoga.", showcaseButton: "Printable learning milestone dekho",
     milestoneOnly: "Browser-local recognition, official certificate nahi.",
@@ -228,11 +231,14 @@ export default function DiscoveryParentReport({ ageBand, locale, attempts, trans
 
       <section className="dc-parent-guidance" aria-labelledby="dc-improvement-heading">
         <div className="dc-guidance-head"><BookOpen size={25}/><div><h3 id="dc-improvement-heading">{copy.improvementHeading}</h3><p>{copy.guidanceNote}</p></div></div>
-        <div className="dc-guidance-grid">{report.worldDetails.map(world => <article className="dc-guidance-card" key={world.id}>
-          <div className="dc-guidance-card-title"><span aria-hidden="true">{world.icon}</span><h4>{world.title[locale]}</h4></div>
-          <strong>{copy.observation}</strong><p>{world.guidance.observation[locale]}</p>
-          {world.transfer?.attempt && <p className="dc-guidance-transfer">{copy.assessmentProgress}: {world.transfer.attempt.solved ? "✓ 1/1" : "0/1"}</p>}
-          <strong>{copy.nextAtHome}</strong><p>{world.guidance.activity[locale]}</p>
+        <div className="dc-guidance-grid">{report.growthPlan.map((step, index) => <article className={"dc-guidance-card" + (index === 0 ? " is-priority" : "")} key={step.id}>
+          <div className="dc-growth-order">{copy.session} {index + 1} / 3</div>
+          <div className="dc-guidance-card-title"><span aria-hidden="true">{step.icon}</span><h4>{step.title[locale]}</h4></div>
+          <span className="dc-growth-focus">{step.label[locale]}</span>
+          <strong>{copy.observation}</strong><p>{step.observation[locale]}</p>
+          <strong>{copy.nextAtHome}</strong><p>{step.activity[locale]}</p>
+          <strong>{copy.guidanceCoach}</strong><p>{step.coaching[locale]}</p>
+          <strong>{copy.guidanceAsk}</strong><p>{step.familyPrompt[locale]}</p>
         </article>)}</div>
       </section>
 

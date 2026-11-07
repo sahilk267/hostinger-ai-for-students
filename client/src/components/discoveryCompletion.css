@@ -73,6 +73,16 @@
 .dc-guidance-card h4 { font-weight: 900; font-size: 15px; }
 .dc-guidance-card > strong { font-size: 11px; text-transform: uppercase; letter-spacing: .045em; color: #3e6697; }
 .dc-guidance-card > p { color: #50617d; line-height: 1.65; font-size: 12px; margin-bottom: 9px; }
+.dc-guidance-card.is-priority { border-color: #92c5b7; box-shadow: 0 9px 26px #245f4620; background: #f4fcf8; }
+.dc-growth-order { align-self: flex-start; border-radius: 100px; padding: 6px 11px; background: #e7edf9; color: #314e82; font-size: 11px; font-weight: 900; letter-spacing: .035em; }
+.dc-growth-focus { display: inline-flex; align-self: flex-start; padding: 5px 10px; border: 1px solid #c8dfe3; border-radius: 20px; color: #2d5b68; background: #ecf9fa; font-size: 11px; font-weight: 850; line-height: 1.5; }
+.dc-transfer-no-spoiler { font-size: 12px; color: #795938; }
+.dc-certificate-next { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin: 18px auto 0; border: 1px solid #cbdadf; background: linear-gradient(100deg,#eff9f5,#eff4ff); border-radius: 17px; padding: 19px 22px; color: #27455c; }
+.dc-certificate-next > div { flex: 1 1 260px; }
+.dc-certificate-next strong { display: flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 900; }
+.dc-certificate-next p { margin-top: 7px; max-width: 580px; font-size: 13px; line-height: 1.65; }
+.dc-certificate-next button { flex: 0 0 auto; }
+
 .dc-guidance-transfer { font-weight: 850; color: #2c7970 !important; }
 .dc-showcase-section .da-primary-action { margin-top: 13px; }
 .dc-certificate-actions { display: flex; justify-content: space-between; gap: 15px; margin: 0 0 18px; }
@@ -121,6 +131,9 @@
   .dc-transfer-icon { min-width: 55px; height: 55px; font-size: 29px; }
   .dc-certificate-actions { flex-wrap: wrap; }
   .dc-certificate-actions > button { flex: 1 1 140px; }
+  .dc-certificate-next { align-items: stretch; }
+  .dc-certificate-next button { width: 100%; justify-content: center; }
+
   .dc-certificate { border-radius: 12px; }
   .dc-certificate-topline { letter-spacing: .05em; font-size: 9px; }
   .dc-certificate-star { display: none; }
@@ -140,7 +153,7 @@
   .discovery-adventure:has(.dc-certificate) .da-languages,
   .discovery-adventure:has(.dc-certificate) .da-age-selector,
   .discovery-adventure:has(.dc-certificate) .da-footer,
-  .dc-certificate-actions { display: none !important; }
+  .dc-certificate-actions, .dc-certificate-next { display: none !important; }
   .dc-certificate-view { width: 100%; margin: 0; max-width: none; }
   .dc-certificate { box-shadow: none; border: 1.5px solid #b8a174; border-radius: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; page-break-inside: avoid; }
   .dc-certificate-inner { padding: 17px 28px; }
