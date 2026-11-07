@@ -7,7 +7,7 @@
 - Email OTP: new opaque 32-byte random cookie identifier; key-separated HMAC-SHA256 of normalized email and six-digit code stored in MySQL. No plaintext OTP/email in the challenge table or cookie.
 - Enforced globally across shared-hosting workers by MySQL: one active challenge per hashed email, 60-second resend cooldown, 10-minute TTL, maximum five incorrect verification attempts, atomic one-time successful consumption and rejection of replay. Failed mail delivery cancels the reserved challenge when possible.
 - Cookie policy: first-party HTTP-only SameSite=Lax; Secure forced in production; avoids trusting arbitrary X-Forwarded-Proto headers. Newly issued email and OAuth sessions expire after 30 days instead of one year.
-- API browser requests carrying foreign Origin headers are denied before tRPC. An absent Origin and same-site subdomains require additional deployment-level review. This guard is not a complete CSRF solution by itself.
+- **Phase 11 (separate review branch):** API browser requests carrying foreign Origin headers are denied before tRPC; when PUBLIC_SITE_ORIGIN is configured it is authoritative and untrusted Host headers cannot bypass it. Cross-site/same-site Fetch Metadata is denied, and originless unsafe requests require same-origin metadata or an explicit Bearer token. This guard is still defense-in-depth, not a complete CSRF solution by itself.
 - Guardian Explorer: new profile creation requires explicit adult/guardian self-declaration, but this is **not verified adult identity or legal parental consent**. Mission IDs must match age band. Account-owned profile deletion now uses FK cascade to remove saved attempts and associated share tokens, rather than soft-delete leaving content behind.
 - New private **/guardian** page lets an authenticated account owner list profiles and mission attempt counts, confirm permanent deletion and manage records. It never displays raw learner answers or exposes public profiles.
 - Account export now includes Explorer profiles, raw saved evidence and account-created share summaries, not only generic game scores. Browser-only guest results are not exported, and any downloaded JSON can contain sensitive learning text: store it privately.
@@ -51,3 +51,12 @@ Covered behavior:
 - A paid product, UPI checkout, Telegram verification or production database migrations.
 
 **This is security groundwork and private account controls, not approval to launch or collect children's data.**
+
+## Phase 11: canonical origin / CSRF defense-in-depth (separate review branch)
+
+- The site owner has reported the earlier feature branch deployed and the database/OTP smoke flow working. **This new patch is on a separate branch** and is NOT automatically proof of deployment or live safety.
+- Required Hostinger setting: `PUBLIC_SITE_ORIGIN=https://aiforstudents.in` (or the actual HTTPS canonical origin in that environment). Do not add a trailing path or unrelated host. Preview apps must use their own isolated `PUBLIC_SITE_ORIGIN`; a copied production value must not be used to enable OTP/accounts on a preview origin.
+- In production, API calls fail closed if PUBLIC_SITE_ORIGIN is absent or invalid. A browser must use exactly that origin, even if a hostile request supplies matching `Host` / `X-Forwarded-Host` headers.
+- Browser-origin requests with `Sec-Fetch-Site` equal to `same-site`, `cross-site` or `none` are blocked on tRPC. No Origin + unsafe HTTP method is blocked unless Fetch Metadata explicitly says `same-origin`, or a caller intentionally supplies a Bearer token (non-browser API clients). Normal browser POSTs supply an Origin and/or Fetch Metadata.
+- OAuth GET callback routes are outside tRPC and remain separate. Validate OTP login, guardian export/delete, and mobile/older-browser functionality on an **isolated staging deployment** before promotion.
+- Remaining limitations: untrusted client-side headers are not authentication; a stolen session/bearer credential remains valid until expiry; legacy/no Fetch Metadata GET requests may still reach read-only APIs; allowlisting GET queries does not mean server-side permissions can be relaxed. Do not enable minor cloud data or paid/verified programs based only on this guard.

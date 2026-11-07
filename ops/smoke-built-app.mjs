@@ -67,7 +67,19 @@ try {
   await assert(statusBody.includes('"enabled":false'), "checkpoint preview must default OFF");
   const blocked = await request(apiPath, { headers: { Origin: "https://untrusted.invalid" } });
   await assert(blocked.status === 403, "cross-origin tRPC request must be blocked");
-  console.log("Compiled app smoke PASS: port, health, SPA routes, default-off preview, same-origin guard");
+  const spoofedHost = await request(apiPath, {
+    headers: { Origin: "https://untrusted.invalid", Host: "untrusted.invalid" },
+  });
+  await assert(spoofedHost.status === 403, "spoofed Host must not bypass configured public origin");
+  const browserCrossSite = await request(apiPath, {
+    headers: { "Sec-Fetch-Site": "cross-site" },
+  });
+  await assert(browserCrossSite.status === 403, "originless cross-site browser API request must be blocked");
+  const unsafeOriginless = await request(apiPath, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: "{}",
+  });
+  await assert(unsafeOriginless.status === 403, "originless unsafe request must be blocked without same-origin metadata");
+  console.log("Compiled app smoke PASS: port, health, SPA routes, default-off preview, canonical origin and Fetch Metadata guard");
 } catch (error) {
   // Do not expose env values or any security tokens in CI failure output.
   console.error(error instanceof Error ? error.message : "Build smoke failed");

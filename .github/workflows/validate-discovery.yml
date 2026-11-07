@@ -3,6 +3,10 @@ name: Validate Discovery Universe
 on:
   pull_request:
     branches: [main]
+  # Run this isolated security branch's full checks without pushing to the
+  # already-deployed feature branch. Remove this temporary filter after review.
+  push:
+    branches: ['feature/phase11-origin-*']
   workflow_dispatch:
 
 permissions:
