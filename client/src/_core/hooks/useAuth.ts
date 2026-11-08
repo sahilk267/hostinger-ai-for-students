@@ -81,6 +81,10 @@ export function useAuth(options?: UseAuthOptions) {
       window.location.href = redirectPath;
     } else if (isOAuthLoginConfigured()) {
       startLogin();
+    } else if (window.location.pathname !== "/account") {
+      // A protected page should never strand OTP-only visitors with a dead
+      // external login route. The account screen offers local email sign-in.
+      window.location.href = "/account";
     }
   }, [
     redirectOnUnauthenticated,

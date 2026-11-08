@@ -764,3 +764,4 @@ Evidence/status: `ops/release-readiness-phase11.md`. Account login and Discovery
 - [x] Correct the OTP success message so browser-only Adventure results are not falsely described as remotely saved.
 - [x] Add read-only, no-secret Phase 11 staging gate + Node-native regression cases, and run them in CI.
 - [ ] Verify real Hostinger isolated staging database, peer-IP topology, OAuth and browser/parent QA with recorded human evidence before enabling DB flags or promotion.
+- [x] Complete OTP-only navigation fallback: dashboard sign-in uses LocalAuthDialog when OAuth is disabled, and protected-route redirects go to the email OTP account page rather than a disabled OAuth function.

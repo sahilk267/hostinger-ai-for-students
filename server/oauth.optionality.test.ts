@@ -17,8 +17,14 @@ describe("optional Manus OAuth vs local email OTP",()=>{
     expect(ui).toContain("guest Adventure results stay on this browser");
     expect(ui).not.toContain("Your progress is now saved.");
   });
+  it("shows email OTP on dashboard when OAuth is not configured",()=>{
+    const page=read("client/src/components/DashboardLayout.tsx");
+    expect(page).toContain("isOAuthLoginConfigured() ? <Button");
+    expect(page).toContain('<LocalAuthDialog label="Sign in with email"');
+  });
   it("does not redirect an unauthenticated visitor to a missing external OAuth",()=>{
     const hook=read("client/src/_core/hooks/useAuth.ts");
     expect(hook).toContain("else if (isOAuthLoginConfigured())");
+    expect(hook).toContain('window.location.href = "/account"');
   });
 });

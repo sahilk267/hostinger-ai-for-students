@@ -51,5 +51,6 @@
 - [x] With `AUTH_SESSIONS_ENFORCED=1`, a deleted account is not silently re-provisioned through the legacy OAuth auto-sync fallback; the external OAuth callback explicitly creates/upserts fresh accounts before new sessions.
 - [x] Optional Manus OAuth now requires `VITE_MANUS_OAUTH_ENABLED=1`, `VITE_OAUTH_PORTAL_URL` and `VITE_APP_ID` for the UI login path. The server also needs an independently approved `OAUTH_SERVER_URL`. OTP-only deployment needs none of these.
 - [x] OTP dialog no longer states that browser-only Discovery Adventure practice was automatically saved in an account.
+- [x] Dashboard and protected-route authentication fall back to the existing email OTP account entry when external OAuth is disabled, avoiding dead sign-in controls.
 - [x] Add a secret-safe **static** staging config gate and six Node-native regression tests, and wire them into CI. Its acknowledgements must not be mistaken for actual Hostinger validation.
 - [ ] Confirm live Hostinger/staging browser paths and migration in a real, isolated environment. **Code is not deployed by these commits.**
