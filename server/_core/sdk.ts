@@ -2,6 +2,7 @@ import { AXIOS_TIMEOUT_MS, COOKIE_NAME, ONE_YEAR_MS, decodeOAuthState } from "@s
 import { ForbiddenError } from "@shared/_core/errors";
 import axios, { type AxiosInstance } from "axios";
 import { parse as parseCookieHeader } from "cookie";
+import { getAuthSessionToken, hashAuthSessionToken } from "../authSessionSecurity";
 import type { Request } from "express";
 import { SignJWT, jwtVerify } from "jose";
 import type { User } from "../../drizzle/schema";
@@ -167,14 +168,24 @@ class SDKServer {
     openId: string,
     options: { expiresInMs?: number; name?: string } = {}
   ): Promise<string> {
-    return this.signSession(
+    const token = await this.signSession(
       {
         openId,
         appId: ENV.appId || "ai-for-students-local",
-        name: options.name || "",
+        name: options.name || "Member",
       },
       options
     );
+    if (process.env.AUTH_SESSIONS_ENFORCED === "1") {
+      const account = await db.getUserByOpenId(openId);
+      if (!account) throw new Error("Cannot issue an untracked account session");
+      const expiresInMs = options.expiresInMs ?? ONE_YEAR_MS;
+      await db.registerAuthSession({
+        tokenHash: hashAuthSessionToken(token), userId: account.id,
+        expiresAt: new Date(Date.now() + expiresInMs),
+      });
+    }
+    return token;
   }
 
   async signSession(
@@ -256,19 +267,8 @@ class SDKServer {
   }
 
   async authenticateRequest(req: Request): Promise<AuthenticatedUser> {
-    // 1. Prefer the session cookie (regular OAuth login).
-    const cookies = this.parseCookies(req.headers.cookie);
-    let sessionToken = cookies.get(COOKIE_NAME);
-
-    // 2. Fallback to the Authorization header (Preview auto-login via
-    //    sessionStorage), used when the browser blocks iframe cookies such as
-    //    Safari ITP, private browsing, or iOS/Android WebView.
-    if (!sessionToken) {
-      const authHeader = req.headers.authorization;
-      if (typeof authHeader === "string" && authHeader.startsWith("Bearer ")) {
-        sessionToken = authHeader.slice(7);
-      }
-    }
+    // First-party session cookie, or the explicitly supplied Bearer fallback.
+    const sessionToken = getAuthSessionToken(req);
 
     const session = await this.verifySession(sessionToken);
 
@@ -309,6 +309,14 @@ class SDKServer {
 
     if (!user) {
       throw ForbiddenError("User not found");
+    }
+
+    if (process.env.AUTH_SESSIONS_ENFORCED === "1") {
+      // Every protected API call checks the shared DB; no in-process cache can
+      // extend a session after logout or account deletion on another worker.
+      if (!sessionToken || !await db.isAuthSessionActive(hashAuthSessionToken(sessionToken), user.id)) {
+        throw ForbiddenError("Session expired or revoked");
+      }
     }
 
     await db.upsertUser({

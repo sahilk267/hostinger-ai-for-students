@@ -127,3 +127,19 @@ export const authEmailChallenges = mysqlTable("authEmailChallenges", {
   attempts: int("attempts").default(0).notNull(),
   consumedAt: timestamp("consumedAt"),
 });
+
+// Optional server-side session revocation and distributed abuse throttling.
+// Both require the manually reviewed ops/auth-session-abuse-hardening.sql.
+export const authSessions = mysqlTable("authSessions", {
+  tokenHash: varchar("tokenHash", { length: 64 }).primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expiresAt").notNull(),
+  revokedAt: timestamp("revokedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export const authRequestBuckets = mysqlTable("authRequestBuckets", {
+  bucketKey: varchar("bucketKey", { length: 64 }).primaryKey(),
+  hits: int("hits").default(0).notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
