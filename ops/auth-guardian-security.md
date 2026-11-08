@@ -92,3 +92,9 @@ No scheduled job was created. Set cleanup ownership and a data-retention policy 
 - Same-origin and Fetch Metadata are CSRF defense-in-depth; they do not protect against XSS, an already stolen Bearer credential, unsafe GET endpoints, malicious browser extensions or all older clients. Session and OAuth integration require staging review.
 - Parent self-attestation is not verified adult identity, legal parental consent or independent educational assessment. Cloud child-data and certificate flags remain OFF.
 - Use `ops/release-readiness-phase11.md` as the updated evidence/checklist authority.
+
+## Privileged storage proxy route audit (Phase 11)
+
+The original public GET `/manus-storage/*` path used a server-only Forge storage API key to generate a signed redirect for **any caller-supplied key**. This was an excessive public capability. It is now default OFF and, if explicitly enabled with `MANUS_STORAGE_PROXY_ENABLED=1`, accepts only a strict, operator-selected `MANUS_STORAGE_PUBLIC_PREFIX` such as `public/`. Requests outside that prefix or containing traversal/encoded key separators fail before contacting the backend. No front-end references to this proxy were found in the available GitHub code search, but the actual Hostinger asset usage must still be manually checked before release.
+
+Never enable the proxy for private learner evidence, guardian exports, upload buckets or access-controlled resources. A *public prefix* requires separate storage-side access-policy verification; it is not authenticated storage access. Staging should verify whether disabling it breaks any existing publicly required assets and should keep it off otherwise.

@@ -750,3 +750,8 @@ Evidence/status: `ops/release-readiness-phase11.md`. Account login and Discovery
 - [x] Reconcile the old five-table GitHub blank import with seven core tables required by hardened email OTP and Discovery checkpoints; the updated `hostinger-schema-import.sql` is for **new empty DBs only**.
 - [x] Keep optional `authSessions` and `authRequestBuckets` in separate Phase 11 SQL; add import/DDL contract regression tests and phpMyAdmin handoff update.
 - [ ] Verify any future actual Hostinger migration independently; neither SQL file has been run by the assistant.
+
+### Additional Phase 11 route audit: privileged storage
+- [x] Restrict formerly public `/manus-storage/*` presigning route: default OFF, explicit public-prefix opt-in and traversal/encoding checks.
+- [x] Add storage prefix validation and denied-request tests without calling external services.
+- [ ] Validate whether production public assets require this proxy, and ensure storage-side access policies permit only public files before any opt-in.

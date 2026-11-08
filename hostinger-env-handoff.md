@@ -12,6 +12,7 @@ This document is a **name-only deployment handoff** for AI for Students. It inte
 | `PUBLIC_SITE_ORIGIN` | Strict canonical origin for tRPC protection | No | Required for Phase 11 production operation. Set to the exact HTTPS site origin without a path; staging and production need their respective own values. |
 | `AUTH_SESSIONS_ENFORCED` | Optional DB-verified, revocable session ledger | No | Keep `0` or unset until `authSessions` migration + staging login/logout test; then explicitly enable by approved rollout. Older sessions need re-login. |
 | `AUTH_ABUSE_DB_ENABLED` | Optional MySQL-backed OTP/contact request budgets | No | Keep `0` or unset until `authRequestBuckets` migration and trusted client-IP/proxy topology validation. Shared reverse-proxy IPs may lock out visitors. |
+| `MANUS_STORAGE_PROXY_ENABLED`, `MANUS_STORAGE_PUBLIC_PREFIX` | Public-only signed asset proxy (optional, potentially sensitive) | No | Keep disabled; only enable for a reviewed public asset prefix such as `public/`, never for learner/guardian files. |
 | `HOSTINGER_MAIL_API_TOKEN` | Auth-code mail adapter credential | Yes | Paste the Hostinger Mail API token only in the protected form. |
 | `AUTH_MAIL_FROM` | Sender address for local auth-code mail | No, but deployment-critical | Set to `auth@aiforstudents.in`. |
 | `BUILT_IN_FORGE_API_URL` | Server-side built-in API endpoint used for supported integrations | Usually secret-backed | Copy the environment value supplied by the managed project configuration. |

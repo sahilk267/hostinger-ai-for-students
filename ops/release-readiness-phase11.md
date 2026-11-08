@@ -6,6 +6,7 @@
 
 | Workstream | Status | Evidence |
 |---|---|---|
+| Privileged storage signing route | Implemented, default OFF | `/manus-storage/*` now requires both `MANUS_STORAGE_PROXY_ENABLED=1` and a strict `MANUS_STORAGE_PUBLIC_PREFIX` (public assets only), with traversal/encoding checks |
 | Canonical tRPC Origin check | Implemented | `server/_core/sameOrigin.ts`; tests reject hostile Host spoof, wrong Origin and missing production canonical origin |
 | Originless unsafe / Fetch Metadata protection | Implemented | `Sec-Fetch-Site` fail-closed cases in `server/auth.security-hardening.test.ts` and compiled-app smoke |
 | Revocable account JWT sessions | Implemented, default OFF | `authSessions` schema, `registerAuthSession`, `isAuthSessionActive`, `revokeAuthSession`, sign-in/auth/logout integration; needs staging migration and `AUTH_SESSIONS_ENFORCED=1` |
@@ -24,6 +25,7 @@
 - [ ] Configure exact staging `PUBLIC_SITE_ORIGIN`; verify browser GET/POST tRPC, forged `Host` rejection, invalid/absent `Origin`, `Sec-Fetch-Site` and OAuth callback compatibility.
 - [ ] Enable `AUTH_SESSIONS_ENFORCED=1` on staging only; new adult test-account OTP login, authenticated account read, cookie attributes, logout, replay of old copied token denied, stale pre-migration cookies require re-login.
 - [ ] Confirm multiple sessions and owner-scoped delete/export on staging; account deletion revokes via FK cascade; logout failure returns an error and clears browser cookie.
+- [ ] Verify real Hostinger site assets do not depend on `/manus-storage/*`; if needed, review storage-side public prefix and test opt-in public assets. Never use proxy for private records.
 - [ ] Determine Hostinger reverse-proxy TCP peer behavior across multiple independent clients. **DO NOT** enable DB-IP budgets if clients share the same proxy peer address.
 - [ ] After verifying peer topology, enable `AUTH_ABUSE_DB_ENABLED=1` on staging and test 12/15 min OTP request, 50/15 min verify, 5/hour contact and legitimate-family/NAT fairness.
 - [ ] Check DB downtime, error logs, email provider quotas and deletion/cleanup policy; assign owner for weekly TTL cleanup, do not silently create a background job.
