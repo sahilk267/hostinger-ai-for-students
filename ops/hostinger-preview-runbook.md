@@ -1,6 +1,6 @@
 # Phase 8 — Hostinger preview and staging rollout
 
-**STATUS:** Draft PR only. No production database migration or verified guardian certificate has been implemented.
+**STATUS (2026-11-08):** The owner reports a separate feature-branch live deployment with imported database tables and working health/OTP/Adventure flows. This was not independently audited. Phase 11 is on separate Draft PR #2 and MUST NOT be treated as deployed. No verified guardian certificate exists.
 
 ## Important: preview is not necessarily a separate database
 
@@ -51,3 +51,16 @@ Never use an unverified PR preview with children's identities, OTPs, account wri
 - MySQL on Node.js: https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/
 
 This document does not authorize a production deployment, expose child data, issue a certificate or charge customers.
+
+## Phase 11 isolated staging checklist
+
+1. Keep the live feature branch unchanged. Stage `feature/phase11-origin-guardian-guard-20261108` in a separate Node.js app with distinct database/user, JWT secret, mail test account and HTTPS hostname. A PR preview URL alone does **not** prove isolation.
+2. Confirm `PUBLIC_SITE_ORIGIN` equals that staging hostname (not the live domain). If missing or malformed, production-mode tRPC deliberately returns 403.
+3. Back up the staging database, reconcile Drizzle migration history, and import `ops/auth-session-abuse-hardening.sql` only there; check that `authSessions` and `authRequestBuckets` exist.
+4. Turn on `AUTH_SESSIONS_ENFORCED=1`; test a **new** adult test-account login. Older issued JWT cookies won't be in the ledger. Test authorization after login, logout, stale JWT denial, a second browser/session, expired token and guardian export/delete. Turn off the flag if issues occur, but remember that disabling it restores stateless legacy JWT acceptance.
+5. **Before turning on `AUTH_ABUSE_DB_ENABLED=1`**, verify the TCP peer address seen by Node is not a shared Hostinger proxy for all visitors; inspect only masked/anonymized diagnostic output. No diagnostic collecting raw visitor IP has been built. If it is shared, leave OFF and plan a properly configured trusted-proxy/WAF rate limiter. Check user fairness across NATs/schools.
+6. With staging limits ON (only if network topology is safe), test OTP/verify/contact rate thresholds, time-window rollover, provider rejection, app restarts and multi-worker behavior. Monitor availability and legitimate user lockouts. All test emails must be adult-controlled.
+7. Confirm mobile, accessibility, languages, public routes, cookies and print. Restore test accounts/data by approved procedures; never run CI destructive tests on Hostinger.
+8. Record actual observed outcomes and Hostinger served commit in `ops/release-readiness-phase11.md`; request a security and privacy review before any production promotion.
+
+No new production ENV is required until the above migration and validation have been completed. Default-off learner data and AI flags stay `0`.

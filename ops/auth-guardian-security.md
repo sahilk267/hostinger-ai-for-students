@@ -1,6 +1,6 @@
 # Phase 6: authentication hardening and guardian-managed records — rollout checklist
 
-**Status: Draft implementation. NOT deployed.** These changes cannot safely be released before the manual MySQL schema is installed and tested. No legally verified guardian consent or identity authentication has been implemented.
+**Status (2026-11-08):** Owner reports the earlier feature branch was deployed and its public health, Adventure, and OTP smoke checks worked. That report is not an independent Hostinger audit. Phase 11 changes are ONLY on a separate Draft PR #2 and are NOT deployed or authorized for promotion. No legally verified guardian consent or identity authentication is implemented.
 
 ## Security changes in this branch
 
@@ -60,3 +60,35 @@ Covered behavior:
 - Browser-origin requests with `Sec-Fetch-Site` equal to `same-site`, `cross-site` or `none` are blocked on tRPC. No Origin + unsafe HTTP method is blocked unless Fetch Metadata explicitly says `same-origin`, or a caller intentionally supplies a Bearer token (non-browser API clients). Normal browser POSTs supply an Origin and/or Fetch Metadata.
 - OAuth GET callback routes are outside tRPC and remain separate. Validate OTP login, guardian export/delete, and mobile/older-browser functionality on an **isolated staging deployment** before promotion.
 - Remaining limitations: untrusted client-side headers are not authentication; a stolen session/bearer credential remains valid until expiry; legacy/no Fetch Metadata GET requests may still reach read-only APIs; allowlisting GET queries does not mean server-side permissions can be relaxed. Do not enable minor cloud data or paid/verified programs based only on this guard.
+
+## Phase 11 implementation: revocable sessions and abuse controls
+
+The code now includes two optional, **default-disabled** controls, separate from the existing Phase 11 strict origin guard. Do not switch them on before applying and reviewing `ops/auth-session-abuse-hardening.sql` on a disposable, isolated staging database.
+
+| Flag | Default | When `1` | Before enabling |
+|---|---|---|---|
+| `AUTH_SESSIONS_ENFORCED` | unset / `0` | New OTP/OAuth JWT sessions store SHA-256 token digest + owner + expiry in MySQL. Every authenticated account request requires active DB record. Logout marks the token revoked; account deletion cascades. | Create `authSessions`; verify HTTPS login, logout, new login, cross-browser expiry and rollback. **Existing untracked sessions will require sign-in again.** |
+| `AUTH_ABUSE_DB_ENABLED` | unset / `0` | Atomic per-peer MySQL budgets: OTP requests 12 per 15 min, OTP checks 50 per 15 min, contact 5 per hour. Stores only HMAC pseudonymous bucket identifiers. | Create `authRequestBuckets`; verify Hostinger TCP peer represents independent clients and not one shared reverse proxy. If it does represent a shared proxy, **DO NOT ENABLE** until trusted-client-IP resolution is engineered and tested. |
+
+Enforcement performs a real MySQL lookup per authenticated request (latency/cost); this is intentional to make cross-worker revocation effective without a stale in-process cache. If MySQL fails while enforcement is enabled, authenticated requests fail closed. The default-off deployment **does not have server-enforced JWT revocation**. This release should not be described as fully hardened until the flags, schema, proxy behavior and staging tests are reviewed.
+
+All session checks use SHA-256 of the signed token (no plaintext JWT table fields). Contact and OTP budget keys use HMAC-SHA256 with `JWT_SECRET` and never store plaintext email or client IP. The TCP peer address is NOT automatically the real client IP behind Hostinger. No `X-Forwarded-For` trust is enabled. Limits are fixed-window, not a network-wide bot-detection guarantee, and NAT/shared-IP users may be affected.
+
+The new migration does not create new users, collect student identity, change existing seven tables or migrate the Drizzle journal automatically. Reconcile with Drizzle migration history and back up first. For an isolated staging database, apply the SQL in phpMyAdmin, check table structure and indexes, then turn on one flag at a time. Do NOT import the migration blindly into live production.
+
+Suggested **manually reviewed** maintenance SQL for the separate security tables:
+
+```sql
+DELETE FROM authSessions WHERE expiresAt < DATE_SUB(UTC_TIMESTAMP(), INTERVAL 7 DAY);
+DELETE FROM authRequestBuckets WHERE expiresAt < DATE_SUB(UTC_TIMESTAMP(), INTERVAL 7 DAY);
+```
+
+No scheduled job was created. Set cleanup ownership and a data-retention policy before promotion.
+
+### Remaining security work and limitations
+
+- Per-IP HTTP abuse budgets remain optional until proxy topology is validated. They do not replace account/email limits, WAF, provider quotas or automated abuse monitoring.
+- Stateless JWTs issued before enforcement become untracked and cannot authenticate with the flag on; this is an intentional re-login migration. If flag is off, logging out clears the browser cookie but cannot invalidate a copied JWT.
+- Same-origin and Fetch Metadata are CSRF defense-in-depth; they do not protect against XSS, an already stolen Bearer credential, unsafe GET endpoints, malicious browser extensions or all older clients. Session and OAuth integration require staging review.
+- Parent self-attestation is not verified adult identity, legal parental consent or independent educational assessment. Cloud child-data and certificate flags remain OFF.
+- Use `ops/release-readiness-phase11.md` as the updated evidence/checklist authority.

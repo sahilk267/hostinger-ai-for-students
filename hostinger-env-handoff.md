@@ -9,6 +9,9 @@ This document is a **name-only deployment handoff** for AI for Students. It inte
 | `DATABASE_URL` | MySQL connection string used by Drizzle and the server | Yes | Preferred form: build it from the Hostinger database host, database name, user and replacement password inside the protected form. |
 | `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME` | Optional split MySQL fields used when `DATABASE_URL` is not available in Hostinger’s Node.js form | Yes | Enter all five in the protected form; `DATABASE_PORT` defaults to `3306`. The runtime also accepts the shorter aliases `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`. Do not mix incomplete sets. |
 | `JWT_SECRET` | Signs local authentication sessions and cookies | Yes | Generate a new long random value for this deployment; do not reuse the password or commit it. |
+| `PUBLIC_SITE_ORIGIN` | Strict canonical origin for tRPC protection | No | Required for Phase 11 production operation. Set to the exact HTTPS site origin without a path; staging and production need their respective own values. |
+| `AUTH_SESSIONS_ENFORCED` | Optional DB-verified, revocable session ledger | No | Keep `0` or unset until `authSessions` migration + staging login/logout test; then explicitly enable by approved rollout. Older sessions need re-login. |
+| `AUTH_ABUSE_DB_ENABLED` | Optional MySQL-backed OTP/contact request budgets | No | Keep `0` or unset until `authRequestBuckets` migration and trusted client-IP/proxy topology validation. Shared reverse-proxy IPs may lock out visitors. |
 | `HOSTINGER_MAIL_API_TOKEN` | Auth-code mail adapter credential | Yes | Paste the Hostinger Mail API token only in the protected form. |
 | `AUTH_MAIL_FROM` | Sender address for local auth-code mail | No, but deployment-critical | Set to `auth@aiforstudents.in`. |
 | `BUILT_IN_FORGE_API_URL` | Server-side built-in API endpoint used for supported integrations | Usually secret-backed | Copy the environment value supplied by the managed project configuration. |
@@ -59,3 +62,9 @@ General learning-game scores are kept in browser storage while a learner plays. 
 ## User-owned checks after configuration
 
 The following cannot be truthfully marked complete from the sandbox: real HTTPS OTP delivery, guest-progress migration in a second browser/device, contact-form delivery on the live domain, Hostinger database connectivity, and the final staging smoke test. Run those only after the protected variables and domain are configured, then record pass/fail outcomes without copying secrets or private learner data.
+
+## Phase 11 secure rollout: configuration is NOT evidence of deployment
+
+Import `ops/auth-session-abuse-hardening.sql` only into a backed-up isolated staging DB first. Check tables `authSessions` and `authRequestBuckets`. Enabling `AUTH_SESSIONS_ENFORCED=1` requires existing visitors to sign in again, and will fail closed if DB/session ledger is missing. `AUTH_ABUSE_DB_ENABLED=1` requires proof that the Node TCP peer represents a sufficiently differentiated client population; Hostinger reverse proxies can make all requests appear to share one address. Never trust arbitrary `X-Forwarded-For` headers. The flags default OFF and should **not** be enabled directly in production.
+
+Track the complete gate-by-gate verification and rollback decision in `ops/release-readiness-phase11.md`. Keeping `EXPLORER_CLOUD_SAVE_ENABLED`, `EXPLORER_AI_FEEDBACK_ENABLED`, and `DISCOVERY_CHECKPOINTS_ENABLED` at `0` remains required until independent safeguarding/privacy review.

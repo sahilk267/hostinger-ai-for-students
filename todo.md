@@ -728,3 +728,20 @@
 - [x] Correct the visual contract regression assertion to check the actual duplicate-round protection implementation without relying on a comment word.
 - [x] Ensure assistance/timeout/exposure quality flags are preserved as `review` when evidence is also incomplete, without changing the score.
 - [x] Deploy the latest visual-game commit to Hostinger and recheck `/discovery-lab`; user confirmed deployment, and live homepage, Learn, Study, Progress, Robotics and Discovery Lab routes now load.
+
+## Phase 11 — origin guard, revocable login sessions, abuse limits, tracking (2026-11-08)
+
+Implementation completed on review branch `feature/phase11-origin-guardian-guard-20261108` and tracked by Draft PR #2. **Code completion is not production deployment approval.**
+- [x] Remove Host header fallback when `PUBLIC_SITE_ORIGIN` is configured; fail closed for unconfigured production origin and unsafe originless requests.
+- [x] Add Fetch Metadata regression tests and compiled-Express smoke coverage, including a spoofed Host.
+- [x] Add **optional** database-backed session token-digest ledger (issue, check, revoke on logout, expire and cascade on deletion). Requires manual staging migration and `AUTH_SESSIONS_ENFORCED=1` after approval.
+- [x] Add **optional** atomic MySQL peer-IP fixed-window budgets for OTP request, OTP verify and contact submissions; do not trust X-Forwarded-For directly. Requires same manual migration and proxy validation before `AUTH_ABUSE_DB_ENABLED=1`.
+- [x] Prepare `ops/auth-session-abuse-hardening.sql` (no DROP / no user or secret data), isolated MySQL integration tests and CI.
+- [x] Update deployment ENV handoff, security runbook, preview checklist and versioned release tracker.
+- [ ] Validate security table migration, session revocation, OTP, logout, contact and account export/delete on a **separate real Hostinger staging DB**.
+- [ ] Verify Hostinger's true remote peer IP architecture across two clients/NATs before enabling shared-IP limits; avoid accidental lockouts.
+- [ ] Obtain authorized safeguarding/guardian-consent/privacy review and manual Android/keyboard/Hindi/print learning QA.
+- [ ] Confirm live served commit, deploy/rollback plan, mail quotas and a retention cleanup schedule.
+- [ ] Review and explicitly approve PR #2 for promotion; no automatic deployment or live migrations executed by this work.
+
+Evidence/status: `ops/release-readiness-phase11.md`. Account login and Discovery Adventure were earlier reported working by the owner on the deployed feature branch; this is NOT proof the new Phase 11 features have been deployed or tested there.
