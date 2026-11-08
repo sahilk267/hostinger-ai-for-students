@@ -755,3 +755,12 @@ Evidence/status: `ops/release-readiness-phase11.md`. Account login and Discovery
 - [x] Restrict formerly public `/manus-storage/*` presigning route: default OFF, explicit public-prefix opt-in and traversal/encoding checks.
 - [x] Add storage prefix validation and denied-request tests without calling external services.
 - [ ] Validate whether production public assets require this proxy, and ensure storage-side access policies permit only public files before any opt-in.
+
+## Phase 12 — session collision, OAuth optionality, staging safety checks (2026-11-08)
+
+- [x] Make newly signed JWT sessions unique per issuance (random `jti` + issue time) to prevent DB primary-key collisions for same-second logins.
+- [x] Under DB-enforced sessions, deny account auto-recreation from legacy JWTs after deletion; retain fresh OAuth callback account creation.
+- [x] Make OAuth visibly opt-in with `VITE_MANUS_OAUTH_ENABLED`; suppress broken external OAuth sign-in when the owner uses Hostinger email OTP only.
+- [x] Correct the OTP success message so browser-only Adventure results are not falsely described as remotely saved.
+- [x] Add read-only, no-secret Phase 11 staging gate + Node-native regression cases, and run them in CI.
+- [ ] Verify real Hostinger isolated staging database, peer-IP topology, OAuth and browser/parent QA with recorded human evidence before enabling DB flags or promotion.

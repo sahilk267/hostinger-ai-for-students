@@ -45,6 +45,8 @@ jobs:
         run: node ops/smoke-built-app.mjs
       - name: Verify Hostinger PR-preview separation guardrails
         run: node --test ops/preview-safety.test.mjs
+      - name: Verify Phase 11 staging policy (static, no live credentials)
+        run: node --test ops/phase11-staging-gate.test.mjs
 
   mysql-integration:
     name: Real MySQL auth and guardian integrity checks

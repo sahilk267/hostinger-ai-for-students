@@ -64,3 +64,11 @@ This document does not authorize a production deployment, expose child data, iss
 8. Record actual observed outcomes and Hostinger served commit in `ops/release-readiness-phase11.md`; request a security and privacy review before any production promotion.
 
 No new production ENV is required until the above migration and validation have been completed. Default-off learner data and AI flags stay `0`.
+
+## Phase 12 read-only staging configuration preflight
+
+In the **isolated staging** environment only, set the following non-secret control keys before running `node ops/check-phase11-staging.mjs`: `DEPLOY_TARGET=staging`, `STAGING_DATA_MODE=isolated-db`, `STAGING_PUBLIC_ORIGIN`, `PRODUCTION_PUBLIC_ORIGIN`, `PUBLIC_SITE_ORIGIN`, `PRODUCTION_DATABASE_NAME`, `PRODUCTION_DATABASE_USER` and `STAGING_TEST_MAIL_ONLY=yes`. The checker also requires staging JWT/mail and staging DB connection fields to exist; it reports only fixed codes, **never secret values**. It does not connect to Hostinger, send an email, open MySQL or prove separation.
+
+After independently reviewing/importing the security schema on **staging only**, the operator can set `STAGING_SECURITY_SCHEMA_REVIEWED=yes` and `STAGING_SECURITY_SCHEMA_APPLIED=yes` as explicit self-attestations when either new DB security flag is enabled. Enabling the peer-IP abuse limiter also requires `STAGING_PEER_IP_ISOLATED=yes` **after** independently observing proxy topology. All acknowledgements are operator assertions; they are not substitute evidence. Keep default-off flags until actual tests show success.
+
+Unconfigured external Manus OAuth is hidden by default. To expose it again intentionally, set `VITE_MANUS_OAUTH_ENABLED=1`, `VITE_APP_ID`, `VITE_OAUTH_PORTAL_URL` (HTTPS) at build time and configure approved server `OAUTH_SERVER_URL`. The original email OTP path requires none of these.

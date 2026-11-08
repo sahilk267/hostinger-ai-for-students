@@ -15,6 +15,7 @@
 | Blank database schema | Synced for **fresh installs only** | `hostinger-schema-import.sql` now includes all seven core tables; never re-import into the owner's existing populated DB |
 | CI | Automated | `.github/workflows/validate-discovery.yml`, normal TypeScript/unit/build/smoke plus isolated MySQL session/abuse concurrency suites |
 | Developer docs + tracker | Implemented | This file, `todo.md`, ENV handoff, auth and staging runbooks |
+| Read-only Hostinger staging configuration preflight | Implemented, no live account access | `ops/phase11-staging-gate.mjs`, `ops/check-phase11-staging.mjs`, and Node-native policy tests; self-acknowledgements are not proof |
 | Live Hostinger validation | **NOT VERIFIED** | User previously attested health/Adventure/OTP worked on the earlier branch; no proof new Phase 11 commit, isolation, flags or table migration were applied |
 | Guardian verification / official certification | **NOT IMPLEMENTED** | Only self-attestation, browser-local formative assessment and private practice milestone. Do not claim accreditation or verified identity |
 
@@ -43,3 +44,12 @@
 - On a staging failure: disable `AUTH_ABUSE_DB_ENABLED` if lockouts occur; disable `AUTH_SESSIONS_ENFORCED` only after acknowledging that older JWTs regain their original stateless validity.
 - Do not `DROP` new tables or alter production user records as a rollback method. Backups and planned session reset are required before any production cutover.
 - Roll back application deployment to the last known-good commit only through authorized Hostinger change control. Session tokens issued solely under DB enforcement might remain signed; coordinate JWT rotation/security response according to incident impact.
+
+## Phase 12 — auth collision and OAuth-optional follow-up (2026-11-08)
+
+- [x] Every freshly issued signed session JWT has a cryptographically unique `jti` even when created twice in the same second; recorded token digests no longer collide solely due to matching JWT claims/expiry.
+- [x] With `AUTH_SESSIONS_ENFORCED=1`, a deleted account is not silently re-provisioned through the legacy OAuth auto-sync fallback; the external OAuth callback explicitly creates/upserts fresh accounts before new sessions.
+- [x] Optional Manus OAuth now requires `VITE_MANUS_OAUTH_ENABLED=1`, `VITE_OAUTH_PORTAL_URL` and `VITE_APP_ID` for the UI login path. The server also needs an independently approved `OAUTH_SERVER_URL`. OTP-only deployment needs none of these.
+- [x] OTP dialog no longer states that browser-only Discovery Adventure practice was automatically saved in an account.
+- [x] Add a secret-safe **static** staging config gate and six Node-native regression tests, and wire them into CI. Its acknowledgements must not be mistaken for actual Hostinger validation.
+- [ ] Confirm live Hostinger/staging browser paths and migration in a real, isolated environment. **Code is not deployed by these commits.**
