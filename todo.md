@@ -745,3 +745,8 @@ Implementation completed on review branch `feature/phase11-origin-guardian-guard
 - [ ] Review and explicitly approve PR #2 for promotion; no automatic deployment or live migrations executed by this work.
 
 Evidence/status: `ops/release-readiness-phase11.md`. Account login and Discovery Adventure were earlier reported working by the owner on the deployed feature branch; this is NOT proof the new Phase 11 features have been deployed or tested there.
+
+### Documentation alignment — blank Hostinger schema
+- [x] Reconcile the old five-table GitHub blank import with seven core tables required by hardened email OTP and Discovery checkpoints; the updated `hostinger-schema-import.sql` is for **new empty DBs only**.
+- [x] Keep optional `authSessions` and `authRequestBuckets` in separate Phase 11 SQL; add import/DDL contract regression tests and phpMyAdmin handoff update.
+- [ ] Verify any future actual Hostinger migration independently; neither SQL file has been run by the assistant.

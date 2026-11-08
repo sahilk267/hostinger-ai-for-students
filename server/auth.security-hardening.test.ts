@@ -147,6 +147,20 @@ describe("Hardened account and guardian security contracts", () => {
     expect(source("server/_core/index.ts")).toContain("requireSameOriginApi");
   });
 
+  it("keeps the phpMyAdmin blank import aligned with all seven core tables, with optional Phase 11 tables separate", () => {
+    const blank = source("hostinger-schema-import.sql");
+    const optional = source("ops/auth-session-abuse-hardening.sql");
+    for (const table of ["users","learningProgress","explorerProfiles","explorerAttempts","explorerShares","authEmailChallenges","discoveryCheckpoints"]) {
+      expect(blank).toContain("CREATE TABLE \`" + table + "\`");
+    }
+    expect(blank).not.toContain("CREATE TABLE \`authSessions\`");
+    expect(blank).not.toContain("CREATE TABLE \`authRequestBuckets\`");
+    for (const table of ["authSessions","authRequestBuckets"]) {
+      expect(optional).toContain("CREATE TABLE IF NOT EXISTS \`" + table + "\`");
+    }
+    expect(optional).not.toMatch(/DROP TABLE|TRUNCATE TABLE|INSERT INTO users/);
+  });
+
   it("stores hashed one-time login secrets with an atomic attempt limit, never OTP plaintext", () => {
     const auth = source("server/authEmail.ts");
     const db = source("server/db.ts");

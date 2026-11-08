@@ -51,7 +51,7 @@ The database password previously shared in chat must be replaced before deployme
 
 ## Blank database schema import
 
-If phpMyAdmin shows **No tables found in database**, select the application database, open **Import**, choose the repository file `hostinger-schema-import.sql`, keep the SQL format selected, and run the import. Do not create individual tables manually and do not modify the SQL to add passwords or user rows. After import, the Structure tab should show `users`, `learningProgress`, `explorerProfiles`, `explorerAttempts` and `explorerShares`. The SQL file also includes the required foreign keys and unique indexes.
+If phpMyAdmin shows **No tables found in database**, select the application database, open **Import**, choose the repository file `hostinger-schema-import.sql`, keep the SQL format selected, and run the import. Do not create individual tables manually and do not modify the SQL to add passwords or user rows. After import, the Structure tab should show **seven core tables**: `users`, `learningProgress`, `explorerProfiles`, `explorerAttempts`, `explorerShares`, `authEmailChallenges` and `discoveryCheckpoints`. For an existing populated database, DO NOT re-import this blank schema file; use reviewed incremental migrations only. The SQL file also includes the required foreign keys and unique indexes.
 
 For a read-only verification in phpMyAdmin, run `SHOW TABLES;`, `SHOW COLUMNS FROM users;` and `SHOW CREATE TABLE users;`. The `users` table must contain `id`, `openId`, `name`, `email`, `loginMethod`, `role`, `createdAt`, `updatedAt` and `lastSignedIn`, with `id` as the primary key and `openId` unique. Do not run `DROP`, `TRUNCATE` or manual row inserts.
 

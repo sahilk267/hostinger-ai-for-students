@@ -11,6 +11,7 @@
 | Revocable account JWT sessions | Implemented, default OFF | `authSessions` schema, `registerAuthSession`, `isAuthSessionActive`, `revokeAuthSession`, sign-in/auth/logout integration; needs staging migration and `AUTH_SESSIONS_ENFORCED=1` |
 | Shared-worker abuse buckets | Implemented, default OFF | `authRequestBuckets` schema, atomic bounded MySQL updates, OTP and contact integration; needs migration and peer-IP validation before `AUTH_ABUSE_DB_ENABLED=1` |
 | Migration SQL | Prepared, **not applied** | `ops/auth-session-abuse-hardening.sql`; non-destructive CREATE TABLE IF NOT EXISTS for two new tables |
+| Blank database schema | Synced for **fresh installs only** | `hostinger-schema-import.sql` now includes all seven core tables; never re-import into the owner's existing populated DB |
 | CI | Automated | `.github/workflows/validate-discovery.yml`, normal TypeScript/unit/build/smoke plus isolated MySQL session/abuse concurrency suites |
 | Developer docs + tracker | Implemented | This file, `todo.md`, ENV handoff, auth and staging runbooks |
 | Live Hostinger validation | **NOT VERIFIED** | User previously attested health/Adventure/OTP worked on the earlier branch; no proof new Phase 11 commit, isolation, flags or table migration were applied |

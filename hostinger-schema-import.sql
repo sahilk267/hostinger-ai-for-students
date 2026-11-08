@@ -1,5 +1,8 @@
 -- AI for Students blank-database schema import
--- Run this only after selecting the empty application database in phpMyAdmin.
+-- Run this ONLY for a completely blank database after selecting it in phpMyAdmin.
+-- Do NOT re-import into an existing seven-table deployment. The two optional
+-- Phase 11 security tables are a separate staging-only migration in
+-- ops/auth-session-abuse-hardening.sql.
 -- This file creates tables and constraints only; it contains no users, credentials or seed data.
 
 SET FOREIGN_KEY_CHECKS = 0;
@@ -80,6 +83,35 @@ CREATE TABLE `explorerShares` (
   CONSTRAINT `explorerShares_tokenHash_unique` UNIQUE (`tokenHash`),
   CONSTRAINT `explorerShares_profileId_explorerProfiles_id_fk` FOREIGN KEY (`profileId`) REFERENCES `explorerProfiles` (`id`) ON DELETE CASCADE
 );
+
+
+-- Browser-independent practice check (default-disabled feature flag).
+CREATE TABLE `discoveryCheckpoints` (
+  `id` INT AUTO_INCREMENT NOT NULL,
+  `userId` INT NOT NULL,
+  `ageBand` ENUM('8-10','11-13','14-17') NOT NULL,
+  `challengeId` VARCHAR(64) NOT NULL,
+  `attempts` INT NOT NULL DEFAULT 0,
+  `solvedAt` TIMESTAMP NULL,
+  `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `discoveryCheckpoints_user_challenge_unique` (`userId`,`challengeId`),
+  CONSTRAINT `discoveryCheckpoints_userId_users_id_fk` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Required for hardened OTP login; no plaintext email or code is stored.
+CREATE TABLE `authEmailChallenges` (
+  `emailKey` VARCHAR(64) NOT NULL,
+  `challengeId` VARCHAR(64) NOT NULL,
+  `codeHash` VARCHAR(64) NOT NULL,
+  `expiresAt` TIMESTAMP NOT NULL,
+  `requestedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `attempts` INT NOT NULL DEFAULT 0,
+  `consumedAt` TIMESTAMP NULL,
+  PRIMARY KEY (`emailKey`),
+  UNIQUE KEY `authEmailChallenges_challengeId_unique` (`challengeId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
