@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { isSameOriginApiRequest, requireSameOriginApi } from "./_core/sameOrigin";
+import { AUTH_ABUSE_LIMITS, authRequestBucket, getAuthSessionToken, hashAuthSessionToken, requestPeerAddress } from "./authSessionSecurity";
 import { getSessionCookieOptions } from "./_core/cookies";
 
 const source = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8");
@@ -81,6 +82,35 @@ describe("Hardened account and guardian security contracts", () => {
       if (previousMode === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = previousMode;
       if (previousOrigin === undefined) delete process.env.PUBLIC_SITE_ORIGIN; else process.env.PUBLIC_SITE_ORIGIN = previousOrigin;
     }
+  });
+
+  it("hashes JWT session credentials and never trusts spoofed forwarding IP headers", () => {
+    const token = "jwt-session-example-do-not-store";
+    const hash = hashAuthSessionToken(token);
+    expect(hash).toMatch(/^[a-f0-9]{64}$/);
+    expect(hash).not.toContain(token);
+    expect(getAuthSessionToken({ headers: { authorization: "Bearer sample.jwt.token" } })).toBe("sample.jwt.token");
+    expect(getAuthSessionToken({ headers: { cookie: "app_session=not-the-expected-name" } })).toBeUndefined();
+    const socket = { socket: { remoteAddress: "127.0.0.1" } };
+    expect(requestPeerAddress(socket as never)).toBe("127.0.0.1");
+    expect(requestPeerAddress({ socket: { remoteAddress: "invalid" }, headers: { "x-forwarded-for": "8.8.8.8" } } as never)).toBeNull();
+  });
+
+  it("keeps opaque per-peer, per-route rate-limit buckets with fixed windows", () => {
+    const secret = "not-a-production-session-secret-but-32-bytes";
+    const now = 1762588800000;
+    const a = authRequestBucket("otp-request","127.0.0.1",now,secret);
+    const b = authRequestBucket("otp-request","127.0.0.1",now+100,secret);
+    const differentPeer = authRequestBucket("otp-request","127.0.0.2",now,secret);
+    const differentKind = authRequestBucket("contact","127.0.0.1",now,secret);
+    const later = authRequestBucket("otp-request","127.0.0.1",now+AUTH_ABUSE_LIMITS["otp-request"].windowMs,secret);
+    expect(a.bucketKey).toMatch(/^[a-f0-9]{64}$/);
+    expect(a.bucketKey).toBe(b.bucketKey);
+    expect(a.bucketKey).not.toBe(differentPeer.bucketKey);
+    expect(a.bucketKey).not.toBe(differentKind.bucketKey);
+    expect(a.bucketKey).not.toBe(later.bucketKey);
+    expect(a.limit).toBe(12);
+    expect(JSON.stringify(a)).not.toContain("127.0.0.1");
   });
 
   it("uses Lax secure first-party cookies in production and supports local HTTP", () => {

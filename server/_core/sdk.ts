@@ -1,7 +1,6 @@
-import { AXIOS_TIMEOUT_MS, COOKIE_NAME, ONE_YEAR_MS, decodeOAuthState } from "@shared/const";
+import { AXIOS_TIMEOUT_MS, ONE_YEAR_MS, decodeOAuthState } from "@shared/const";
 import { ForbiddenError } from "@shared/_core/errors";
 import axios, { type AxiosInstance } from "axios";
-import { parse as parseCookieHeader } from "cookie";
 import { getAuthSessionToken, hashAuthSessionToken } from "../authSessionSecurity";
 import type { Request } from "express";
 import { SignJWT, jwtVerify } from "jose";
@@ -143,15 +142,6 @@ class SDKServer {
       platform: loginMethod,
       loginMethod,
     } as GetUserInfoResponse;
-  }
-
-  private parseCookies(cookieHeader: string | undefined) {
-    if (!cookieHeader) {
-      return new Map<string, string>();
-    }
-
-    const parsed = parseCookieHeader(cookieHeader);
-    return new Map(Object.entries(parsed));
   }
 
   private getSessionSecret() {
