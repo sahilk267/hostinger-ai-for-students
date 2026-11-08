@@ -50,7 +50,8 @@ run("session revocation and distributed abuse limits (isolated MySQL)", () => {
     await registerAuthSession({ tokenHash, userId: owner, expiresAt });
     expect(await isAuthSessionActive(tokenHash,owner)).toBe(true);
     expect(await isAuthSessionActive(tokenHash,stranger)).toBe(false);
-    expect(await isAuthSessionActive(tokenHash,owner,new Date(expiresAt.getTime()+1))).toBe(false);
+    // MySQL TIMESTAMP has whole-second precision; use a definite later instant.
+    expect(await isAuthSessionActive(tokenHash,owner,new Date(expiresAt.getTime()+60_000))).toBe(false);
     const [rows] = await connection.query<mysql.RowDataPacket[]>("SELECT tokenHash FROM authSessions WHERE tokenHash = ?", [tokenHash]);
     expect(rows).toHaveLength(1);
     expect(JSON.stringify(rows)).not.toContain(token);
