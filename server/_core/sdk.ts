@@ -1,6 +1,7 @@
 import { AXIOS_TIMEOUT_MS, ONE_YEAR_MS, decodeOAuthState } from "@shared/const";
 import { ForbiddenError } from "@shared/_core/errors";
 import axios, { type AxiosInstance } from "axios";
+import { randomUUID } from "node:crypto";
 import { getAuthSessionToken, hashAuthSessionToken } from "../authSessionSecurity";
 import type { Request } from "express";
 import { SignJWT, jwtVerify } from "jose";
@@ -193,6 +194,10 @@ class SDKServer {
       name: payload.name,
     })
       .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+      // A unique jti prevents same-second logins from sharing a signed token,
+      // colliding in authSessions or accidentally revoking each other.
+      .setJti(randomUUID())
+      .setIssuedAt(Math.floor(issuedAt / 1000))
       .setExpirationTime(expirationSeconds)
       .sign(secretKey);
   }
@@ -279,7 +284,14 @@ class SDKServer {
     const signedInAt = new Date();
     let user = await db.getUserByOpenId(sessionUserId);
 
-    // If user not in DB, sync from OAuth server automatically
+    // With DB session enforcement, a missing user cannot be auto-created by
+    // a legacy signed token after account deletion. Fresh OAuth callbacks
+    // explicitly upsert before issuing their new tracked token.
+    if (!user && process.env.AUTH_SESSIONS_ENFORCED === "1") {
+      throw ForbiddenError("Account is unavailable");
+    }
+
+    // Compatibility for existing deployments without DB-backed sessions.
     if (!user) {
       try {
         const userInfo = await this.getUserInfoWithJwt(sessionToken ?? "");

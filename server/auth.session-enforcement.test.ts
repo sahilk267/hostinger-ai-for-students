@@ -65,6 +65,19 @@ function context(token?:string) {
 }
 
 describe("enforced session lifecycle and authenticated route budgets", () => {
+  it("issues independently revocable, unique tokens even twice in the same second", async () => {
+    const first=await sdk.createSessionToken("email:ci-example",{name:"Adult Test",expiresInMs:3600_000});
+    const second=await sdk.createSessionToken("email:ci-example",{name:"Adult Test",expiresInMs:3600_000});
+    expect(first).not.toEqual(second);
+    expect(records.size).toBe(2);
+    const firstDigest=hashAuthSessionToken(first);
+    const secondDigest=hashAuthSessionToken(second);
+    expect(firstDigest).not.toEqual(secondDigest);
+    await revokeAuthSession(firstDigest);
+    await expect(sdk.authenticateRequest(req(first))).rejects.toThrow(/revoked/i);
+    expect(await sdk.authenticateRequest(req(second))).toMatchObject({id:42});
+  });
+
   it("stores only a token digest; live cookie authenticates, logout revokes across future requests", async () => {
     const token=await sdk.createSessionToken("email:ci-example",{name:"Adult Test",expiresInMs:3600_000});
     expect(registerAuthSession).toHaveBeenCalledTimes(1);
