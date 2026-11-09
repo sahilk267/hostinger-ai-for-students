@@ -7,6 +7,7 @@ import DiscoveryParentReport from "@/components/DiscoveryParentReport";
 import DiscoveryTransferAssessment from "@/components/DiscoveryTransferAssessment";
 import { TRANSFER_CHALLENGES, summarizeTransfer, type TransferAttempt } from "@/data/discoveryTransfer";
 import "./discoveryAdventure.css";
+import "./phase14Journey.css";
 
 const STORAGE_KEY = "aifs-discovery-adventure-v1";
 const TRANSFER_STORAGE_KEY = "aifs-discovery-transfer-v1";
@@ -147,6 +148,8 @@ function initialLocale(): AdventureLocale {
 function initialBand(): AdventureAgeBand {
   if (typeof window === "undefined") return "11-13";
   try {
+    const requested = new URLSearchParams(window.location.search).get("age");
+    if (requested === "8-10" || requested === "11-13" || requested === "14-17") return requested;
     const stored = window.localStorage.getItem(AGE_KEY);
     if (stored === "8-10" || stored === "11-13" || stored === "14-17") return stored;
   } catch { /* private browsing or storage disabled */ }
@@ -164,7 +167,8 @@ export default function DiscoveryAdventurePage() {
   const [optionOrder, setOptionOrder] = useState<string[]>([]);
   const [hintOpen, setHintOpen] = useState(false);
   const [checked, setChecked] = useState<boolean | null>(null);
-  const [showReport, setShowReport] = useState(false);
+  const [showReport, setShowReport] = useState(() =>
+    typeof window !== "undefined" && new URLSearchParams(window.location.search).get("view") === "report");
   const copy = words[locale];
   const availableMissions = useMemo(() => getAgeAdventureMissions(ageBand), [ageBand]);
   const current = availableMissions.find((mission) => mission.id === activeId) ?? null;
@@ -283,7 +287,7 @@ export default function DiscoveryAdventurePage() {
       <div className="da-sky" aria-hidden="true"><span className="da-orb da-orb-one" /><span className="da-orb da-orb-two" /><span className="da-orb da-orb-three" /></div>
       <header className="da-header">
         <a href="/" className="da-brand"><span aria-hidden="true">✦</span> AI for Students</a>
-        <a href="/explorer" className="da-back-link"><ArrowLeft size={16} /> Explorer Lab</a>
+        <a href="/my-journey" className="da-back-link"><ArrowLeft size={16} /> My Journey</a>
       </header>
       <main className="da-shell">
         <section className="da-hero">
@@ -296,6 +300,12 @@ export default function DiscoveryAdventurePage() {
           <div className="da-planet-art" aria-hidden="true"><span className="da-planet-ring" /><span className="da-planet-core">✦</span><span className="da-planet-satellite">🛸</span><span className="da-planet-star">✧</span></div>
         </section>
 
+        <nav className="phase14-adventure-steps" aria-label="Your learning journey">
+          <a href="/my-journey">📍 Dashboard</a>
+          <span>1 · Age & world</span><span>2 · 9 missions ({practiceSolved}/9)</span>
+          <span>3 · Thinking challenge ({transferSummary.solved}/3)</span>
+          <button type="button" onClick={() => { setActiveId(null); setShowAssessment(false); setShowReport(true); }}>4 · Family plan ↗</button>
+        </nav>
         <nav className="da-languages" aria-label="Choose language">
           {ADVENTURE_LOCALES.map((language) => <button type="button" key={language.id} aria-pressed={locale === language.id} className={locale === language.id ? "is-active" : ""} onClick={() => changeLocale(language.id)}>{language.label}</button>)}
         </nav>
