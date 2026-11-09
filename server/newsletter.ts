@@ -1,5 +1,5 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
-import { and, eq, gt, isNull, sql } from "drizzle-orm";
+import { and, eq, gt, isNull, isNotNull, or, sql } from "drizzle-orm";
 import { newsletterSubscribers } from "../drizzle/schema";
 import { getDb } from "./db";
 
@@ -94,7 +94,11 @@ export async function confirmNewsletterSubscription(key:string,token:string) {
   const [changed]=await db.update(r)
     .set({confirmedAt:new Date(),unsubscribedAt:null,confirmHash:""})
     .where(and(eq(r.emailKey,key),eq(r.confirmHash,hashNewsletterConfirmation(key,token)),
-      isNull(r.confirmedAt),gt(r.confirmExpiresAt,new Date())));
+      // A previously opted-out address may rejoin only with a NEW confirmHash.
+      // Older confirmedAt can remain in historical rows; unsubscribedAt must
+      // stay set until confirmation succeeds.
+      or(isNull(r.confirmedAt),isNotNull(r.unsubscribedAt)),
+      gt(r.confirmExpiresAt,new Date())));
   return changed.affectedRows===1;
 }
 export async function unsubscribeNewsletterSubscription(key:string,token:string) {
