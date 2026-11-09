@@ -277,6 +277,78 @@ try {
     "Direct Thinking Challenge link cannot bypass unsolved 9-mission gate");
   await closePage(gated);
 
+  // Exercise the complete 9 + 3 UI hand-off using synthetic, non-learner
+  // records generated from the actual current authored mission/challenge IDs.
+  // This verifies navigation/state, not the reasoning engine or a real child's work.
+  const fixtureRun=spawnSync("pnpm",["exec","tsx","ops/phase14-browser-fixture.ts"],{
+    encoding:"utf8",timeout:12000,
+  });
+  check(fixtureRun.status===0,"Authoritative authored mission fixture generates");
+  const fixture=JSON.parse(fixtureRun.stdout.trim());
+  check(fixture.missions.length===9 && fixture.transfers.length===3,
+    "Exactly nine authored missions and three new-situation challenges in selected band");
+  const at="2026-11-10T00:00:00.000Z";
+  const missionRecords=Object.fromEntries(fixture.missions.map(id=>[id,{
+    firstCorrect:true,firstIndependent:true,bestCorrect:true,attempts:1,
+    hintsUsed:0,enjoyed:null,updatedAt:at,
+  }]));
+  const transferRecords=Object.fromEntries(fixture.transfers.map(id=>[id,{
+    firstCorrect:true,firstDecisionCorrect:true,firstReasonCorrect:true,
+    solved:true,attempts:1,updatedAt:at,
+  }]));
+  const storagePage=await openPage("/my-journey");
+  const setValue=(key,value)=>"localStorage.setItem("+JSON.stringify(key)+","+JSON.stringify(JSON.stringify(value))+");";
+  await evalPage(storagePage.sid,"(()=>{"+
+    setValue("aifs-discovery-adventure-v1",missionRecords)+
+    "localStorage.setItem('aifs-discovery-adventure-age-band','11-13');return true;})()");
+  await closePage(storagePage);
+
+  const afterNine=await openPage("/my-journey");
+  await waitText(afterNine,"9/9");
+  check(await evalPage(afterNine.sid,
+    "!!document.querySelector('.phase14-journey-card a[href*=\"view=challenge\"]')"),
+    "Nine solved practice missions offer direct gated Thinking Challenge");
+  await closePage(afterNine);
+
+  const unlocked=await openPage("/explorer/adventure?age=11-13&view=challenge");
+  await poll(()=>evalPage(unlocked.sid,
+    "!!document.querySelector('#da-transfer-panel')"),
+    "Thinking Challenge opens when all nine missions are solved");
+  await closePage(unlocked);
+
+  const seedTransfer=await openPage("/my-journey");
+  await evalPage(seedTransfer.sid,"(()=>{"+
+    setValue("aifs-discovery-transfer-v1",transferRecords)+
+    "return true;})()");
+  await closePage(seedTransfer);
+
+  const afterTwelve=await openPage("/my-journey");
+  await waitText(afterTwelve,"3/3");
+  check(await evalPage(afterTwelve.sid,
+    "!!document.querySelector('.phase14-journey-card a[href*=\"view=report\"]')"),
+    "Twelve solved tasks route to private family milestone");
+  await closePage(afterTwelve);
+
+  const fullReport=await openPage("/explorer/adventure?age=11-13&view=report");
+  await poll(()=>evalPage(fullReport.sid,
+    "!!document.querySelector('#da-report-panel .dc-showcase-section.is-earned')"),
+    "Private 12-task family milestone unlocks without accreditation claims");
+  check(await evalPage(fullReport.sid,
+    "!!document.querySelector('#da-report-panel .da-delete-action')"),
+    "Browser practice can be deleted from the private report");
+  await snapshot(fullReport,"08-private-milestone-12tasks-desktop");
+  const deleted=await evalPage(fullReport.sid,
+    "(()=>{window.confirm=()=>true;const b=document.querySelector('.da-delete-action');if(!b)return false;b.click();return true;})()");
+  check(deleted,"User-controlled delete action available");
+  await poll(()=>evalPage(fullReport.sid,
+    "(()=>{try{return Object.keys(JSON.parse(localStorage.getItem('aifs-discovery-adventure-v1')||'{}')).length===0 && Object.keys(JSON.parse(localStorage.getItem('aifs-discovery-transfer-v1')||'{}')).length===0;}catch{return false;}})()"),
+    "Clear browser-local missions and challenges",45);
+  await closePage(fullReport);
+
+  const reset=await openPage("/my-journey");
+  await waitText(reset,"0/9");
+  await closePage(reset);
+
   const token="c".repeat(44),key="a".repeat(64);
   const email=await openPage("/newsletter/confirm?key="+key+"&token="+token,1280,900);
   await poll(()=>evalPage(email.sid,"location.search===''"),
@@ -297,7 +369,7 @@ try {
     checkedOn:"Chromium headless desktop, 360px and 320px",
     pass:checks.every(x=>x.pass),checks,
   },null,2));
-  console.log("Phase 14 browser QA PASS: "+checks.length+" assertions, 7 screenshots; isolated app only");
+  console.log("Phase 14 browser QA PASS: "+checks.length+" assertions, 8 screenshots; isolated app only");
 } catch(error) {
   console.error(error instanceof Error?error.message:"Browser QA failed");
   await mkdir(output,{recursive:true}).catch(()=>{});
