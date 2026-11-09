@@ -61,3 +61,9 @@ The visible educational MVP is implemented in code, but it is not a paid/verifie
 - [x] Phase 14 P1–P5 implemented on isolated GitHub branch, with relevant tests and docs.
 - [x] GitHub CI verified for Phase 14 implementation/docs commit `63cd5a0d906cf3fb36108624d7a944c33a211c06`: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42712113727 (TypeScript, all unit/route tests, production build, compiled-app smoke, isolated real MySQL auth/guardian/newsletter suites).
 - [ ] Hostinger staging/live deployment, database migration, browser QA and approvals — deliberately deferred, **not falsely marked complete**.
+
+## Phase 15 pre-deployment browser acceptance — evidence summary
+
+**Pass:** https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677 on test code `3495b86b344a670cfd256a961ae0c47405bbb2a3`. Chromium performed 44 UI assertions and saved 8 screenshots in `phase14-browser-qa` artifact: desktop homepage, 360px+320px home/menu, 360px dashboard, desktop Hindi parent plan, 320px parent plan, 360px Adventure, desktop 12-task milestone, and sanitized adult confirmation page. It verified synthetic state 0/9 → 9/9 → direct Thinking Challenge → 3/3 → local milestone → delete → 0/9. Privacy headers and no-history email tokens checked.
+
+**Still to do manually:** actual learner game completion, real visual polish review, Android/iOS/screen-reader/A4 print QA, genuine guardian feedback and real isolated Hostinger deployment. No production change or real newsletter signup is part of this pass. Complete details: `ops/phase15-browser-acceptance.md`.

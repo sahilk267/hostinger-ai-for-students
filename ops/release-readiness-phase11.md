@@ -80,3 +80,9 @@ A separate feature branch `feature/phase14-visible-learning-journey-20261110` ad
 The earlier homepage newsletter form falsely displayed a success without a backend. Phase 14 removes it. New adult-only double-opt-in subscriber persistence is implemented but requires separate `newsletterSubscribers` staging-only migration and `NEWSLETTER_SIGNUP_ENABLED=1`. This flag is default OFF and requires the Phase 11 shared-IP budget plus verified privacy/mail configuration; unsubscribing remains available even if signups later close. Campaign sending/retention owner are outstanding.
 
 Details and P1–P5 evidence: `ops/phase14-visible-product-completion.md`. **Release remains blocked** by real staging/manual QA/approval; do not enable learner cloud storage, paid AI feedback, certificate checkpoints or marketing signup without the documented safeguards.
+
+## Phase 15 — evidence-based browser acceptance (2026-11-10)
+
+Implemented isolated CI Chromium browser acceptance tests after Phase 14 product delivery, including a test-only 9+3 saved-state continuity route, private milestone, local deletion, 320px and 360px responsiveness, three-session parent guide, Hindi switch and print stylesheet. Browser HTTP response validation confirms newsletter token referrer/cache protection and direct-link query clearing. **44 assertions, eight PNG screenshots**, full GitHub CI pass on SHA `3495b86b344a670cfd256a961ae0c47405bbb2a3`: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677. Artifact `phase14-browser-qa`.
+
+Review `ops/phase15-browser-acceptance.md` for exactly what was tested and what was NOT. No real design review, browser assistive-tech testing, actual Hostinger staging, privacy approval or production deployment is implied by synthetic CI. Phase 11–15 code is pending PR integration and acceptance; release remains blocked.

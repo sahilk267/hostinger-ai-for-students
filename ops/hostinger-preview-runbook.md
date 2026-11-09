@@ -95,3 +95,9 @@ The commands below are **optional actions on your own isolated staging environme
 Once a **separate real staging app** is available, test homepage Start Free Adventure → `/explorer/adventure` → `/my-journey` → `/for-parents`, including all three age groups, Hindi/Hinglish, the 9/9 challenge gate, 3/3 transfer, private report, family-plan print and local-delete behavior. Check 320 px Android and keyboard controls. The live site has not received these changes.
 
 New adult newsletter is default OFF. In staging ONLY, after consent review, import `ops/phase14-adult-newsletter.sql` (one additional table; not in the old seven-core-table import). Validate actual test email confirmation and unsubscribe with adult-controlled accounts, and check shared reverse-proxy IP behavior before setting `AUTH_ABUSE_DB_ENABLED=1` or `NEWSLETTER_SIGNUP_ENABLED=1`. Do not run newsletter campaigns/collect child emails. Full Phase 14 product checklist is `ops/phase14-visible-product-completion.md`.
+
+## Phase 15 browser screenshot handoff (before staging)
+
+The Phase 14/15 branch CI now starts its compiled Express app entirely on localhost and captures 8 screens across desktop, 360px and 320px Chromium, including homepage, mobile menu, progress, parent plan in Hindi, Adventure, private 12-task milestone, and email-link privacy state. Download the `phase14-browser-qa` artifact from https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677 (retention 14 days). Inspect the eight PNGs and JSON report; this is **automated evidence**, not production or visual sign-off. No external assets are fetched in the isolated browser.
+
+After deployment is separately approved, repeat real-browser accessibility, keyboard, A4 printing, OTP and guardian privacy checks on isolated staging, compare screenshots to the authored design, and record findings in `ops/phase15-browser-acceptance.md`. Avoid using actual child names, answers or paid newsletters during testing.

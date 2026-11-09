@@ -100,3 +100,9 @@ Confirmation email needs existing `HOSTINGER_MAIL_API_TOKEN`, `AUTH_MAIL_FROM`, 
 The new adult tester feedback form uses the **existing** `contact.submit`/Hostinger Mail API integration and does not need a new table. It collects only the explicitly submitted adult name, email, category, and message; the UI warns not to include child details.
 
 **DO NOT** import `hostinger-schema-import.sql` into the already-populated production database. Do not add `NEWSLETTER_SIGNUP_ENABLED=1` just because the code is present. See `ops/phase14-visible-product-completion.md`.
+
+## Phase 15 visual QA — no ENV changes
+
+The new `ops/phase14-browser-qa.mjs` is a **CI-only** compiled-app Chromium test runner. It uses local `http://127.0.0.1:43179` and the explicit pair `CI=true`, `ALLOW_INSECURE_LOOPBACK_ORIGIN_FOR_CI=1` strictly in its *child test process*. **Never add these values to Hostinger staging or production**. No new production ENV variable, database table or email provider setting was needed for this QA phase.
+
+QA evidence: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677 (`phase14-browser-qa`, 8 screenshots). More detail: `ops/phase15-browser-acceptance.md`. Real Hostinger staging and privacy/marketing approval remain prerequisites to any new rollout.
