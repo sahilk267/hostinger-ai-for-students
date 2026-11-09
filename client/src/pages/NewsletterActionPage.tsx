@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, CheckCircle2, LockKeyhole, Mail } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import "./phase14Journey.css";
 
 export default function NewsletterActionPage() {
   const unsubscribe=typeof window!=="undefined" && window.location.pathname.endsWith("/unsubscribe");
-  const params=new URLSearchParams(typeof window!=="undefined"?window.location.search:"");
-  const key=params.get("key")??"";
-  const token=params.get("token")??"";
+  // Preserve private email tokens only in transient component memory.
+  // Strip the query from address bar/history before any user interaction.
+  // The server also sets Referrer-Policy: no-referrer for the initial HTML.
+  const [{key,token}]=useState(()=>{
+    const params=new URLSearchParams(typeof window!=="undefined"?window.location.search:"");
+    return {key:params.get("key")??"",token:params.get("token")??""};
+  });
+  useEffect(()=>{
+    if(typeof window!=="undefined" && window.location.search) {
+      window.history.replaceState(window.history.state,"",window.location.pathname+window.location.hash);
+    }
+  },[]);
   const [done,setDone]=useState(false);
   const [invalid,setInvalid]=useState(false);
   const confirm=trpc.newsletter.confirm.useMutation({onSuccess:r=>{setDone(r.confirmed);setInvalid(!r.confirmed);}});
@@ -26,6 +35,6 @@ export default function NewsletterActionPage() {
         {(confirm.isError||remove.isError)&&<p role="alert" className="phase14-notice is-error">Request failed. Please retry later.</p>}
       </>}
     </section>
-    <p className="phase14-trust-note">This URL contains a private token. Do not share or publish it.</p>
+    <p className="phase14-trust-note">A private one-time token was supplied in the email link and has been cleared from the address bar. Do not share your original email link.</p>
   </main></div>;
 }
