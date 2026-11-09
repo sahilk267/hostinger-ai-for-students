@@ -6,7 +6,7 @@ on:
   # Run this isolated security branch's full checks without pushing to the
   # already-deployed feature branch. Remove this temporary filter after review.
   push:
-    branches: ['feature/phase11-origin-*']
+    branches: ['feature/phase11-origin-*', 'feature/phase14-visible-*']
   workflow_dispatch:
 
 permissions:

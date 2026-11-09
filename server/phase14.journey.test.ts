@@ -29,7 +29,7 @@ describe("Phase 14 visible journey and parent plan",()=>{
   });
   it("shows unlocked thinking and private milestones only from completed practice",()=>{
     const missions=getAgeAdventureMissions("11-13");
-    const transfers=TRANSFER_CHALLENGES.filter(c=>c.ageBand==="11-13");
+    const transfers=TRANSFER_CHALLENGES.filter(c=>c.band==="11-13");
     const a=Object.fromEntries(missions.map(m=>[m.id,{firstCorrect:true,firstIndependent:true,bestCorrect:true,attempts:1,hintsUsed:0,enjoyed:true,updatedAt:"2026-11-10T00:00:00.000Z"}]));
     const t=Object.fromEntries(transfers.map(q=>[q.id,{firstCorrect:true,solved:true,attempts:1,updatedAt:"2026-11-10T00:00:00.000Z"}]));
     const data=storage({"aifs-discovery-adventure-v1":JSON.stringify(a),"aifs-discovery-transfer-v1":JSON.stringify(t)});

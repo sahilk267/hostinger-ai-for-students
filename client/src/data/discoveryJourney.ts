@@ -1,5 +1,5 @@
 import {
-  ALL_ADVENTURE_MISSIONS, getAgeAdventureMissions,
+  getAgeAdventureMissions,
   type AdventureAgeBand, type AdventureAttempt,
 } from "./discoveryAdventure";
 import { TRANSFER_CHALLENGES, type TransferAttempt } from "./discoveryTransfer";
@@ -48,7 +48,7 @@ export function getBrowserJourneyReport(ageBand:AdventureAgeBand,storage?:Journe
       updatedAt:typeof row.updatedAt==="string"?row.updatedAt:"",
     };
   }
-  for(const challenge of TRANSFER_CHALLENGES.filter(c=>c.ageBand===ageBand)) {
+  for(const challenge of TRANSFER_CHALLENGES.filter(c=>c.band===ageBand)) {
     const item=rawTransfer[challenge.id];
     if(!item||typeof item!=="object"||Array.isArray(item))continue;
     const row=item as Partial<TransferAttempt>;
