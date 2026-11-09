@@ -138,6 +138,7 @@ export default function Home() {
               <div className="hero-actions">
                 <a href="/explorer/adventure" className="button button--primary">Start Free Adventure <ArrowUpRight size={16} /></a>
                 <a href="/my-journey" className="text-link">See My Journey <ChevronRight size={16} /></a>
+                <a href="/journey" className="text-link">Start 30-day journey <ChevronRight size={16} /></a>
                 <a href="/for-parents" className="text-link">Parents: see how it works <ChevronRight size={16} /></a>
               </div>
               <div className="hero-note"><span className="note-pin" /> 9 free missions · 3 optional challenge scenarios · Private, device-only report</div>
