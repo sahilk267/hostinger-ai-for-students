@@ -18,6 +18,9 @@ const env = {
   MYSQL_HOST: "",
   JWT_SECRET: "CI-SMOKE-ONLY-NOT-A-PRODUCTION-SECRET",
   PUBLIC_SITE_ORIGIN: base,
+  CI: "true",
+  ALLOW_INSECURE_LOOPBACK_ORIGIN_FOR_CI: "1",
+  MANUS_OAUTH_SERVER_ENABLED: "0",
   EXPLORER_CLOUD_SAVE_ENABLED: "0",
   EXPLORER_AI_FEEDBACK_ENABLED: "0",
   DISCOVERY_CHECKPOINTS_ENABLED: "0",
@@ -60,6 +63,9 @@ try {
     await assert(response.status === 200 && html.includes('id="root"'),
       "expected SPA fallback for " + route);
   }
+  const oauthDisabled = await request("/api/oauth/callback?code=sample&state=sample");
+  await assert(oauthDisabled.status === 404,
+    "external OAuth callback must remain unavailable on OTP-only deployments");
   const apiPath = "/api/trpc/discoveryCheckpoint.status";
   const allowed = await request(apiPath, { headers: { Origin: base } });
   await assert(allowed.status === 200, "same-origin public tRPC query must be permitted");

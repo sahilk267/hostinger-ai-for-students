@@ -56,6 +56,7 @@ describe("Phase 11 read-only staging release policy",()=>{
     assert.ok(check.issues.includes("STORAGE_PROXY_NOT_DISABLED"));
     assert.ok(check.issues.includes("STAGING_HTTPS_ORIGIN_INVALID"));
     assert.ok(check.issues.includes("OPTIONAL_OAUTH_NOT_CONFIGURED"));
+    assert.ok(check.issues.includes("OPTIONAL_OAUTH_SERVER_NOT_ENABLED"));
   });
   it("supports a separate MySQL URL without returning URL credentials",()=>{
     const env=valid();

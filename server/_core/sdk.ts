@@ -31,11 +31,10 @@ const GET_USER_INFO_WITH_JWT_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserI
 
 class OAuthService {
   constructor(private client: ReturnType<typeof axios.create>) {
-    console.log("[OAuth] Initialized with baseURL:", ENV.oAuthServerUrl);
-    if (!ENV.oAuthServerUrl) {
-      console.error(
-        "[OAuth] ERROR: OAUTH_SERVER_URL is not configured! Set OAUTH_SERVER_URL environment variable."
-      );
+    // Email OTP deployments intentionally omit the optional external OAuth
+    // service. Do not log a scary error or expose a provider URL at startup.
+    if (process.env.MANUS_OAUTH_SERVER_ENABLED === "1" && !ENV.oAuthServerUrl) {
+      console.warn("[OAuth] External provider is enabled but not configured");
     }
   }
 

@@ -8,6 +8,7 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { requireSameOriginApi } from "./sameOrigin";
+import { validateProductionSecurityConfig } from "./runtimeSecurity";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -30,6 +31,12 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 }
 
 async function startServer() {
+  // Reject unsafe production configuration before binding a public listener.
+  // Only fixed identifiers are logged; never credentials or configured values.
+  const issues = validateProductionSecurityConfig(process.env);
+  if (issues.length) {
+    throw new Error("Production security configuration invalid: " + issues.join(", "));
+  }
   const app = express();
   const server = createServer(app);
   // Liveness does not depend on database availability, and reveals no configuration.

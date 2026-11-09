@@ -62,6 +62,7 @@ export function evaluatePhase11Staging(env) {
   if (env.VITE_MANUS_OAUTH_ENABLED === "1") {
     add("OPTIONAL_OAUTH_NOT_CONFIGURED", !env.OAUTH_SERVER_URL ||
       !env.VITE_OAUTH_PORTAL_URL || !env.VITE_APP_ID);
+    add("OPTIONAL_OAUTH_SERVER_NOT_ENABLED", env.MANUS_OAUTH_SERVER_ENABLED !== "1");
   }
   return { ok: issues.length === 0, issues };
 }
