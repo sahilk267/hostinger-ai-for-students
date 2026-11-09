@@ -47,6 +47,8 @@ jobs:
         run: node --test ops/preview-safety.test.mjs
       - name: Verify Phase 11 staging policy (static, no live credentials)
         run: node --test ops/phase11-staging-gate.test.mjs
+      - name: Verify read-only HTTPS staging probe policy (offline mocks)
+        run: node --test ops/phase11-stage-http.test.mjs
 
   mysql-integration:
     name: Real MySQL auth and guardian integrity checks
