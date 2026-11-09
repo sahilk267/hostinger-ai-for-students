@@ -157,3 +157,11 @@
   .site-header .auth-action svg{width:18px;height:18px;flex:0 0 auto}
   .site-header .mobile-menu{padding:4px}
 }
+
+/* A remote-image fallback has intrinsic content width. Do not let CSS Grid
+   min-content sizing widen a 320px mobile page beyond the padded container. */
+@media(max-width:760px){
+  .feature-layout{grid-template-columns:minmax(0,1fr)}
+  .feature-layout>*{min-width:0;max-width:100%}
+  .feature-image-wrap .home-image-fallback{min-width:0;max-width:100%}
+}
