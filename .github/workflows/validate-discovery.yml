@@ -49,6 +49,8 @@ jobs:
         run: node --test ops/phase11-staging-gate.test.mjs
       - name: Verify read-only HTTPS staging probe policy (offline mocks)
         run: node --test ops/phase11-stage-http.test.mjs
+      - name: Verify read-only security table schema policy (offline mocks)
+        run: node --test ops/phase11-schema-read.test.mjs
 
   mysql-integration:
     name: Real MySQL auth and guardian integrity checks
@@ -87,3 +89,13 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Check OTP and guardian records against real MySQL
         run: pnpm exec vitest run server/auth.mysql.integration.test.ts server/guardian.mysql.integration.test.ts server/auth.session-abuse.mysql.integration.test.ts
+      - name: Validate Phase 11 security schema with read-only metadata queries
+        env:
+          DEPLOY_TARGET: staging
+          STAGING_DATA_MODE: isolated-db
+          STAGING_PUBLIC_ORIGIN: https://staging.aifs.invalid
+          PRODUCTION_PUBLIC_ORIGIN: https://aiforstudents.in
+          PUBLIC_SITE_ORIGIN: https://staging.aifs.invalid
+          PRODUCTION_DATABASE_NAME: production_never_accessed
+          PRODUCTION_DATABASE_USER: production_never_accessed
+        run: node ops/check-phase11-schema.mjs
