@@ -136,8 +136,11 @@ async function waitText(page,text) {
 async function assertNoHorizontalOverflow(page,label) {
   const sizes=await evalPage(page.sid,
     "({scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,inner:innerWidth})");
+  const overflow=sizes.scroll>sizes.client+3
+    ? await evalPage(page.sid,"(()=>{const width=document.documentElement.clientWidth;return [...document.body.querySelectorAll('*')].map(el=>({tag:el.tagName,cls:String(el.className).slice(0,80),right:Math.round(el.getBoundingClientRect().right)})).filter(v=>v.right>width+3).slice(0,12)})()")
+    : [];
   check(sizes.scroll<=sizes.client+3,
-    label+" no horizontal page overflow",JSON.stringify(sizes));
+    label+" no horizontal page overflow",JSON.stringify({sizes,overflow}));
 }
 async function closePage(page) {
   await ws.send("Target.closeTarget",{targetId:page.targetId});

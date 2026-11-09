@@ -142,3 +142,18 @@
 }
 @media(max-width:560px){.home-image-fallback__sheet{min-height:195px;padding:18px 16px}.home-image-fallback__spark{font-size:50px}}
 @media(prefers-reduced-motion:reduce){.home-image-fallback,.home-brand-fallback{animation:none}}
+
+/* Small phones: keep the full brand readable and offer an accessible icon-size
+   account action instead of forcing a horizontal scroll in the header. */
+@media(max-width:380px){
+  .site-header .header-inner{padding-inline:12px;gap:7px}
+  .site-header .brand{gap:6px;min-width:0}
+  .site-header .brand-type{font-size:16px;letter-spacing:-.045em}
+  .site-header .brand-mark{width:29px;height:29px;flex-shrink:1}
+  .site-header .home-brand-fallback{font-size:22px;border-radius:9px}
+  .site-header .header-actions{gap:6px;margin-left:auto}
+  .site-header .header-actions .header-link{display:none}
+  .site-header .auth-action{font-size:0;min-width:34px;height:34px;padding:6px;justify-content:center}
+  .site-header .auth-action svg{width:18px;height:18px;flex:0 0 auto}
+  .site-header .mobile-menu{padding:4px}
+}

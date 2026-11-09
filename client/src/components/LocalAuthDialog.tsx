@@ -50,7 +50,7 @@ export default function LocalAuthDialog({
 
   return (
     <>
-      <button className={className} onClick={() => setOpen(true)} type="button">
+      <button className={className} onClick={() => setOpen(true)} type="button" aria-label={label}>
         <Mail size={14} /> {label}
       </button>
       {open && (
