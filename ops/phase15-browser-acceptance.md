@@ -6,7 +6,7 @@
 **PR:** https://github.com/sahilk267/hostinger-ai-for-students/pull/3 (Draft)  
 **Latest fully tested code SHA:** `3495b86b344a670cfd256a961ae0c47405bbb2a3`  
 **CI PASS:** https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677  
-**Evidence artifact:** `phase14-browser-qa` (8 PNG screenshots plus JSON report, in the CI run's Artifacts area; expires November 23, 2026)
+**Evidence artifact:** `phase14-browser-qa` (9 PNG screenshots plus JSON report, in the CI run's Artifacts area; expires November 23, 2026)
 
 ## Summary
 

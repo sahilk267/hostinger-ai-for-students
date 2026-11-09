@@ -798,6 +798,6 @@ Evidence/status: `ops/release-readiness-phase11.md`. Account login and Discovery
 - [x] Verify homepage/mobile navigation, visible Adventure CTA, legacy links, parent guide, Hindi translation, no horizontal overflow at 320/360px, print media, and newsletter default-off messaging.
 - [x] Verify private confirmation link query sanitization, response no-referrer/no-store policies, and deliberate—not automatic—opt-in.
 - [x] Generate deterministic synthetic authored 9+3 state and verify actual browser routes: locked challenge before nine solved; unlocked after nine; milestone after twelve; local records deleted and dashboard reset.
-- [x] CI PASS: 44 assertions and 8 screenshots in `phase14-browser-qa` artifact: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677.
+- [x] CI PASS: 44 assertions and 9 screenshots in `phase14-browser-qa` artifact: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677.
 - [x] Record exact test evidence and limitations in `ops/phase15-browser-acceptance.md`.
 - [ ] Human design review of screenshots/physical devices, accessibility/print QA, family learning evaluation and verified real staging; no deployment without operator sign-off.

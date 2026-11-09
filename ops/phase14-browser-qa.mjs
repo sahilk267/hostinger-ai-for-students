@@ -27,6 +27,7 @@ const testEnv={
   HOSTINGER_MAIL_API_TOKEN:"",AUTH_MAIL_FROM:"",
 };
 const checks=[];
+const screenshots=[];
 let app,chrome,ws,profile;
 function check(condition,label,detail) {
   checks.push({label,pass:Boolean(condition),detail:condition?undefined:detail});
@@ -123,6 +124,7 @@ async function snapshot(page,name) {
   const bytes=Buffer.from(data.data,"base64");
   check(bytes.length>2000,"Screenshot "+name+" generated");
   await writeFile(join(output,name+".png"),bytes);
+  screenshots.push(name+".png");
 }
 async function textIncludes(page,needle) {
   return Boolean(await evalPage(page.sid,
@@ -367,14 +369,14 @@ try {
     branchScope:"isolated localhost compiled app",
     noRealUsers:true,noExternalMail:true,noProductionDatabase:true,
     checkedOn:"Chromium headless desktop, 360px and 320px",
-    pass:checks.every(x=>x.pass),checks,
+    pass:checks.every(x=>x.pass),checks,screenshots,
   },null,2));
-  console.log("Phase 14 browser QA PASS: "+checks.length+" assertions, 8 screenshots; isolated app only");
+  console.log("Phase 14 browser QA PASS: "+checks.length+" assertions, "+screenshots.length+" screenshots; isolated app only");
 } catch(error) {
   console.error(error instanceof Error?error.message:"Browser QA failed");
   await mkdir(output,{recursive:true}).catch(()=>{});
   await writeFile(join(output,"report.json"),JSON.stringify({
-    version:"phase14-browser-qa-v1",pass:false,checks,
+    version:"phase14-browser-qa-v1",pass:false,checks,screenshots,
     error:error instanceof Error?error.message:"Browser QA failed",
   },null,2)).catch(()=>{});
   process.exitCode=1;
