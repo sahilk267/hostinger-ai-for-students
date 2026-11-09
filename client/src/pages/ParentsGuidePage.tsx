@@ -4,6 +4,7 @@ import AuthControls from "@/components/AuthControls";
 import { ADVENTURE_AGE_BANDS, type AdventureAgeBand, type AdventureLocale } from "@/data/discoveryAdventure";
 import { getBrowserJourneyReport, readSelectedJourneyBand } from "@/data/discoveryJourney";
 import "./phase14Journey.css";
+import SiteFeedbackPanel from "@/components/SiteFeedbackPanel";
 
 export default function ParentsGuidePage() {
   const [ageBand,setAgeBand]=useState<AdventureAgeBand>(()=>readSelectedJourneyBand(typeof window!=="undefined"?window.localStorage:undefined));
@@ -37,6 +38,7 @@ export default function ParentsGuidePage() {
         </div>
       </section>
       <p className="phase14-trust-note"><LockKeyhole size={18}/> Results stay in this browser and may be shared across learners on the same device. They are editable, not verified, and should never be used for IQ, career or aptitude decisions.</p>
+      <SiteFeedbackPanel/>
       <a href="/my-journey" className="phase14-text-action"><ArrowLeft size={16}/> Back to My Journey</a>
     </main>
   </div>;

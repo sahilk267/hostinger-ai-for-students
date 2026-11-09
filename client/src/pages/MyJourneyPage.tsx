@@ -4,6 +4,7 @@ import AuthControls from "@/components/AuthControls";
 import { DiscoveryJourneyCard } from "@/components/DiscoveryJourneyCard";
 import { getLearningProgress } from "@/lib/learningProgress";
 import "./phase14Journey.css";
+import SiteFeedbackPanel from "@/components/SiteFeedbackPanel";
 
 export default function MyJourneyPage() {
   const [games] = useState(()=>getLearningProgress());
@@ -21,6 +22,7 @@ export default function MyJourneyPage() {
         <section className="phase14-simple-card"><div className="phase14-card-icon"><Home/></div><h2>For your family</h2><p>The practice report includes three ten-minute activities, observations from these tasks and questions to ask together.</p><a href="/for-parents">Open the parent guide <ArrowRight size={16}/></a></section>
       </div>
       <p className="phase14-trust-note"><LockKeyhole size={17}/> Discovery Adventure stays on this device and is not tied to a learner identity. Use the Adventure clear button before another child uses the same browser.</p>
+      <SiteFeedbackPanel/>
       <a href="/" className="phase14-text-action"><ArrowLeft size={16}/> Back to the main desk</a>
     </main>
   </div>;

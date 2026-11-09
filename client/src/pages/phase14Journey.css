@@ -66,3 +66,21 @@
 @media(max-width:760px){.phase14-feature-layout{grid-template-columns:1fr}.phase14-feature-links{grid-column:1}.phase14-page-header{padding:13px 18px}.phase14-page-main{padding:40px 0}.phase14-two-cards,.phase14-session-grid{grid-template-columns:1fr}.phase14-journey-metrics{grid-template-columns:1fr}.phase14-journey-card,.phase14-plan{padding:18px}}
 @media print{.phase14-page-header,.phase14-journey-actions,.phase14-feature-section,.phase14-parent-controls,.phase14-text-action,.phase14-adventure-steps{display:none!important}.phase14-page{background:#fff}.phase14-plan{border:0;padding:0}.phase14-session-grid{grid-template-columns:repeat(3,1fr);gap:8px}.phase14-session{break-inside:avoid;padding:10px}}
 @media(prefers-reduced-motion:reduce){.phase14-meter span{transition:none}}
+
+.phase14-feedback-section{background:#f8f6ed;padding:50px 0}
+.phase14-feedback-panel{background:#fffdf8;border:1px solid #d9e5d8;border-radius:20px;margin:30px 0;padding:25px;max-width:850px}
+.phase14-feedback-panel h2{font-family:Georgia,serif;font-size:clamp(24px,3vw,35px);color:#214c38;margin:12px 0 9px}
+.phase14-feedback-panel p{color:#63746b;font-size:14px;line-height:1.65}
+.phase14-feedback-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:18px}
+.phase14-feedback-fields label{font-size:13px;font-weight:800;color:#2a513e;display:flex;flex-direction:column;gap:6px}
+.phase14-feedback-fields input,.phase14-feedback-fields select,.phase14-feedback-fields textarea,.phase14-newsletter-form input{font:inherit;padding:12px;border:1px solid #afcbb9;border-radius:10px;background:#fff;color:#203f32;width:100%}
+.phase14-feedback-fields label.wide{grid-column:1/-1}
+.phase14-check{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:#3e604f;line-height:1.6;margin:12px 0}
+.phase14-check input{flex:0 0 auto;margin-top:4px}
+.phase14-notice{font-size:13px;line-height:1.65;color:#315f4a;margin:15px 0}
+.phase14-notice.is-error{color:#9a3434}
+.phase14-newsletter-form{display:flex;flex-direction:column;gap:8px;margin-top:22px;max-width:510px}
+.phase14-newsletter-form button{align-self:flex-start}
+.phase14-token-card{max-width:650px;margin:24px 0;background:#fff;border:1px solid #dce5d8;border-radius:16px;padding:25px}
+.phase14-feedback-panel button:disabled,.phase14-newsletter-form button:disabled{opacity:.58;cursor:not-allowed}
+@media(max-width:760px){.phase14-feedback-fields{grid-template-columns:1fr}.phase14-feedback-panel{padding:17px}}

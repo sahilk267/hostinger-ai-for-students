@@ -19,6 +19,8 @@ import { toast } from "sonner";
 import AuthControls from "@/components/AuthControls";
 import { assetUrls } from "@/lib/assets";
 import "./phase14Journey.css";
+import AdultNewsletterSignup from "@/components/AdultNewsletterSignup";
+import SiteFeedbackPanel from "@/components/SiteFeedbackPanel";
 
 const heroImage = assetUrls.hero;
 const studyImage = assetUrls.study;
@@ -111,19 +113,7 @@ function CopyPrompt({ text }: { text: string }) {
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activePrompt, setActivePrompt] = useState(0);
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
   const filteredPrompts = useMemo(() => prompts.filter((prompt) => `${prompt.title} ${prompt.tag}`.toLowerCase().includes(searchTerm.toLowerCase())), [searchTerm]);
-
-  const submitNewsletter = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!email.includes("@")) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
-    setSubmitted(true);
-    toast.success("You are on the list. Your starter kit is on its way.");
-  };
 
   return (
     <div className="app-shell" id="top">
@@ -213,7 +203,8 @@ export default function Home() {
 
         <section className="career-section" id="career"><div className="container career-layout"><div className="career-visual"><img src={careerImage} alt="Career notes, a laptop and interview cue cards" /><span className="image-caption image-caption--dark"><span>CAREER NOTE 04</span><strong>The future skill is knowing what to ask.</strong></span></div><div className="career-copy"><SectionLabel>CAREER & SKILLS / 04</SectionLabel><h2>Make your next<br /><em>move clearer.</em></h2><p>From your first CV to your next interview, use AI to practice, sharpen and prepare—while the final thinking stays yours.</p><a href="/study" className="text-link">See study & career resources <ArrowUpRight size={16} /></a></div></div></section>
 
-        <section className="newsletter-section" id="newsletter"><div className="container newsletter-layout"><div className="newsletter-symbol"><img src={markImage} alt="" /><span>INDEX TAB<br />EVERY WEEK</span></div><div className="newsletter-copy"><SectionLabel>THE DESK, IN YOUR INBOX</SectionLabel><h2>One useful AI idea.<br /><em>Every week.</em></h2><p>Join a small, thoughtful newsletter with one prompt, one workflow and one thing worth knowing. No noise.</p>{submitted ? <div className="success-box"><Check size={18} /><span>You're on the list. Check your inbox for the starter kit.</span></div> : <form onSubmit={submitNewsletter} className="newsletter-form"><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your email address" aria-label="Your email address" /><button type="submit" className="button button--ink">Join the desk <ArrowUpRight size={16} /></button></form>}<small>By subscribing, you agree to receive practical AI notes. Unsubscribe anytime.</small></div></div></section>
+        <section className="newsletter-section" id="newsletter"><div className="container newsletter-layout"><div className="newsletter-symbol"><img src={markImage} alt="" /><span>ADULT NOTES<br/>OPT-IN ONLY</span></div><div className="newsletter-copy"><SectionLabel>OPTIONAL ADULT EMAIL NOTES</SectionLabel><h2>One useful AI idea.<br /><em>When notes open.</em></h2><p>Adults (18+) can request useful learning notes with a confirmation step. No child accounts, DOB, or Adventure results are collected.</p><AdultNewsletterSignup/></div></div></section>
+        <section className="phase14-feedback-section" aria-label="Send site feedback"><div className="container"><SiteFeedbackPanel /></div></section>
       </main>
       <footer className="site-footer"><div className="container footer-inner"><div className="footer-brand"><img src={markImage} alt="" /><strong>AI for Students</strong><p>Learn the tool. Keep the thinking.</p></div><div className="footer-links"><a href="#learn-ai">Learn AI</a><a href="#study-with-ai">Study</a><a href="#prompts">Prompts</a><a href="#tools">Tools</a><a href="/for-parents">For Parents</a><a href="/my-journey">My Journey</a><a href="#newsletter">Newsletter</a><a href="/contact">Contact</a><a href="/progress">Progress</a></div><div className="footer-meta"><span>Made for curious minds.</span><span>© 2026 AI for Students</span></div></div></footer>
     </div>
