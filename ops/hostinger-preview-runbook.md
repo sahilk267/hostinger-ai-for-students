@@ -89,3 +89,9 @@ The commands below are **optional actions on your own isolated staging environme
 10. Record redacted evidence in `ops/release-readiness-phase11.md`, including *time, staging commit, redacted PASS/BLOCK codes, tester, rollback owner and explicit security/privacy approval*. Obtain sign-off before any merge or production release.
 
 **New startup rule:** a production-mode Node process requires a strong `JWT_SECRET` (32+ characters) and canonical HTTPS `PUBLIC_SITE_ORIGIN`. CI's HTTP loopback test exception is not for Hostinger. If the new production app fails startup, check these two settings in the protected hPanel without sharing their values. No schema importer is executed automatically.
+
+## Phase 14 visible-product staging acceptance
+
+Once a **separate real staging app** is available, test homepage Start Free Adventure → `/explorer/adventure` → `/my-journey` → `/for-parents`, including all three age groups, Hindi/Hinglish, the 9/9 challenge gate, 3/3 transfer, private report, family-plan print and local-delete behavior. Check 320 px Android and keyboard controls. The live site has not received these changes.
+
+New adult newsletter is default OFF. In staging ONLY, after consent review, import `ops/phase14-adult-newsletter.sql` (one additional table; not in the old seven-core-table import). Validate actual test email confirmation and unsubscribe with adult-controlled accounts, and check shared reverse-proxy IP behavior before setting `AUTH_ABUSE_DB_ENABLED=1` or `NEWSLETTER_SIGNUP_ENABLED=1`. Do not run newsletter campaigns/collect child emails. Full Phase 14 product checklist is `ops/phase14-visible-product-completion.md`.

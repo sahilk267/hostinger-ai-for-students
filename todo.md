@@ -778,3 +778,16 @@ Evidence/status: `ops/release-readiness-phase11.md`. Account login and Discovery
 - [x] Sync Phase 11-13 documentation and tracking, and verify GitHub Actions for the complete review-branch commit.
 - [ ] Independent real Hostinger staging isolation, live HTTP/DB probe result, OTP browser revocation, proxy peer address, privacy/safeguarding, mobile/print and deployment approval evidence.
 - [ ] Promote only after all staging gates pass, authorized release plan and backup; production/auto-deploy feature branch is intentionally untouched by this work.
+
+## Phase 14 — visible learner and parent experience (2026-11-10)
+
+- [x] P1: Put Discovery Adventure in main header/hero as the primary free experience; preserve the 30-day Journey and existing product paths.
+- [x] P2: Show four-stage learning map with 9/9 mission gate and direct route to three Thinking Challenges; parent report accessible at any time.
+- [x] P3: Build unified /my-journey dashboard with device-local Discovery metrics, next CTA and existing game-progress links; insert Discovery card on /progress.
+- [x] P4: Publish /for-parents with age/language choices and visible three-session evidence-based home plan (explicit no-evidence limitation). Keep private milestone non-accredited.
+- [x] P5 feedback: Add a real adult tester feedback form to homepage, dashboard and parent guide via existing server mail adapter. Success only after mail service resolves.
+- [x] P5 newsletter: Remove fake homepage success; implement adult self-attested double opt-in, one-use hashed confirmation, unsubscribe, 15-minute email cooldown, optional MySQL schema, and 3/hour request budget. Default OFF pending stage/privacy gates.
+- [x] Write `ops/phase14-visible-product-completion.md`; update ENV handoff and release tracker. Add journey, newsletter unit/route and isolated MySQL coverage.
+- [ ] Manually verify mobile, keyboard, languages, browser print, actual test-mail delivery and participant usefulness.
+- [ ] Apply `ops/phase14-adult-newsletter.sql` only after independently backed-up *isolated staging* migration and privacy approval. Do not enable `NEWSLETTER_SIGNUP_ENABLED` or production.
+- [ ] Confirm actual served Git SHA and human-approved deployment after staging. Live feature branch remains unchanged.

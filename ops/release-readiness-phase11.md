@@ -72,3 +72,11 @@
 - [ ] Verify production served commit, safe release/rollback, HTTP behavior behind Hostinger CDN, real OTP and guardian privacy, independent proxy IPs and human mobile/safeguarding review.
 
 **Release decision: STILL BLOCKED**. A green CI and passing synthetic/isolated database checks do not complete the real hosting, consent, provider or operator evidence gates. Live feature-branch deployment should remain unchanged until staging approval.
+
+## Phase 14 — user-facing product readiness (2026-11-10)
+
+A separate feature branch `feature/phase14-visible-learning-journey-20261110` adds prominent homepage Discovery entry, `/my-journey` dashboard, `/for-parents` three-session family plan and real adult feedback. This is **not merged or deployed** to the earlier owner-reported live feature branch. Parent insights are local educational practice evidence, not verified psychometrics.
+
+The earlier homepage newsletter form falsely displayed a success without a backend. Phase 14 removes it. New adult-only double-opt-in subscriber persistence is implemented but requires separate `newsletterSubscribers` staging-only migration and `NEWSLETTER_SIGNUP_ENABLED=1`. This flag is default OFF and requires the Phase 11 shared-IP budget plus verified privacy/mail configuration; unsubscribing remains available even if signups later close. Campaign sending/retention owner are outstanding.
+
+Details and P1–P5 evidence: `ops/phase14-visible-product-completion.md`. **Release remains blocked** by real staging/manual QA/approval; do not enable learner cloud storage, paid AI feedback, certificate checkpoints or marketing signup without the documented safeguards.
