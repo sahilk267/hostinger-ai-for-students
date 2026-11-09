@@ -765,3 +765,16 @@ Evidence/status: `ops/release-readiness-phase11.md`. Account login and Discovery
 - [x] Add read-only, no-secret Phase 11 staging gate + Node-native regression cases, and run them in CI.
 - [ ] Verify real Hostinger isolated staging database, peer-IP topology, OAuth and browser/parent QA with recorded human evidence before enabling DB flags or promotion.
 - [x] Complete OTP-only navigation fallback: dashboard sign-in uses LocalAuthDialog when OAuth is disabled, and protected-route redirects go to the email OTP account page rather than a disabled OAuth function.
+
+## Phase 13 — runtime hardening and staged release verification (2026-11-10)
+
+- [x] Protect `/api/*` with private/no-store response headers and disable MIME sniffing, including private guardian/account exports.
+- [x] Reduce unauthenticated generic Express payload limit from 50 MB to 512 KB JSON / 64 KB form, with compiled-server 413 regression.
+- [x] Reject legacy public child profile share lookups while the private/cloud feature flag is OFF; retain private account deletion paths.
+- [x] Fail closed on unsafe production startup configuration: JWT secret length, canonical HTTPS public origin and optional DB, OAuth and storage prerequisites.
+- [x] Disable optional Manus OAuth callback by default, independent of frontend login menu configuration.
+- [x] Add public-only HTTPS staging acceptance probe `ops/check-phase11-stage-http.mjs`; offline tests prove never contacting a production origin or sending a POST/credentials.
+- [x] Add read-only MySQL security migration inspector `ops/check-phase11-schema.mjs`; verify keys, columns, deletion cascade, and production-vs-staging separation. Execute against ephemeral CI MySQL only, not Hostinger.
+- [x] Sync Phase 11-13 documentation and tracking, and verify GitHub Actions for the complete review-branch commit.
+- [ ] Independent real Hostinger staging isolation, live HTTP/DB probe result, OTP browser revocation, proxy peer address, privacy/safeguarding, mobile/print and deployment approval evidence.
+- [ ] Promote only after all staging gates pass, authorized release plan and backup; production/auto-deploy feature branch is intentionally untouched by this work.

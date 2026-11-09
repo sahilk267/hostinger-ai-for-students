@@ -1,6 +1,6 @@
 # AI for Students — Phase 11 release evidence & gate tracker
 
-**As of 2026-11-08. Review branch:** `feature/phase11-origin-guardian-guard-20261108`. **Draft PR:** https://github.com/sahilk267/hostinger-ai-for-students/pull/2. **Base:** `feature/discovery-adventure-pilot-20261106` (reported by the owner as deployed). Status: **CODE READY FOR REVIEW; PRODUCTION PROMOTION BLOCKED**.
+**Updated 2026-11-10. Review branch:** `feature/phase11-origin-guardian-guard-20261108`. **Draft PR:** https://github.com/sahilk267/hostinger-ai-for-students/pull/2. **Base:** `feature/discovery-adventure-pilot-20261106` (reported by the owner as deployed). Status: **CODE READY FOR REVIEW; PRODUCTION PROMOTION BLOCKED**.
 
 ## What is completed in the repository
 
@@ -16,6 +16,9 @@
 | CI | Automated | `.github/workflows/validate-discovery.yml`, normal TypeScript/unit/build/smoke plus isolated MySQL session/abuse concurrency suites |
 | Developer docs + tracker | Implemented | This file, `todo.md`, ENV handoff, auth and staging runbooks |
 | Read-only Hostinger staging configuration preflight | Implemented, no live account access | `ops/phase11-staging-gate.mjs`, `ops/check-phase11-staging.mjs`, and Node-native policy tests; self-acknowledgements are not proof |
+| Read-only staging HTTPS probe | Implemented; live staging **not tested** | `ops/check-phase11-stage-http.mjs` tests health, cache policy, origin/Fetch Metadata denial, disabled public child sharing and default-off AI/cloud/checkpoint responses using public GET only |
+| Read-only security schema inspector | Implemented; production/staging DB **not connected by assistant** | `ops/check-phase11-schema.mjs` queries INFORMATION_SCHEMA metadata for `authSessions` and `authRequestBuckets`, PKs and cascading FK; rejects same DB username/name as recorded production baseline |
+| Production startup & response safety | Implemented on review branch | `server/_core/runtimeSecurity.ts` rejects missing weak JWT/invalid origin and missing opt-in integration prerequisites; `/api` no-store; 512 KB JSON limit; old child share links blocked while saving OFF |
 | Live Hostinger validation | **NOT VERIFIED** | User previously attested health/Adventure/OTP worked on the earlier branch; no proof new Phase 11 commit, isolation, flags or table migration were applied |
 | Guardian verification / official certification | **NOT IMPLEMENTED** | Only self-attestation, browser-local formative assessment and private practice milestone. Do not claim accreditation or verified identity |
 
@@ -54,3 +57,18 @@
 - [x] Dashboard and protected-route authentication fall back to the existing email OTP account entry when external OAuth is disabled, avoiding dead sign-in controls.
 - [x] Add a secret-safe **static** staging config gate and six Node-native regression tests, and wire them into CI. Its acknowledgements must not be mistaken for actual Hostinger validation.
 - [ ] Confirm live Hostinger/staging browser paths and migration in a real, isolated environment. **Code is not deployed by these commits.**
+
+## Phase 13 — deploy-gate and API privacy closure (2026-11-10)
+
+**Completed in code, only on Draft PR #2:**
+- [x] Harden private account/tRPC response caching: `Cache-Control: private, no-store` and `X-Content-Type-Options: nosniff` for `/api/*`. Guard default-off public share-token reads even for old share URLs.
+- [x] Reduce generic body parser limit from 50 MB to 512 KB JSON / 64 KB URL encoded. CI compiled-app smoke covers HTTP 413.
+- [x] Fail startup of a production app missing a 32+ character `JWT_SECRET` or a canonical HTTPS `PUBLIC_SITE_ORIGIN`. Opt-in DB session/abuse flags require a configured MySQL connection. Privileged storage and external OAuth opt-ins need prerequisite configuration. CI's loopback-only HTTP exception explicitly requires two separate environment flags and does not permit a public HTTP domain.
+- [x] Keep the external OAuth callback disabled by default with `MANUS_OAUTH_SERVER_ENABLED=0`; leave the OTP-only login path functional. Explicit opt-in requires approved `OAUTH_SERVER_URL` and `VITE_APP_ID`.
+- [x] Create public-only `ops/check-phase11-stage-http.mjs` probe: checks staging/production origin separation *before* network calls and then does only safe GETs; no login or DB write. Unit tests use an offline fake HTTP responder.
+- [x] Create `ops/check-phase11-schema.mjs` inspector: requires isolated staging name AND user separate from production baseline and checks table structure with read-only INFORMATION_SCHEMA SELECTs. CI executes against ephemeral MySQL after integration tests create schema.
+- [x] Add operational commands / handoff and CI contracts. None of these scripts were run against the user's real Hostinger staging or production account.
+- [ ] Actually create/access isolated Hostinger staging, verify backup and schema imported, run both live checks and save **redacted results**.
+- [ ] Verify production served commit, safe release/rollback, HTTP behavior behind Hostinger CDN, real OTP and guardian privacy, independent proxy IPs and human mobile/safeguarding review.
+
+**Release decision: STILL BLOCKED**. A green CI and passing synthetic/isolated database checks do not complete the real hosting, consent, provider or operator evidence gates. Live feature-branch deployment should remain unchanged until staging approval.
