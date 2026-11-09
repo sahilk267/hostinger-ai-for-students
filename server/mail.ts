@@ -88,6 +88,27 @@ export async function sendContactMessage({ name, replyEmail, subject, message }:
   });
 }
 
+/** A confirmation request only, never an assertion of an active subscription.
+ * No newsletter campaigns are sent by this application.
+ */
+export async function sendNewsletterOptInEmail(input: {
+  to: string; confirmUrl: string; unsubscribeUrl: string;
+}) {
+  const mailbox = await getSenderMailbox();
+  await hostingerRequest(`/api/v1/mailboxes/${encodeURIComponent(mailbox.resourceId)}/send`, {
+    method: "POST",
+    body: JSON.stringify({
+      to: [input.to],
+      subject: "Confirm your adult AI for Students email notes",
+      text: "You requested adult-only AI for Students learning notes.\\n\\n" +
+        "Confirm your email within 30 minutes:\\n" + input.confirmUrl + "\\n\\n" +
+        "If you did not request this, ignore this message. No subscription is active until confirmation.\\n\\n" +
+        "You can unsubscribe at any time using this private link:\\n" + input.unsubscribeUrl + "\\n\\n" +
+        "Never share these private links. We will not collect child learning records through the newsletter.",
+    }),
+  });
+}
+
 export function resetHostingerMailboxCacheForTests() {
   mailboxCache = null;
 }

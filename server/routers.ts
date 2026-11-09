@@ -9,7 +9,9 @@ import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { sdk } from "./_core/sdk";
 import { invokeLLM } from "./_core/llm";
-import { sendAuthenticationCode, sendContactMessage } from "./mail";
+import { sendAuthenticationCode, sendContactMessage, sendNewsletterOptInEmail } from "./mail";
+import { makeNewsletterChallenge, confirmNewsletterSubscription, reserveNewsletterSubscription,
+  undoFailedNewsletterRequest, unsubscribeNewsletterSubscription } from "./newsletter";
 import { CHECKPOINT_POLICY, getCheckpoints, gradeCheckpoint } from "./discoveryCheckpoints";
 import { cancelEmailCodeChallenge, clearEmailCodeChallenge, createEmailCodeChallenge, getEmailChallengeCookie, localEmailOpenId, normalizeEmail, verifyEmailCode } from "./authEmail";
 import { getAuthSessionToken, hashAuthSessionToken, requireAuthRequestBudget } from "./authSessionSecurity";
@@ -31,6 +33,61 @@ export const appRouter = router({
       } catch {
         throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Contact delivery is temporarily unavailable" });
       }
+    }),
+  }),
+  /** Newsletter is separate from student practice. Never attribute subscriptions to children.
+   * Confirmation is deliberately a POST from a first-party browser page.
+   * Unsubscribe remains functional even when new signups are closed.
+   */
+  newsletter: router({
+    availability: publicProcedure.query(() => ({
+      enabled: process.env.NEWSLETTER_SIGNUP_ENABLED === "1",
+    })),
+    request: publicProcedure.input(z.object({
+      email: z.string().trim().email().max(320),
+      adultAcknowledged: z.literal(true),
+      consent: z.literal(true),
+      website: z.string().max(160).optional().default(""),
+    })).mutation(async ({ctx,input}) => {
+      if(process.env.NEWSLETTER_SIGNUP_ENABLED !== "1") {
+        throw new TRPCError({code:"FORBIDDEN",message:"Adult newsletter signups are not open yet"});
+      }
+      if(input.website) return { received:true as const }; // harmless honeypot
+      await requireAuthRequestBudget(ctx.req,"newsletter-request");
+      const challenge=makeNewsletterChallenge(input.email);
+      let accepted=false;
+      try { accepted=await reserveNewsletterSubscription(challenge); }
+      catch { throw new TRPCError({code:"SERVICE_UNAVAILABLE",message:"Signup is temporarily unavailable"}); }
+      if(accepted) {
+        try {
+          await sendNewsletterOptInEmail({
+            to:challenge.email,confirmUrl:challenge.confirmUrl,
+            unsubscribeUrl:challenge.unsubscribeUrl,
+          });
+        } catch {
+          await undoFailedNewsletterRequest(challenge.emailKey,challenge.confirmHash).catch(()=>undefined);
+          throw new TRPCError({code:"SERVICE_UNAVAILABLE",message:"Confirmation email could not be sent"});
+        }
+      }
+      // Generic response avoids disclosing existing subscribers.
+      return {received:true as const};
+    }),
+    confirm: publicProcedure.input(z.object({
+      key:z.string().regex(/^[a-f0-9]{64}$/),
+      token:z.string().regex(/^[A-Za-z0-9_-]{36,100}$/),
+    })).mutation(async ({input}) => {
+      if(process.env.NEWSLETTER_SIGNUP_ENABLED !== "1") {
+        throw new TRPCError({code:"FORBIDDEN",message:"Newsletter confirmation is unavailable"});
+      }
+      try {return {confirmed:await confirmNewsletterSubscription(input.key,input.token)};}
+      catch {throw new TRPCError({code:"SERVICE_UNAVAILABLE",message:"Confirmation is temporarily unavailable"});}
+    }),
+    unsubscribe: publicProcedure.input(z.object({
+      key:z.string().regex(/^[a-f0-9]{64}$/),
+      token:z.string().regex(/^[a-f0-9]{64}$/),
+    })).mutation(async ({input}) => {
+      try {return {removed:await unsubscribeNewsletterSubscription(input.key,input.token)};}
+      catch {throw new TRPCError({code:"SERVICE_UNAVAILABLE",message:"Unsubscribe service is temporarily unavailable"});}
     }),
   }),
   auth: router({

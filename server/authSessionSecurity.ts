@@ -29,11 +29,12 @@ export function requestPeerAddress(req: Pick<Request, "socket">) {
   return ip && isIP(ip) ? ip : null;
 }
 
-export type AuthRequestKind = "otp-request" | "otp-verify" | "contact";
+export type AuthRequestKind = "otp-request" | "otp-verify" | "contact" | "newsletter-request";
 export const AUTH_ABUSE_LIMITS: Record<AuthRequestKind, { max: number; windowMs: number }> = {
   "otp-request": { max: 12, windowMs: 15 * 60_000 },
   "otp-verify": { max: 50, windowMs: 15 * 60_000 },
   contact: { max: 5, windowMs: 60 * 60_000 },
+  "newsletter-request": { max: 3, windowMs: 60 * 60_000 },
 };
 
 export function authRequestBucket(

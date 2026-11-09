@@ -35,6 +35,17 @@ export function validateProductionSecurityConfig(env: NodeJS.ProcessEnv): string
     errors.push("SECURITY_DATABASE_CONFIG_MISSING");
   }
 
+  if (env.NEWSLETTER_SIGNUP_ENABLED === "1") {
+    // Adult marketing opt-in is disabled unless verified schema and shared-worker
+    // request budgets are both intentionally rolled out.
+    if (env.AUTH_ABUSE_DB_ENABLED !== "1" || !buildDatabaseUrl(env)) {
+      errors.push("NEWSLETTER_SECURITY_DATABASE_REQUIRED");
+    }
+    if (!env.HOSTINGER_MAIL_API_TOKEN || !env.AUTH_MAIL_FROM) {
+      errors.push("NEWSLETTER_CONFIRMATION_MAIL_MISSING");
+    }
+  }
+
   if (env.MANUS_OAUTH_SERVER_ENABLED === "1") {
     let serverValid = false;
     try {
