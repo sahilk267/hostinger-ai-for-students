@@ -63,6 +63,31 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Remote editorial assets have a branded fallback when a school network blocks them. */
+function BrandMark({ className = "" }: { className?: string }) {
+  const [failed,setFailed]=useState(false);
+  return failed
+    ? <span className={className + " home-brand-fallback"} aria-hidden="true">✦</span>
+    : <img className={className} src={markImage} alt="" onError={()=>setFailed(true)}/>;
+}
+function EditorialImage({src,alt,theme}:{
+  src:string;alt:string;theme:"hero"|"study"|"career";
+}) {
+  const [failed,setFailed]=useState(false);
+  if(!failed) return <img src={src} alt={alt} onError={()=>setFailed(true)}/>;
+  return <div className={"home-image-fallback home-image-fallback--"+theme}
+    role="img" aria-label={alt+" (illustrated fallback)"}>
+      <span className="home-image-fallback__orbit" aria-hidden="true"/>
+      <span className="home-image-fallback__sheet" aria-hidden="true">
+        <span className="home-image-fallback__sheet-title">MY STUDY DESK</span>
+        <span className="home-image-fallback__line"/><span className="home-image-fallback__line"/>
+        <span className="home-image-fallback__line"/>
+        <span className="home-image-fallback__check">✓ Explore · ✓ Reflect</span>
+      </span>
+      <span className="home-image-fallback__spark" aria-hidden="true">✦</span>
+    </div>;
+}
+
 function Header() {
   const [open, setOpen] = useState(false);
   const navItems = [
@@ -77,7 +102,7 @@ function Header() {
     <header className="site-header">
       <div className="header-inner">
         <a className="brand" href="#top" aria-label="AI for Students home">
-          <img src={markImage} alt="" className="brand-mark" />
+          <BrandMark className="brand-mark"/>
           <span className="brand-type"><strong>AI</strong> for <em>Students</em></span>
         </a>
         <nav className={`desktop-nav ${open ? "is-open" : ""}`} aria-label="Primary navigation">
@@ -135,7 +160,7 @@ export default function Home() {
             </div>
             <div className="hero-visual">
               <div className="hero-image-frame">
-                <img src={heroImage} alt="A warm study desk with notes and an AI toolkit" />
+                <EditorialImage src={heroImage} theme="hero" alt="A warm study desk with notes and an AI toolkit" />
                 <div className="image-caption"><span>FIELD NOTE 01</span><strong>Your best AI workflow starts with a better question.</strong></div>
               </div>
               <div className="toolkit-stack" aria-label="Quick learning paths">
@@ -181,7 +206,7 @@ export default function Home() {
 
         <section className="feature-section" id="study-with-ai">
           <div className="container feature-layout">
-            <div className="feature-image-wrap"><img src={studyImage} alt="Study notes and flashcards arranged on a desk" /><span className="image-stamp">TRY THIS</span></div>
+            <div className="feature-image-wrap"><EditorialImage src={studyImage} theme="study" alt="Study notes and flashcards arranged on a desk" /><span className="image-stamp">TRY THIS</span></div>
             <div className="feature-copy"><SectionLabel>STUDY WITH AI</SectionLabel><h2>Use AI as a<br /><em>thinking partner.</em></h2><p>Good study support does not give you an answer and disappear. It helps you ask a sharper question, spot a gap and practice until the idea is yours.</p><div className="check-list"><span><Check size={15} /> Explain a concept in your own words</span><span><Check size={15} /> Turn notes into active recall</span><span><Check size={15} /> Get feedback without losing your voice</span></div><div className="home-study-actions"><a href="/mission" className="button button--ink">Start a 5-minute mission <ArrowUpRight size={16} /></a><a href="/discovery-lab" className="text-link">Play visual logic games <ArrowUpRight size={15} /></a></div></div>
           </div>
         </section>
@@ -201,12 +226,12 @@ export default function Home() {
           <div className="container split-layout"><div className="split-copy"><SectionLabel>FIELD NOTES / 03</SectionLabel><h2>Make room for<br /><em>better work.</em></h2><p>We test tools, simplify workflows and explain the trade-offs. You get a useful starting point—not another endless list of “best AI tools”.</p><a href="/my-journey" className="button button--primary">Open My Journey <ArrowUpRight size={16} /></a></div><div className="field-note-list"><div className="field-note-rail">A SMALLER, CLEARER AI HABIT</div><div className="field-note"><span className="field-note-num">01</span><div><strong>Tool cards with context</strong><p>What it does, who it helps, what to watch out for and where to start.</p></div><ArrowUpRight size={16} /></div><div className="field-note"><span className="field-note-num">02</span><div><strong>Templates you can actually use</strong><p>Study planners, CV checklists and prompts built around real tasks.</p></div><ArrowUpRight size={16} /></div><div className="field-note"><span className="field-note-num">03</span><div><strong>Safety without the lecture</strong><p>Clear guidance on privacy, verification and keeping your own voice.</p></div><ArrowUpRight size={16} /></div></div></div>
         </section>
 
-        <section className="career-section" id="career"><div className="container career-layout"><div className="career-visual"><img src={careerImage} alt="Career notes, a laptop and interview cue cards" /><span className="image-caption image-caption--dark"><span>CAREER NOTE 04</span><strong>The future skill is knowing what to ask.</strong></span></div><div className="career-copy"><SectionLabel>CAREER & SKILLS / 04</SectionLabel><h2>Make your next<br /><em>move clearer.</em></h2><p>From your first CV to your next interview, use AI to practice, sharpen and prepare—while the final thinking stays yours.</p><a href="/study" className="text-link">See study & career resources <ArrowUpRight size={16} /></a></div></div></section>
+        <section className="career-section" id="career"><div className="container career-layout"><div className="career-visual"><EditorialImage src={careerImage} theme="career" alt="Career notes, a laptop and interview cue cards" /><span className="image-caption image-caption--dark"><span>CAREER NOTE 04</span><strong>The future skill is knowing what to ask.</strong></span></div><div className="career-copy"><SectionLabel>CAREER & SKILLS / 04</SectionLabel><h2>Make your next<br /><em>move clearer.</em></h2><p>From your first CV to your next interview, use AI to practice, sharpen and prepare—while the final thinking stays yours.</p><a href="/study" className="text-link">See study & career resources <ArrowUpRight size={16} /></a></div></div></section>
 
-        <section className="newsletter-section" id="newsletter"><div className="container newsletter-layout"><div className="newsletter-symbol"><img src={markImage} alt="" /><span>ADULT NOTES<br/>OPT-IN ONLY</span></div><div className="newsletter-copy"><SectionLabel>OPTIONAL ADULT EMAIL NOTES</SectionLabel><h2>One useful AI idea.<br /><em>When notes open.</em></h2><p>Adults (18+) can request useful learning notes with a confirmation step. No child accounts, DOB, or Adventure results are collected.</p><AdultNewsletterSignup/></div></div></section>
+        <section className="newsletter-section" id="newsletter"><div className="container newsletter-layout"><div className="newsletter-symbol"><BrandMark/><span>ADULT NOTES<br/>OPT-IN ONLY</span></div><div className="newsletter-copy"><SectionLabel>OPTIONAL ADULT EMAIL NOTES</SectionLabel><h2>One useful AI idea.<br /><em>When notes open.</em></h2><p>Adults (18+) can request useful learning notes with a confirmation step. No child accounts, DOB, or Adventure results are collected.</p><AdultNewsletterSignup/></div></div></section>
         <section className="phase14-feedback-section" aria-label="Send site feedback"><div className="container"><SiteFeedbackPanel /></div></section>
       </main>
-      <footer className="site-footer"><div className="container footer-inner"><div className="footer-brand"><img src={markImage} alt="" /><strong>AI for Students</strong><p>Learn the tool. Keep the thinking.</p></div><div className="footer-links"><a href="#learn-ai">Learn AI</a><a href="#study-with-ai">Study</a><a href="#prompts">Prompts</a><a href="#tools">Tools</a><a href="/for-parents">For Parents</a><a href="/my-journey">My Journey</a><a href="#newsletter">Newsletter</a><a href="/contact">Contact</a><a href="/progress">Progress</a></div><div className="footer-meta"><span>Made for curious minds.</span><span>© 2026 AI for Students</span></div></div></footer>
+      <footer className="site-footer"><div className="container footer-inner"><div className="footer-brand"><BrandMark/><strong>AI for Students</strong><p>Learn the tool. Keep the thinking.</p></div><div className="footer-links"><a href="#learn-ai">Learn AI</a><a href="#study-with-ai">Study</a><a href="#prompts">Prompts</a><a href="#tools">Tools</a><a href="/for-parents">For Parents</a><a href="/my-journey">My Journey</a><a href="#newsletter">Newsletter</a><a href="/contact">Contact</a><a href="/progress">Progress</a></div><div className="footer-meta"><span>Made for curious minds.</span><span>© 2026 AI for Students</span></div></div></footer>
     </div>
   );
 }
