@@ -9,6 +9,10 @@ export const JOURNEY_AGE_KEY="aifs-discovery-adventure-age-band";
 export const JOURNEY_ATTEMPTS_KEY="aifs-discovery-adventure-v1";
 export const JOURNEY_TRANSFER_KEY="aifs-discovery-transfer-v1";
 export type JourneyStorage=Pick<Storage,"getItem">;
+export function safeJourneyStorage(): JourneyStorage | undefined {
+  if(typeof window==="undefined")return undefined;
+  try { return window.localStorage; } catch { return undefined; }
+}
 
 export function normalizeJourneyBand(value: unknown): AdventureAgeBand {
   return value==="8-10" || value==="11-13" || value==="14-17" ? value : "11-13";

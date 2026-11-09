@@ -2,14 +2,14 @@ import { useState } from "react";
 import { ArrowLeft, ArrowRight, HeartHandshake, LockKeyhole, Printer, Sparkles } from "lucide-react";
 import AuthControls from "@/components/AuthControls";
 import { ADVENTURE_AGE_BANDS, type AdventureAgeBand, type AdventureLocale } from "@/data/discoveryAdventure";
-import { getBrowserJourneyReport, readSelectedJourneyBand } from "@/data/discoveryJourney";
+import { getBrowserJourneyReport, readSelectedJourneyBand, safeJourneyStorage } from "@/data/discoveryJourney";
 import "./phase14Journey.css";
 import SiteFeedbackPanel from "@/components/SiteFeedbackPanel";
 
 export default function ParentsGuidePage() {
-  const [ageBand,setAgeBand]=useState<AdventureAgeBand>(()=>readSelectedJourneyBand(typeof window!=="undefined"?window.localStorage:undefined));
+  const [ageBand,setAgeBand]=useState<AdventureAgeBand>(()=>readSelectedJourneyBand(safeJourneyStorage()));
   const [locale,setLocale]=useState<AdventureLocale>("hinglish");
-  const report=getBrowserJourneyReport(ageBand,typeof window!=="undefined"?window.localStorage:undefined);
+  const report=getBrowserJourneyReport(ageBand,safeJourneyStorage());
   return <div className="phase14-page">
     <header className="phase14-page-header"><a href="/" className="phase14-wordmark">✦ AI for Students</a><nav aria-label="Parent navigation"><a href="/explorer/adventure">Adventure</a><a href="/my-journey">My Journey</a></nav><AuthControls/></header>
     <main className="phase14-page-main">

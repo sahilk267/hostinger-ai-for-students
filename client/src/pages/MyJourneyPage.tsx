@@ -7,7 +7,10 @@ import "./phase14Journey.css";
 import SiteFeedbackPanel from "@/components/SiteFeedbackPanel";
 
 export default function MyJourneyPage() {
-  const [games] = useState(()=>getLearningProgress());
+  const [games] = useState(()=>{
+    try { return getLearningProgress(); }
+    catch { return {} as ReturnType<typeof getLearningProgress>; }
+  });
   const gamesTried=Object.values(games).filter(game=>game.attempts>0).length;
   const gamesComplete=Object.values(games).filter(game=>game.completions>0).length;
   return <div className="phase14-page">

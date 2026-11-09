@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { ArrowRight, BookOpen, LockKeyhole, Sparkles } from "lucide-react";
 import { ADVENTURE_AGE_BANDS, type AdventureAgeBand } from "@/data/discoveryAdventure";
-import { getBrowserJourneyReport, nextJourneyAction, readSelectedJourneyBand } from "@/data/discoveryJourney";
+import { getBrowserJourneyReport, nextJourneyAction, readSelectedJourneyBand, safeJourneyStorage } from "@/data/discoveryJourney";
 
-function browserStorage() {return typeof window!=="undefined"?window.localStorage:undefined;}
+
 export function DiscoveryJourneyCard() {
-  const [ageBand,setAgeBand]=useState<AdventureAgeBand>(()=>readSelectedJourneyBand(browserStorage()));
-  const report=getBrowserJourneyReport(ageBand,browserStorage());
+  const [ageBand,setAgeBand]=useState<AdventureAgeBand>(()=>readSelectedJourneyBand(safeJourneyStorage()));
+  const report=getBrowserJourneyReport(ageBand,safeJourneyStorage());
   const next=nextJourneyAction(report);
   return <section className="phase14-journey-card" aria-labelledby="phase14-journey-title">
     <div className="phase14-journey-top">
