@@ -205,8 +205,12 @@ try {
       "(()=>{const a=[...document.querySelectorAll('a')].find(e=>e.textContent.includes('Start Free Adventure'));if(!a)return null;const r=a.getBoundingClientRect();return {left:r.left,right:r.right,width:r.width,visible:getComputedStyle(a).display!=='none'};})()");
     check(cta && cta.visible && cta.left>=-2 && cta.right<=width+2,
       width+"px primary CTA fits viewport",JSON.stringify(cta));
-    const menu=await evalPage(mobile.sid,
-      "(()=>{const b=document.querySelector('button.mobile-menu');if(!b)return false;b.click();return !!document.querySelector('.desktop-nav.is-open a[href=\"/explorer/adventure\"]');})()");
+    const toggled=await evalPage(mobile.sid,
+      "(()=>{const b=document.querySelector('button.mobile-menu');if(!b)return false;b.click();return true;})()");
+    check(toggled,width+"px mobile navigation toggle exists");
+    const menu=await poll(()=>evalPage(mobile.sid,
+      "!!document.querySelector('.desktop-nav.is-open a[href=\"/explorer/adventure\"]')"),
+      width+"px mobile menu React update",30);
     check(menu,width+"px mobile menu opens Discovery Adventure link");
     await snapshot(mobile,"02-home-"+width+"px-menu");
     await closePage(mobile);
