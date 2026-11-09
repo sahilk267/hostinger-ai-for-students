@@ -65,6 +65,21 @@ try {
   await assert(allowed.status === 200, "same-origin public tRPC query must be permitted");
   const statusBody = await allowed.text();
   await assert(statusBody.includes('"enabled":false'), "checkpoint preview must default OFF");
+  await assert(allowed.headers.get("cache-control")?.includes("no-store"),
+    "API responses must prevent caching of private account records");
+  await assert(allowed.headers.get("x-content-type-options") === "nosniff",
+    "API responses must disable MIME sniffing");
+  const sharing = await request("/api/trpc/explorer.getShare?input=" +
+    encodeURIComponent(JSON.stringify({ json: { token: "A".repeat(40) } })), {
+      headers: { Origin: base },
+    });
+  await assert(sharing.status === 403, "share-token lookup must stay disabled with cloud child data OFF");
+  const oversized = await request("/api/trpc/auth.logout", {
+    method: "POST",
+    headers: { Origin: base, "Content-Type": "application/json" },
+    body: JSON.stringify({ json: { padding: "X".repeat(600 * 1024) } }),
+  });
+  await assert(oversized.status === 413, "oversized JSON must be rejected before the API procedure");
   const blocked = await request(apiPath, { headers: { Origin: "https://untrusted.invalid" } });
   await assert(blocked.status === 403, "cross-origin tRPC request must be blocked");
   const spoofedHost = await request(apiPath, {
@@ -79,7 +94,7 @@ try {
     method: "POST", headers: { "Content-Type": "application/json" }, body: "{}",
   });
   await assert(unsafeOriginless.status === 403, "originless unsafe request must be blocked without same-origin metadata");
-  console.log("Compiled app smoke PASS: port, health, SPA routes, default-off preview, canonical origin and Fetch Metadata guard");
+  console.log("Compiled app smoke PASS: health, routes, no-store security headers, disabled child sharing, bounded request body, origin guard");
 } catch (error) {
   // Do not expose env values or any security tokens in CI failure output.
   console.error(error instanceof Error ? error.message : "Build smoke failed");

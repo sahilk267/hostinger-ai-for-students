@@ -56,6 +56,21 @@ describe("Private guardian-managed Explorer record boundaries", () => {
     }
   });
 
+  it("denies all public share-token reads while cloud/learner sharing is disabled", async () => {
+    const previous = process.env.EXPLORER_CLOUD_SAVE_ENABLED;
+    try {
+      delete process.env.EXPLORER_CLOUD_SAVE_ENABLED;
+      const visitor = appRouter.createCaller({ req: { headers: {} }, res: {}, user: null } as never);
+      await expect(visitor.explorer.getShare({ token: "A".repeat(40) })).rejects.toMatchObject({
+        code: "FORBIDDEN",
+        message: "Public learner sharing is disabled",
+      });
+    } finally {
+      if (previous === undefined) delete process.env.EXPLORER_CLOUD_SAVE_ENABLED;
+      else process.env.EXPLORER_CLOUD_SAVE_ENABLED = previous;
+    }
+  });
+
   it("exports all account-owned Explorer data while retaining a delete route", () => {
     const db = source("server/db.ts");
     const router = source("server/routers.ts");

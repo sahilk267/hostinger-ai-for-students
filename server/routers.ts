@@ -172,7 +172,14 @@ export const appRouter = router({
       return db.createExplorerShare({ userId: ctx.user.id, profileId: input.profileId, summaryJson: JSON.stringify({ completedCount: input.completedCount, skills: input.skills }), expiresAt: new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000) });
     }),
     revokeShare: protectedProcedure.input(z.object({ shareId: z.number().int().positive() })).mutation(({ ctx, input }) => db.revokeExplorerShare(ctx.user.id, input.shareId)),
-    getShare: publicProcedure.input(z.object({ token: z.string().regex(/^[A-Za-z0-9_-]{32,80}$/) })).query(({ input }) => db.getExplorerShareByToken(input.token)),
+    getShare: publicProcedure.input(z.object({ token: z.string().regex(/^[A-Za-z0-9_-]{32,80}$/) })).query(({ input }) => {
+      // Previously issued links must also go dark while public child-data
+      // sharing is disabled. Keeping profile deletion available is intentional.
+      if (process.env.EXPLORER_CLOUD_SAVE_ENABLED !== "1") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Public learner sharing is disabled" });
+      }
+      return db.getExplorerShareByToken(input.token);
+    }),
     feedback: protectedProcedure.input(z.object({
       ageBand: z.enum(["5-7", "8-10", "11-13", "14-17"]),
       skill: z.enum(["planning", "evidence", "creativity", "explanation", "flexibility", "reflection"]),

@@ -38,9 +38,17 @@ async function startServer() {
     res.set("Cache-Control", "no-store");
     res.status(200).json({ status: "ok" });
   });
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // No uploads are accepted on these routes. Bound untrusted request bodies
+  // before parsing so a client cannot cheaply allocate 50 MB per request.
+  app.use(express.json({ limit: "512kb" }));
+  app.use(express.urlencoded({ limit: "64kb", extended: true }));
+  // Account exports and tRPC queries can contain private records. They must
+  // never be cached by browsers, a CDN or a reverse proxy.
+  app.use("/api", (_req, res, next) => {
+    res.set("Cache-Control", "private, no-store");
+    res.set("X-Content-Type-Options", "nosniff");
+    next();
+  });
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   // tRPC API

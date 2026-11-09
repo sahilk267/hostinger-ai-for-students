@@ -126,6 +126,16 @@ describe("Hardened account and guardian security contracts", () => {
     }
   });
 
+  it("keeps API cache bypass and parsers appropriately bounded", () => {
+    const app = source("server/_core/index.ts");
+    expect(app).toContain('app.use("/api",');
+    expect(app).toContain('res.set("Cache-Control", "private, no-store")');
+    expect(app).toContain('res.set("X-Content-Type-Options", "nosniff")');
+    expect(app).toContain('express.json({ limit: "512kb" })');
+    expect(app).toContain('express.urlencoded({ limit: "64kb", extended: true })');
+    expect(app).not.toContain('limit: "50mb"');
+  });
+
   it("requires explicit guardian self-declaration for learner profile creation", () => {
     const server = source("server/routers.ts");
     const page = source("client/src/pages/ExplorerPage.tsx");
