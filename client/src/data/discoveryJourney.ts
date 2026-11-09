@@ -68,6 +68,6 @@ export type BrowserJourneyReport=ReturnType<typeof getBrowserJourneyReport>;
 export function nextJourneyAction(report: BrowserJourneyReport) {
   if(report.nextMission) return {href:`/explorer/adventure?age=${report.ageBand}`,label:"Continue an adventure mission"};
   if(!report.completed) return {href:`/explorer/adventure?age=${report.ageBand}`,label:"Explore the learning worlds"};
-  if(!report.transfer.completed) return {href:`/explorer/adventure?age=${report.ageBand}`,label:"Start or continue Thinking Challenge"};
+  if(!report.transfer.completed) return {href:`/explorer/adventure?age=${report.ageBand}&view=challenge`,label:"Start or continue Thinking Challenge"};
   return {href:`/explorer/adventure?age=${report.ageBand}&view=report`,label:"See your family learning milestone"};
 }

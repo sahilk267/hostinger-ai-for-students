@@ -34,6 +34,9 @@ describe("Phase 14 visible journey and parent plan",()=>{
     const t=Object.fromEntries(transfers.map(q=>[q.id,{firstCorrect:true,solved:true,attempts:1,updatedAt:"2026-11-10T00:00:00.000Z"}]));
     const data=storage({"aifs-discovery-adventure-v1":JSON.stringify(a),"aifs-discovery-transfer-v1":JSON.stringify(t)});
     const result=getBrowserJourneyReport("11-13",data);
+    const onlyNine=storage({"aifs-discovery-adventure-v1":JSON.stringify(a)});
+    const readyForChallenge=getBrowserJourneyReport("11-13",onlyNine);
+    expect(nextJourneyAction(readyForChallenge).href).toContain("view=challenge");
     expect(result.showcaseReady).toBe(true);
     expect(nextJourneyAction(result).href).toContain("view=report");
     expect(result.growthPlan).toHaveLength(3);
@@ -53,5 +56,6 @@ describe("Phase 14 visible journey and parent plan",()=>{
     expect(parent).toContain("report.growthPlan.map");
     expect(parent).toContain("No mission results yet");
     expect(adventure).toContain('get("view") === "report"');
+    expect(adventure).toContain('get("view") === "challenge"');
   });
 });

@@ -161,7 +161,13 @@ export default function DiscoveryAdventurePage() {
   const [ageBand, setAgeBand] = useState<AdventureAgeBand>(initialBand);
   const [attempts, setAttempts] = useState<Record<string, AdventureAttempt>>(readSaved);
   const [transfers, setTransfers] = useState<Record<string, TransferAttempt>>(readSavedTransfers);
-  const [showAssessment, setShowAssessment] = useState(false);
+  const [showAssessment, setShowAssessment] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    // A deep link is a shortcut only, not a way around the nine-mission gate.
+    return params.get("view") === "challenge"
+      && getAgeAdventureMissions(initialBand()).every(mission => readSaved()[mission.id]?.bestCorrect);
+  });
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [optionOrder, setOptionOrder] = useState<string[]>([]);
