@@ -37,3 +37,7 @@ This feature is implemented on the existing Draft PR #1, not a verified or accre
 Independent guardian/learner identity verification, real server-verified revocable certificates, legal consent and real-user educational validity studies are not completed by this browser-only release. Commercial payment flow remains separate. PR remains Draft pending live browser and educational QA.
 
 If Hostinger auto-deploys this feature branch, pushing the commit may start that configured workflow. Verify the actual Hostinger preview/live version separately: CI tests are not browser QA.
+
+## Phase 10 follow-up (implemented; manual live education QA outstanding)
+
+Draft PR #1 advanced the browser-only Thinking Challenge to give **diagnostic action/reason feedback without revealing the full solution on an incorrect attempt**. It added a prioritised three-session family growth plan (observed evidence, coaching prompts, ten-minute activities, discussion starters) and a next-step action from the printable private milestone back to the family report. Automated TypeScript/tests/build and CI smoke passed at `0aaf1bdbb0`; this is not equivalent to a mobile/browser/learning-outcome study. See Phase 11 tracker `ops/release-readiness-phase11.md` for pending operational gates.

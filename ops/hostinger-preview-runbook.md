@@ -1,6 +1,6 @@
 # Phase 8 — Hostinger preview and staging rollout
 
-**STATUS:** Draft PR only. No production database migration or verified guardian certificate has been implemented.
+**STATUS (2026-11-08):** The owner reports a separate feature-branch live deployment with imported database tables and working health/OTP/Adventure flows. This was not independently audited. Phase 11 is on separate Draft PR #2 and MUST NOT be treated as deployed. No verified guardian certificate exists.
 
 ## Important: preview is not necessarily a separate database
 
@@ -51,3 +51,41 @@ Never use an unverified PR preview with children's identities, OTPs, account wri
 - MySQL on Node.js: https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/
 
 This document does not authorize a production deployment, expose child data, issue a certificate or charge customers.
+
+## Phase 11 isolated staging checklist
+
+1. Keep the live feature branch unchanged. Stage `feature/phase11-origin-guardian-guard-20261108` in a separate Node.js app with distinct database/user, JWT secret, mail test account and HTTPS hostname. A PR preview URL alone does **not** prove isolation.
+2. Confirm `PUBLIC_SITE_ORIGIN` equals that staging hostname (not the live domain). If missing or malformed, production-mode tRPC deliberately returns 403.
+3. Back up the staging database, reconcile Drizzle migration history, and import `ops/auth-session-abuse-hardening.sql` only there; check that `authSessions` and `authRequestBuckets` exist.
+4. Turn on `AUTH_SESSIONS_ENFORCED=1`; test a **new** adult test-account login. Older issued JWT cookies won't be in the ledger. Test authorization after login, logout, stale JWT denial, a second browser/session, expired token and guardian export/delete. Turn off the flag if issues occur, but remember that disabling it restores stateless legacy JWT acceptance.
+5. **Before turning on `AUTH_ABUSE_DB_ENABLED=1`**, verify the TCP peer address seen by Node is not a shared Hostinger proxy for all visitors; inspect only masked/anonymized diagnostic output. No diagnostic collecting raw visitor IP has been built. If it is shared, leave OFF and plan a properly configured trusted-proxy/WAF rate limiter. Check user fairness across NATs/schools.
+6. With staging limits ON (only if network topology is safe), test OTP/verify/contact rate thresholds, time-window rollover, provider rejection, app restarts and multi-worker behavior. Monitor availability and legitimate user lockouts. All test emails must be adult-controlled.
+7. Confirm mobile, accessibility, languages, public routes, cookies and print. Restore test accounts/data by approved procedures; never run CI destructive tests on Hostinger.
+8. Record actual observed outcomes and Hostinger served commit in `ops/release-readiness-phase11.md`; request a security and privacy review before any production promotion.
+
+No new production ENV is required until the above migration and validation have been completed. Default-off learner data and AI flags stay `0`.
+
+## Phase 12 read-only staging configuration preflight
+
+In the **isolated staging** environment only, set the following non-secret control keys before running `node ops/check-phase11-staging.mjs`: `DEPLOY_TARGET=staging`, `STAGING_DATA_MODE=isolated-db`, `STAGING_PUBLIC_ORIGIN`, `PRODUCTION_PUBLIC_ORIGIN`, `PUBLIC_SITE_ORIGIN`, `PRODUCTION_DATABASE_NAME`, `PRODUCTION_DATABASE_USER` and `STAGING_TEST_MAIL_ONLY=yes`. The checker also requires staging JWT/mail and staging DB connection fields to exist; it reports only fixed codes, **never secret values**. It does not connect to Hostinger, send an email, open MySQL or prove separation.
+
+After independently reviewing/importing the security schema on **staging only**, the operator can set `STAGING_SECURITY_SCHEMA_REVIEWED=yes` and `STAGING_SECURITY_SCHEMA_APPLIED=yes` as explicit self-attestations when either new DB security flag is enabled. Enabling the peer-IP abuse limiter also requires `STAGING_PEER_IP_ISOLATED=yes` **after** independently observing proxy topology. All acknowledgements are operator assertions; they are not substitute evidence. Keep default-off flags until actual tests show success.
+
+Unconfigured external Manus OAuth is hidden by default. To expose it again intentionally, set `VITE_MANUS_OAUTH_ENABLED=1`, `VITE_APP_ID`, `VITE_OAUTH_PORTAL_URL` (HTTPS) at build time and configure approved server `OAUTH_SERVER_URL`. The original email OTP path requires none of these.
+
+## Phase 13 staging operator sequence — no production writes
+
+The commands below are **optional actions on your own isolated staging environment**. They must never be run with live production credentials or a production hostname. The assistant has not executed them on Hostinger. The production feature branch remains separate from Draft PR #2.
+
+1. Create an isolated Hostinger Node.js staging app on a different HTTPS hostname, with an independent database **and DB username**, secret, and test-only mail configuration; record only non-secret identifiers. Back up the isolated database and verify it is not the production database.
+2. Configure `DEPLOY_TARGET=staging`, `STAGING_DATA_MODE=isolated-db`, `STAGING_PUBLIC_ORIGIN=https://<your-stage-domain>`, `PRODUCTION_PUBLIC_ORIGIN=https://aiforstudents.in`, and `PUBLIC_SITE_ORIGIN` equal to the staging origin. Set `PRODUCTION_DATABASE_NAME` and `PRODUCTION_DATABASE_USER` to the *names* from production for comparison, not credentials. Never paste secrets into chat or Git.
+3. Ensure staging environment holds its own MySQL variables, unique `JWT_SECRET`, Hostinger mail test token/sender, and `STAGING_TEST_MAIL_ONLY=yes`. Keep `EXPLORER_CLOUD_SAVE_ENABLED=0`, `EXPLORER_AI_FEEDBACK_ENABLED=0`, `DISCOVERY_CHECKPOINTS_ENABLED=0`, `MANUS_STORAGE_PROXY_ENABLED=0`, `MANUS_OAUTH_SERVER_ENABLED=0`, `AUTH_SESSIONS_ENFORCED=0`, `AUTH_ABUSE_DB_ENABLED=0`.
+4. From the app directory on staging run: `node ops/check-phase11-staging.mjs`. It is **read-only/static**, printing only policy names, and cannot independently prove asserted isolation.
+5. After inspecting the seven base tables, back up and import `ops/auth-session-abuse-hardening.sql` into the **staging** MySQL DB only. Then run `node ops/check-phase11-schema.mjs`. It uses SELECT-only INFORMATION_SCHEMA queries and exits nonzero if columns, primary keys, the cascade FK or isolated DB-name/user declarations are wrong. A pass does not verify other core tables.
+6. Deploy the exact Draft PR #2 commit to staging only, with the staging origin and Node 22. Run `node ops/check-phase11-stage-http.mjs` from an environment with internet access. It makes public **GET requests only** (no credentials or OTP), verifies response headers and negative origin/share checks, and refuses to probe if staging origin equals the production origin. It cannot prove which commit is actually served.
+7. Review the **actual** staging runtime logs (mask secrets), then enable `AUTH_SESSIONS_ENFORCED=1` only there, restart the app and create a fresh adult-test OTP session. Confirm logout invalidates that session in another tab, old sessions require re-login, account privacy/deletion remains correct, and DB-unavailable behavior is safe. Do not store raw tokens in the tracker.
+8. Independently verify real remote TCP peers across distinct clients behind Hostinger, without publishing addresses. Leave `AUTH_ABUSE_DB_ENABLED=0` if multiple clients share a reverse-proxy address. Only enable it on staging if differentiation and school/NAT fairness are demonstrated. Test rate windows without real learner records.
+9. Manual keyboard, 320-pixel mobile, Hindi/Hinglish, 9+3 learning tasks, A4 print, test-only email quota, abuse monitoring, storage public-prefix dependencies and safeguarding review remain separate acceptance gates.
+10. Record redacted evidence in `ops/release-readiness-phase11.md`, including *time, staging commit, redacted PASS/BLOCK codes, tester, rollback owner and explicit security/privacy approval*. Obtain sign-off before any merge or production release.
+
+**New startup rule:** a production-mode Node process requires a strong `JWT_SECRET` (32+ characters) and canonical HTTPS `PUBLIC_SITE_ORIGIN`. CI's HTTP loopback test exception is not for Hostinger. If the new production app fails startup, check these two settings in the protected hPanel without sharing their values. No schema importer is executed automatically.

@@ -12,6 +12,7 @@ import { invokeLLM } from "./_core/llm";
 import { sendAuthenticationCode, sendContactMessage } from "./mail";
 import { CHECKPOINT_POLICY, getCheckpoints, gradeCheckpoint } from "./discoveryCheckpoints";
 import { cancelEmailCodeChallenge, clearEmailCodeChallenge, createEmailCodeChallenge, getEmailChallengeCookie, localEmailOpenId, normalizeEmail, verifyEmailCode } from "./authEmail";
+import { getAuthSessionToken, hashAuthSessionToken, requireAuthRequestBudget } from "./authSessionSecurity";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -22,7 +23,8 @@ export const appRouter = router({
       replyEmail: z.string().email().max(320),
       subject: z.string().trim().min(1).max(160),
       message: z.string().trim().min(1).max(4000),
-    })).mutation(async ({ input }) => {
+    })).mutation(async ({ ctx, input }) => {
+      await requireAuthRequestBudget(ctx.req, "contact");
       try {
         await sendContactMessage(input);
         return { success: true as const };
@@ -34,6 +36,7 @@ export const appRouter = router({
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     requestEmailCode: publicProcedure.input(z.object({ email: z.string().email().max(320) })).mutation(async ({ ctx, input }) => {
+      await requireAuthRequestBudget(ctx.req, "otp-request");
       let challenge: Awaited<ReturnType<typeof createEmailCodeChallenge>>;
       try {
         challenge = await createEmailCodeChallenge(input.email, ctx.req, ctx.res);
@@ -51,6 +54,7 @@ export const appRouter = router({
       return { success: true as const, expiresInMinutes: challenge.expiresInMinutes };
     }),
     verifyEmailCode: publicProcedure.input(z.object({ email: z.string().email().max(320), code: z.string().regex(/^\d{6}$/) })).mutation(async ({ ctx, input }) => {
+      await requireAuthRequestBudget(ctx.req, "otp-verify");
       const email = normalizeEmail(input.email);
       let verified: boolean;
       try { verified = await verifyEmailCode(email, input.code, getEmailChallengeCookie(ctx.req)); }
@@ -68,12 +72,21 @@ export const appRouter = router({
       clearEmailCodeChallenge(ctx.res, ctx.req);
       return { success: true as const };
     }),
-    logout: publicProcedure.mutation(({ ctx }) => {
+    logout: publicProcedure.mutation(async ({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
+      if (process.env.AUTH_SESSIONS_ENFORCED === "1") {
+        const token = getAuthSessionToken(ctx.req);
+        if (token) {
+          try {
+            await db.revokeAuthSession(hashAuthSessionToken(token));
+          } catch {
+            ctx.res.clearCookie(COOKIE_NAME, cookieOptions);
+            throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Could not revoke session; please try again" });
+          }
+        }
+      }
       ctx.res.clearCookie(COOKIE_NAME, cookieOptions);
-      return {
-        success: true,
-      } as const;
+      return { success: true as const };
     }),
   }),
   discoveryCheckpoint: router({
@@ -159,7 +172,14 @@ export const appRouter = router({
       return db.createExplorerShare({ userId: ctx.user.id, profileId: input.profileId, summaryJson: JSON.stringify({ completedCount: input.completedCount, skills: input.skills }), expiresAt: new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000) });
     }),
     revokeShare: protectedProcedure.input(z.object({ shareId: z.number().int().positive() })).mutation(({ ctx, input }) => db.revokeExplorerShare(ctx.user.id, input.shareId)),
-    getShare: publicProcedure.input(z.object({ token: z.string().regex(/^[A-Za-z0-9_-]{32,80}$/) })).query(({ input }) => db.getExplorerShareByToken(input.token)),
+    getShare: publicProcedure.input(z.object({ token: z.string().regex(/^[A-Za-z0-9_-]{32,80}$/) })).query(({ input }) => {
+      // Previously issued links must also go dark while public child-data
+      // sharing is disabled. Keeping profile deletion available is intentional.
+      if (process.env.EXPLORER_CLOUD_SAVE_ENABLED !== "1") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Public learner sharing is disabled" });
+      }
+      return db.getExplorerShareByToken(input.token);
+    }),
     feedback: protectedProcedure.input(z.object({
       ageBand: z.enum(["5-7", "8-10", "11-13", "14-17"]),
       skill: z.enum(["planning", "evidence", "creativity", "explanation", "flexibility", "reflection"]),

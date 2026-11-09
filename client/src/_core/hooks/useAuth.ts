@@ -1,4 +1,4 @@
-import { startLogin } from "@/const";
+import { isOAuthLoginConfigured, startLogin } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { TRPCClientError } from "@trpc/client";
 import { useCallback, useEffect, useMemo } from "react";
@@ -79,8 +79,12 @@ export function useAuth(options?: UseAuthOptions) {
     // Navigate at this moment only. startLogin() mints the nonce + cookie itself.
     if (redirectPath) {
       window.location.href = redirectPath;
-    } else {
+    } else if (isOAuthLoginConfigured()) {
       startLogin();
+    } else if (window.location.pathname !== "/account") {
+      // A protected page should never strand OTP-only visitors with a dead
+      // external login route. The account screen offers local email sign-in.
+      window.location.href = "/account";
     }
   }, [
     redirectOnUnauthenticated,

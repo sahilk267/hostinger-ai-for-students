@@ -9,6 +9,10 @@ This document is a **name-only deployment handoff** for AI for Students. It inte
 | `DATABASE_URL` | MySQL connection string used by Drizzle and the server | Yes | Preferred form: build it from the Hostinger database host, database name, user and replacement password inside the protected form. |
 | `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME` | Optional split MySQL fields used when `DATABASE_URL` is not available in Hostinger’s Node.js form | Yes | Enter all five in the protected form; `DATABASE_PORT` defaults to `3306`. The runtime also accepts the shorter aliases `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`. Do not mix incomplete sets. |
 | `JWT_SECRET` | Signs local authentication sessions and cookies | Yes | Generate a new long random value for this deployment; do not reuse the password or commit it. |
+| `PUBLIC_SITE_ORIGIN` | Strict canonical origin for tRPC protection | No | Required for Phase 11 production operation. Set to the exact HTTPS site origin without a path; staging and production need their respective own values. |
+| `AUTH_SESSIONS_ENFORCED` | Optional DB-verified, revocable session ledger | No | Keep `0` or unset until `authSessions` migration + staging login/logout test; then explicitly enable by approved rollout. Older sessions need re-login. |
+| `AUTH_ABUSE_DB_ENABLED` | Optional MySQL-backed OTP/contact request budgets | No | Keep `0` or unset until `authRequestBuckets` migration and trusted client-IP/proxy topology validation. Shared reverse-proxy IPs may lock out visitors. |
+| `MANUS_STORAGE_PROXY_ENABLED`, `MANUS_STORAGE_PUBLIC_PREFIX` | Public-only signed asset proxy (optional, potentially sensitive) | No | Keep disabled; only enable for a reviewed public asset prefix such as `public/`, never for learner/guardian files. |
 | `HOSTINGER_MAIL_API_TOKEN` | Auth-code mail adapter credential | Yes | Paste the Hostinger Mail API token only in the protected form. |
 | `AUTH_MAIL_FROM` | Sender address for local auth-code mail | No, but deployment-critical | Set to `auth@aiforstudents.in`. |
 | `BUILT_IN_FORGE_API_URL` | Server-side built-in API endpoint used for supported integrations | Usually secret-backed | Copy the environment value supplied by the managed project configuration. |
@@ -48,7 +52,7 @@ The database password previously shared in chat must be replaced before deployme
 
 ## Blank database schema import
 
-If phpMyAdmin shows **No tables found in database**, select the application database, open **Import**, choose the repository file `hostinger-schema-import.sql`, keep the SQL format selected, and run the import. Do not create individual tables manually and do not modify the SQL to add passwords or user rows. After import, the Structure tab should show `users`, `learningProgress`, `explorerProfiles`, `explorerAttempts` and `explorerShares`. The SQL file also includes the required foreign keys and unique indexes.
+If phpMyAdmin shows **No tables found in database**, select the application database, open **Import**, choose the repository file `hostinger-schema-import.sql`, keep the SQL format selected, and run the import. Do not create individual tables manually and do not modify the SQL to add passwords or user rows. After import, the Structure tab should show **seven core tables**: `users`, `learningProgress`, `explorerProfiles`, `explorerAttempts`, `explorerShares`, `authEmailChallenges` and `discoveryCheckpoints`. For an existing populated database, DO NOT re-import this blank schema file; use reviewed incremental migrations only. The SQL file also includes the required foreign keys and unique indexes.
 
 For a read-only verification in phpMyAdmin, run `SHOW TABLES;`, `SHOW COLUMNS FROM users;` and `SHOW CREATE TABLE users;`. The `users` table must contain `id`, `openId`, `name`, `email`, `loginMethod`, `role`, `createdAt`, `updatedAt` and `lastSignedIn`, with `id` as the primary key and `openId` unique. Do not run `DROP`, `TRUNCATE` or manual row inserts.
 
@@ -59,3 +63,24 @@ General learning-game scores are kept in browser storage while a learner plays. 
 ## User-owned checks after configuration
 
 The following cannot be truthfully marked complete from the sandbox: real HTTPS OTP delivery, guest-progress migration in a second browser/device, contact-form delivery on the live domain, Hostinger database connectivity, and the final staging smoke test. Run those only after the protected variables and domain are configured, then record pass/fail outcomes without copying secrets or private learner data.
+
+## Phase 11 secure rollout: configuration is NOT evidence of deployment
+
+Import `ops/auth-session-abuse-hardening.sql` only into a backed-up isolated staging DB first. Check tables `authSessions` and `authRequestBuckets`. Enabling `AUTH_SESSIONS_ENFORCED=1` requires existing visitors to sign in again, and will fail closed if DB/session ledger is missing. `AUTH_ABUSE_DB_ENABLED=1` requires proof that the Node TCP peer represents a sufficiently differentiated client population; Hostinger reverse proxies can make all requests appear to share one address. Never trust arbitrary `X-Forwarded-For` headers. The flags default OFF and should **not** be enabled directly in production.
+
+Track the complete gate-by-gate verification and rollback decision in `ops/release-readiness-phase11.md`. Keeping `EXPLORER_CLOUD_SAVE_ENABLED`, `EXPLORER_AI_FEEDBACK_ENABLED`, and `DISCOVERY_CHECKPOINTS_ENABLED` at `0` remains required until independent safeguarding/privacy review.
+
+## Phase 12 read-only staging preflight & optional OAuth
+
+A safer **staging-only** config check is available: `node ops/check-phase11-staging.mjs`. It evaluates staging/production origin separation, distinct DB name/user, test-only mail declarations, default-OFF child-data/storage flags and prerequisites for opt-in session/abuse features. It does not connect to the DB or inspect any live Hostinger system, and prints only policy names. It does not independently verify declarations made by an operator. Set `DEPLOY_TARGET=staging`, `STAGING_PUBLIC_ORIGIN`, `PRODUCTION_PUBLIC_ORIGIN`, `STAGING_DATA_MODE=isolated-db`, `STAGING_TEST_MAIL_ONLY=yes` and the protected DB/mail credentials only inside the staging environment; `PRODUCTION_DATABASE_NAME` and `PRODUCTION_DATABASE_USER` are comparison identifiers, not passwords.
+
+For OTP-only sites, leave `VITE_MANUS_OAUTH_ENABLED` unset or `0`; the UI will hide the unusable OAuth option. Only set it to `1` when `VITE_OAUTH_PORTAL_URL`, `VITE_APP_ID` (frontend build) and approved server `OAUTH_SERVER_URL` are fully configured and tested. No new variable is required for normal email OTP login.
+
+## Phase 13 API safety, deployment-time gating and staging commands
+
+- Production-mode startup now refuses to serve when `JWT_SECRET` is shorter than 32 characters or `PUBLIC_SITE_ORIGIN` is not the correct canonical HTTPS origin, with no path/query. The only HTTP exception is an explicit CI/test-only loopback and must **never** be configured in Hostinger.
+- API response headers include `Cache-Control: private, no-store` to protect account exports and private learning records from intermediary caches. JSON/URL-encoded request bodies are capped at 512 KB / 64 KB. This app has no general file-upload endpoint on these parsers.
+- `MANUS_OAUTH_SERVER_ENABLED` is a separate server-side opt-in that defaults OFF. It must be `1` only when a separately approved OAuth provider is configured; the frontend also requires `VITE_MANUS_OAUTH_ENABLED=1` plus `VITE_OAUTH_PORTAL_URL` and `VITE_APP_ID` at build time. Local email OTP requires NONE of those OAuth variables.
+- Public child share-token lookup is now denied when `EXPLORER_CLOUD_SAVE_ENABLED` is unset/`0`; previous share links intentionally stop working under that privacy boundary.
+- The Stage Operator Preflight uses `DEPLOY_TARGET`, `STAGING_DATA_MODE`, `STAGING_PUBLIC_ORIGIN`, `PRODUCTION_PUBLIC_ORIGIN`, `PRODUCTION_DATABASE_NAME` and `PRODUCTION_DATABASE_USER`. These are comparison/verification identifiers for **staging**, not production settings; do not add them to a live application merely to satisfy a checklist.
+- Safe commands: `node ops/check-phase11-staging.mjs` (static only), `node ops/check-phase11-schema.mjs` (SELECT-only against **staging** DB after reviewed migration), `node ops/check-phase11-stage-http.mjs` (public GETs against **staging** HTTPS only). Each exits nonzero on a detected gap and reports codes without displaying secrets. Neither proves a verified guardian, official certification, live git SHA, or production safety.

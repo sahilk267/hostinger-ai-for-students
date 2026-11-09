@@ -728,3 +728,53 @@
 - [x] Correct the visual contract regression assertion to check the actual duplicate-round protection implementation without relying on a comment word.
 - [x] Ensure assistance/timeout/exposure quality flags are preserved as `review` when evidence is also incomplete, without changing the score.
 - [x] Deploy the latest visual-game commit to Hostinger and recheck `/discovery-lab`; user confirmed deployment, and live homepage, Learn, Study, Progress, Robotics and Discovery Lab routes now load.
+
+## Phase 11 — origin guard, revocable login sessions, abuse limits, tracking (2026-11-08)
+
+Implementation completed on review branch `feature/phase11-origin-guardian-guard-20261108` and tracked by Draft PR #2. **Code completion is not production deployment approval.**
+- [x] Remove Host header fallback when `PUBLIC_SITE_ORIGIN` is configured; fail closed for unconfigured production origin and unsafe originless requests.
+- [x] Add Fetch Metadata regression tests and compiled-Express smoke coverage, including a spoofed Host.
+- [x] Add **optional** database-backed session token-digest ledger (issue, check, revoke on logout, expire and cascade on deletion). Requires manual staging migration and `AUTH_SESSIONS_ENFORCED=1` after approval.
+- [x] Add **optional** atomic MySQL peer-IP fixed-window budgets for OTP request, OTP verify and contact submissions; do not trust X-Forwarded-For directly. Requires same manual migration and proxy validation before `AUTH_ABUSE_DB_ENABLED=1`.
+- [x] Prepare `ops/auth-session-abuse-hardening.sql` (no DROP / no user or secret data), isolated MySQL integration tests and CI.
+- [x] Update deployment ENV handoff, security runbook, preview checklist and versioned release tracker.
+- [ ] Validate security table migration, session revocation, OTP, logout, contact and account export/delete on a **separate real Hostinger staging DB**.
+- [ ] Verify Hostinger's true remote peer IP architecture across two clients/NATs before enabling shared-IP limits; avoid accidental lockouts.
+- [ ] Obtain authorized safeguarding/guardian-consent/privacy review and manual Android/keyboard/Hindi/print learning QA.
+- [ ] Confirm live served commit, deploy/rollback plan, mail quotas and a retention cleanup schedule.
+- [ ] Review and explicitly approve PR #2 for promotion; no automatic deployment or live migrations executed by this work.
+
+Evidence/status: `ops/release-readiness-phase11.md`. Account login and Discovery Adventure were earlier reported working by the owner on the deployed feature branch; this is NOT proof the new Phase 11 features have been deployed or tested there.
+
+### Documentation alignment — blank Hostinger schema
+- [x] Reconcile the old five-table GitHub blank import with seven core tables required by hardened email OTP and Discovery checkpoints; the updated `hostinger-schema-import.sql` is for **new empty DBs only**.
+- [x] Keep optional `authSessions` and `authRequestBuckets` in separate Phase 11 SQL; add import/DDL contract regression tests and phpMyAdmin handoff update.
+- [ ] Verify any future actual Hostinger migration independently; neither SQL file has been run by the assistant.
+
+### Additional Phase 11 route audit: privileged storage
+- [x] Restrict formerly public `/manus-storage/*` presigning route: default OFF, explicit public-prefix opt-in and traversal/encoding checks.
+- [x] Add storage prefix validation and denied-request tests without calling external services.
+- [ ] Validate whether production public assets require this proxy, and ensure storage-side access policies permit only public files before any opt-in.
+
+## Phase 12 — session collision, OAuth optionality, staging safety checks (2026-11-08)
+
+- [x] Make newly signed JWT sessions unique per issuance (random `jti` + issue time) to prevent DB primary-key collisions for same-second logins.
+- [x] Under DB-enforced sessions, deny account auto-recreation from legacy JWTs after deletion; retain fresh OAuth callback account creation.
+- [x] Make OAuth visibly opt-in with `VITE_MANUS_OAUTH_ENABLED`; suppress broken external OAuth sign-in when the owner uses Hostinger email OTP only.
+- [x] Correct the OTP success message so browser-only Adventure results are not falsely described as remotely saved.
+- [x] Add read-only, no-secret Phase 11 staging gate + Node-native regression cases, and run them in CI.
+- [ ] Verify real Hostinger isolated staging database, peer-IP topology, OAuth and browser/parent QA with recorded human evidence before enabling DB flags or promotion.
+- [x] Complete OTP-only navigation fallback: dashboard sign-in uses LocalAuthDialog when OAuth is disabled, and protected-route redirects go to the email OTP account page rather than a disabled OAuth function.
+
+## Phase 13 — runtime hardening and staged release verification (2026-11-10)
+
+- [x] Protect `/api/*` with private/no-store response headers and disable MIME sniffing, including private guardian/account exports.
+- [x] Reduce unauthenticated generic Express payload limit from 50 MB to 512 KB JSON / 64 KB form, with compiled-server 413 regression.
+- [x] Reject legacy public child profile share lookups while the private/cloud feature flag is OFF; retain private account deletion paths.
+- [x] Fail closed on unsafe production startup configuration: JWT secret length, canonical HTTPS public origin and optional DB, OAuth and storage prerequisites.
+- [x] Disable optional Manus OAuth callback by default, independent of frontend login menu configuration.
+- [x] Add public-only HTTPS staging acceptance probe `ops/check-phase11-stage-http.mjs`; offline tests prove never contacting a production origin or sending a POST/credentials.
+- [x] Add read-only MySQL security migration inspector `ops/check-phase11-schema.mjs`; verify keys, columns, deletion cascade, and production-vs-staging separation. Execute against ephemeral CI MySQL only, not Hostinger.
+- [x] Sync Phase 11-13 documentation and tracking, and verify GitHub Actions for the complete review-branch commit.
+- [ ] Independent real Hostinger staging isolation, live HTTP/DB probe result, OTP browser revocation, proxy peer address, privacy/safeguarding, mobile/print and deployment approval evidence.
+- [ ] Promote only after all staging gates pass, authorized release plan and backup; production/auto-deploy feature branch is intentionally untouched by this work.

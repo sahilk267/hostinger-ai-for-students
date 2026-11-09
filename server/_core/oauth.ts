@@ -13,6 +13,12 @@ function getQueryParam(req: Request, key: string): string | undefined {
 
 export function registerOAuthRoutes(app: Express) {
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
+    // Hostinger email OTP is the primary sign-in. Keep the legacy external
+    // callback completely unavailable unless the operator explicitly enables it.
+    if (process.env.MANUS_OAUTH_SERVER_ENABLED !== "1") {
+      res.status(404).json({ error: "OAuth login is not enabled" });
+      return;
+    }
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");
 

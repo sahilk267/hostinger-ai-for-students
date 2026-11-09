@@ -1,5 +1,5 @@
 import { trpc } from "@/lib/trpc";
-import { startLogin } from "@/const";
+import { isOAuthLoginConfigured, startLogin } from "@/const";
 import { useState } from "react";
 import { Mail, X } from "lucide-react";
 import { toast } from "sonner";
@@ -35,7 +35,7 @@ export default function LocalAuthDialog({
       setOpen(false);
       setSent(false);
       setCode("");
-      toast.success("You are signed in. Your progress is now saved.");
+      toast.success("You are signed in. Account saving is available where enabled; guest Adventure results stay on this browser.");
       onVerified?.();
     },
     onError: (error) => toast.error(error.message || "We could not verify that code."),
@@ -76,8 +76,10 @@ export default function LocalAuthDialog({
                 <button className="text-link" type="button" onClick={() => { setSent(false); setCode(""); }}>Use a different email</button>
               </>
             )}
-            <div className="auth-modal-divider"><span>or</span></div>
-            <button className="text-link" type="button" onClick={() => startLogin()}>Continue with Manus OAuth</button>
+            {isOAuthLoginConfigured() && <>
+              <div className="auth-modal-divider"><span>or</span></div>
+              <button className="text-link" type="button" onClick={() => startLogin()}>Continue with Manus OAuth</button>
+            </>}
           </section>
         </div>
       )}

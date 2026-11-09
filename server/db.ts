@@ -2,7 +2,7 @@ import { and, eq, isNull, sql, gt, lt, ne, desc } from "drizzle-orm";
 import { EXPLORER_PILOT_MISSIONS } from "../client/src/data/explorerLab";
 import { createHash, createHmac, randomBytes } from "node:crypto";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, authEmailChallenges, discoveryCheckpoints, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
+import { InsertUser, authEmailChallenges, authSessions, authRequestBuckets, discoveryCheckpoints, explorerAttempts, explorerProfiles, explorerShares, learningProgress, users } from "../drizzle/schema";
 import { ENV, describeDatabaseConfig } from './_core/env';
 
 
@@ -397,4 +397,49 @@ export async function exportExplorerRecordsForAccount(userId: number) {
     eq(explorerShares.profileId, explorerProfiles.id))
     .where(eq(explorerProfiles.userId, userId));
   return { profiles, attempts, shares };
+}
+
+// These optional security tables are never written until the rollout flags are set.
+// The caller must apply the manual SQL migration BEFORE enabling either flag.
+/** Store only SHA-256 of an issued JWT, never its plaintext. */
+export async function registerAuthSession(input: {
+  tokenHash: string; userId: number; expiresAt: Date;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.insert(authSessions).values(input);
+}
+
+/** DB check is performed for every protected account request when enabled. */
+export async function isAuthSessionActive(tokenHash: string, userId: number, now = new Date()) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db.select({ tokenHash: authSessions.tokenHash }).from(authSessions)
+    .where(and(eq(authSessions.tokenHash, tokenHash),
+      eq(authSessions.userId, userId), isNull(authSessions.revokedAt),
+      gt(authSessions.expiresAt, now))).limit(1);
+  return rows.length === 1;
+}
+
+export async function revokeAuthSession(tokenHash: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.update(authSessions).set({ revokedAt: new Date() })
+    .where(and(eq(authSessions.tokenHash, tokenHash), isNull(authSessions.revokedAt)));
+}
+
+/** Fixed-window token bucket: conditional UPDATE is atomic on real MySQL. */
+export async function spendAuthRequestBudget(input: {
+  bucketKey: string; limit: number; expiresAt: Date;
+}): Promise<boolean> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.insert(authRequestBuckets).values({
+    bucketKey: input.bucketKey, hits: 0, expiresAt: input.expiresAt,
+  }).onDuplicateKeyUpdate({ set: { bucketKey: sql`${authRequestBuckets.bucketKey}` } });
+  const [updated] = await db.update(authRequestBuckets)
+    .set({ hits: sql`${authRequestBuckets.hits} + 1` })
+    .where(and(eq(authRequestBuckets.bucketKey, input.bucketKey),
+      lt(authRequestBuckets.hits, input.limit)));
+  return updated.affectedRows === 1;
 }

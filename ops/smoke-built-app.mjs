@@ -18,6 +18,9 @@ const env = {
   MYSQL_HOST: "",
   JWT_SECRET: "CI-SMOKE-ONLY-NOT-A-PRODUCTION-SECRET",
   PUBLIC_SITE_ORIGIN: base,
+  CI: "true",
+  ALLOW_INSECURE_LOOPBACK_ORIGIN_FOR_CI: "1",
+  MANUS_OAUTH_SERVER_ENABLED: "0",
   EXPLORER_CLOUD_SAVE_ENABLED: "0",
   EXPLORER_AI_FEEDBACK_ENABLED: "0",
   DISCOVERY_CHECKPOINTS_ENABLED: "0",
@@ -60,14 +63,44 @@ try {
     await assert(response.status === 200 && html.includes('id="root"'),
       "expected SPA fallback for " + route);
   }
+  const oauthDisabled = await request("/api/oauth/callback?code=sample&state=sample");
+  await assert(oauthDisabled.status === 404,
+    "external OAuth callback must remain unavailable on OTP-only deployments");
   const apiPath = "/api/trpc/discoveryCheckpoint.status";
   const allowed = await request(apiPath, { headers: { Origin: base } });
   await assert(allowed.status === 200, "same-origin public tRPC query must be permitted");
   const statusBody = await allowed.text();
   await assert(statusBody.includes('"enabled":false'), "checkpoint preview must default OFF");
+  await assert(allowed.headers.get("cache-control")?.includes("no-store"),
+    "API responses must prevent caching of private account records");
+  await assert(allowed.headers.get("x-content-type-options") === "nosniff",
+    "API responses must disable MIME sniffing");
+  const sharing = await request("/api/trpc/explorer.getShare?input=" +
+    encodeURIComponent(JSON.stringify({ json: { token: "A".repeat(40) } })), {
+      headers: { Origin: base },
+    });
+  await assert(sharing.status === 403, "share-token lookup must stay disabled with cloud child data OFF");
+  const oversized = await request("/api/trpc/auth.logout", {
+    method: "POST",
+    headers: { Origin: base, "Content-Type": "application/json" },
+    body: JSON.stringify({ json: { padding: "X".repeat(600 * 1024) } }),
+  });
+  await assert(oversized.status === 413, "oversized JSON must be rejected before the API procedure");
   const blocked = await request(apiPath, { headers: { Origin: "https://untrusted.invalid" } });
   await assert(blocked.status === 403, "cross-origin tRPC request must be blocked");
-  console.log("Compiled app smoke PASS: port, health, SPA routes, default-off preview, same-origin guard");
+  const spoofedHost = await request(apiPath, {
+    headers: { Origin: "https://untrusted.invalid", Host: "untrusted.invalid" },
+  });
+  await assert(spoofedHost.status === 403, "spoofed Host must not bypass configured public origin");
+  const browserCrossSite = await request(apiPath, {
+    headers: { "Sec-Fetch-Site": "cross-site" },
+  });
+  await assert(browserCrossSite.status === 403, "originless cross-site browser API request must be blocked");
+  const unsafeOriginless = await request(apiPath, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: "{}",
+  });
+  await assert(unsafeOriginless.status === 403, "originless unsafe request must be blocked without same-origin metadata");
+  console.log("Compiled app smoke PASS: health, routes, no-store security headers, disabled child sharing, bounded request body, origin guard");
 } catch (error) {
   // Do not expose env values or any security tokens in CI failure output.
   console.error(error instanceof Error ? error.message : "Build smoke failed");

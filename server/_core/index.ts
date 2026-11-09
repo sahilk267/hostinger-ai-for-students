@@ -8,6 +8,7 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { requireSameOriginApi } from "./sameOrigin";
+import { validateProductionSecurityConfig } from "./runtimeSecurity";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -30,6 +31,12 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 }
 
 async function startServer() {
+  // Reject unsafe production configuration before binding a public listener.
+  // Only fixed identifiers are logged; never credentials or configured values.
+  const issues = validateProductionSecurityConfig(process.env);
+  if (issues.length) {
+    throw new Error("Production security configuration invalid: " + issues.join(", "));
+  }
   const app = express();
   const server = createServer(app);
   // Liveness does not depend on database availability, and reveals no configuration.
@@ -38,9 +45,17 @@ async function startServer() {
     res.set("Cache-Control", "no-store");
     res.status(200).json({ status: "ok" });
   });
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // No uploads are accepted on these routes. Bound untrusted request bodies
+  // before parsing so a client cannot cheaply allocate 50 MB per request.
+  app.use(express.json({ limit: "512kb" }));
+  app.use(express.urlencoded({ limit: "64kb", extended: true }));
+  // Account exports and tRPC queries can contain private records. They must
+  // never be cached by browsers, a CDN or a reverse proxy.
+  app.use("/api", (_req, res, next) => {
+    res.set("Cache-Control", "private, no-store");
+    res.set("X-Content-Type-Options", "nosniff");
+    next();
+  });
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   // tRPC API

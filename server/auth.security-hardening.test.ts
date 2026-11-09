@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import type { Request, Response } from "express";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { isSameOriginApiRequest } from "./_core/sameOrigin";
+import { isSameOriginApiRequest, requireSameOriginApi } from "./_core/sameOrigin";
+import { AUTH_ABUSE_LIMITS, authRequestBucket, getAuthSessionToken, hashAuthSessionToken, requestPeerAddress } from "./authSessionSecurity";
 import { getSessionCookieOptions } from "./_core/cookies";
 
 const source = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8");
@@ -17,6 +19,100 @@ describe("Hardened account and guardian security contracts", () => {
     expect(isSameOriginApiRequest({ origin: "https://evil.example", host: "private-host" }, "https://aiforstudents.in")).toBe(false);
   });
 
+  it("treats PUBLIC_SITE_ORIGIN as canonical even when the Host header is spoofed", () => {
+    const configured = "https://aiforstudents.in";
+    expect(isSameOriginApiRequest({ origin: "https://evil.example", host: "evil.example", method: "POST" }, configured)).toBe(false);
+    expect(isSameOriginApiRequest({ origin: "https://evil.example", host: "evil.example", secFetchSite: "same-origin" }, configured)).toBe(false);
+    expect(isSameOriginApiRequest({ origin: configured, host: "internal-proxy.local:3000", method: "POST" }, configured)).toBe(true);
+    expect(isSameOriginApiRequest({ origin: configured, host: "internal-proxy.local:3000", method: "POST", secFetchSite: "same-origin" }, configured)).toBe(true);
+    expect(isSameOriginApiRequest({ origin: configured, host: "internal-proxy.local:3000" }, "https://aiforstudents.in/path")).toBe(false);
+    expect(isSameOriginApiRequest({ method: "GET" }, "javascript:alert(1)")).toBe(false);
+    expect(isSameOriginApiRequest({ origin: "https://aiforstudents.in@evil.example", host: "evil.example" }, configured)).toBe(false);
+    expect(isSameOriginApiRequest({ origin: configured + "/trpc", host: "aiforstudents.in" }, configured)).toBe(false);
+  });
+
+  it("rejects cross-site and sibling-site Fetch Metadata even with no Origin header", () => {
+    const configured = "https://aiforstudents.in";
+    for (const secFetchSite of ["cross-site", "same-site", "none", "unknown"]) {
+      expect(isSameOriginApiRequest({ method: "POST", secFetchSite }, configured)).toBe(false);
+      expect(isSameOriginApiRequest({ method: "GET", secFetchSite }, configured)).toBe(false);
+      expect(isSameOriginApiRequest({ origin: configured, method: "POST", secFetchSite }, configured)).toBe(false);
+    }
+    expect(isSameOriginApiRequest({ method: "POST", secFetchSite: "same-origin" }, configured)).toBe(true);
+    expect(isSameOriginApiRequest({ method: "GET" }, configured)).toBe(true);
+    expect(isSameOriginApiRequest({ method: "POST" }, configured)).toBe(false);
+    expect(isSameOriginApiRequest({ method: "POST", bearerAuthorization: true }, configured)).toBe(true);
+    expect(isSameOriginApiRequest({ method: "POST", bearerAuthorization: true, secFetchSite: "cross-site" }, configured)).toBe(false);
+    expect(isSameOriginApiRequest({ method: "POST", bearerAuthorization: true, origin: "https://evil.example" }, configured)).toBe(false);
+  });
+
+  it("fails closed on a missing public origin in production, but allows configured proxy requests", () => {
+    const previousMode = process.env.NODE_ENV;
+    const previousOrigin = process.env.PUBLIC_SITE_ORIGIN;
+    const check = (headers: Request["headers"], method = "POST") => {
+      let responseStatus = 0;
+      let responseBody: unknown;
+      let nextCalled = false;
+      const res = {
+        status(status: number) { responseStatus = status; return this; },
+        json(body: unknown) { responseBody = body; return this; },
+      } as unknown as Response;
+      requireSameOriginApi({ headers, method } as Request, res, () => { nextCalled = true; });
+      return { responseStatus, responseBody, nextCalled };
+    };
+    try {
+      process.env.NODE_ENV = "production";
+      delete process.env.PUBLIC_SITE_ORIGIN;
+      expect(check({ origin: "https://aiforstudents.in", host: "aiforstudents.in" }))
+        .toMatchObject({ responseStatus: 403, nextCalled: false });
+      process.env.PUBLIC_SITE_ORIGIN = "https://aiforstudents.in";
+      expect(check({ origin: "https://aiforstudents.in", host: "private-proxy.internal" }))
+        .toMatchObject({ responseStatus: 0, nextCalled: true });
+      expect(check({ origin: "https://evil.example", host: "evil.example" }))
+        .toMatchObject({ responseStatus: 403, nextCalled: false });
+      expect(check({ "sec-fetch-site": "cross-site" }))
+        .toMatchObject({ responseStatus: 403, nextCalled: false });
+      expect(check({}))
+        .toMatchObject({ responseStatus: 403, nextCalled: false });
+      expect(check({ "sec-fetch-site": "same-origin" }))
+        .toMatchObject({ responseStatus: 0, nextCalled: true });
+      expect(check({ authorization: "Bearer test-only" }))
+        .toMatchObject({ responseStatus: 0, nextCalled: true });
+    } finally {
+      if (previousMode === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = previousMode;
+      if (previousOrigin === undefined) delete process.env.PUBLIC_SITE_ORIGIN; else process.env.PUBLIC_SITE_ORIGIN = previousOrigin;
+    }
+  });
+
+  it("hashes JWT session credentials and never trusts spoofed forwarding IP headers", () => {
+    const token = "jwt-session-example-do-not-store";
+    const hash = hashAuthSessionToken(token);
+    expect(hash).toMatch(/^[a-f0-9]{64}$/);
+    expect(hash).not.toContain(token);
+    expect(getAuthSessionToken({ headers: { authorization: "Bearer sample.jwt.token" } })).toBe("sample.jwt.token");
+    expect(getAuthSessionToken({ headers: { cookie: "app_session=not-the-expected-name" } })).toBeUndefined();
+    const socket = { socket: { remoteAddress: "127.0.0.1" } };
+    expect(requestPeerAddress(socket as never)).toBe("127.0.0.1");
+    expect(requestPeerAddress({ socket: { remoteAddress: "invalid" }, headers: { "x-forwarded-for": "8.8.8.8" } } as never)).toBeNull();
+  });
+
+  it("keeps opaque per-peer, per-route rate-limit buckets with fixed windows", () => {
+    const secret = "not-a-production-session-secret-but-32-bytes";
+    const now = 1762588800000;
+    const a = authRequestBucket("otp-request","127.0.0.1",now,secret);
+    const b = authRequestBucket("otp-request","127.0.0.1",now+100,secret);
+    const differentPeer = authRequestBucket("otp-request","127.0.0.2",now,secret);
+    const differentKind = authRequestBucket("contact","127.0.0.1",now,secret);
+    const later = authRequestBucket("otp-request","127.0.0.1",now+AUTH_ABUSE_LIMITS["otp-request"].windowMs,secret);
+    expect(a.bucketKey).toMatch(/^[a-f0-9]{64}$/);
+    expect(a.bucketKey).toBe(b.bucketKey);
+    expect(a.bucketKey).not.toBe(differentPeer.bucketKey);
+    expect(a.bucketKey).not.toBe(differentKind.bucketKey);
+    expect(a.bucketKey).not.toBe(later.bucketKey);
+    expect(a.limit).toBe(12);
+    expect(JSON.stringify(a)).not.toContain("127.0.0.1");
+  });
+
   it("uses Lax secure first-party cookies in production and supports local HTTP", () => {
     const old = process.env.NODE_ENV;
     try {
@@ -28,6 +124,16 @@ describe("Hardened account and guardian security contracts", () => {
     } finally {
       if (old === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = old;
     }
+  });
+
+  it("keeps API cache bypass and parsers appropriately bounded", () => {
+    const app = source("server/_core/index.ts");
+    expect(app).toContain('app.use("/api",');
+    expect(app).toContain('res.set("Cache-Control", "private, no-store")');
+    expect(app).toContain('res.set("X-Content-Type-Options", "nosniff")');
+    expect(app).toContain('express.json({ limit: "512kb" })');
+    expect(app).toContain('express.urlencoded({ limit: "64kb", extended: true })');
+    expect(app).not.toContain('limit: "50mb"');
   });
 
   it("requires explicit guardian self-declaration for learner profile creation", () => {
@@ -49,6 +155,20 @@ describe("Hardened account and guardian security contracts", () => {
     expect(db).toContain("await db.delete(explorerProfiles).where");
     expect(schema).toContain('onDelete: "cascade"');
     expect(source("server/_core/index.ts")).toContain("requireSameOriginApi");
+  });
+
+  it("keeps the phpMyAdmin blank import aligned with all seven core tables, with optional Phase 11 tables separate", () => {
+    const blank = source("hostinger-schema-import.sql");
+    const optional = source("ops/auth-session-abuse-hardening.sql");
+    for (const table of ["users","learningProgress","explorerProfiles","explorerAttempts","explorerShares","authEmailChallenges","discoveryCheckpoints"]) {
+      expect(blank).toContain("CREATE TABLE \`" + table + "\`");
+    }
+    expect(blank).not.toContain("CREATE TABLE \`authSessions\`");
+    expect(blank).not.toContain("CREATE TABLE \`authRequestBuckets\`");
+    for (const table of ["authSessions","authRequestBuckets"]) {
+      expect(optional).toContain("CREATE TABLE IF NOT EXISTS \`" + table + "\`");
+    }
+    expect(optional).not.toMatch(/DROP TABLE|TRUNCATE TABLE|INSERT INTO users/);
   });
 
   it("stores hashed one-time login secrets with an atomic attempt limit, never OTP plaintext", () => {

@@ -1,7 +1,8 @@
-import { AXIOS_TIMEOUT_MS, COOKIE_NAME, ONE_YEAR_MS, decodeOAuthState } from "@shared/const";
+import { AXIOS_TIMEOUT_MS, ONE_YEAR_MS, decodeOAuthState } from "@shared/const";
 import { ForbiddenError } from "@shared/_core/errors";
 import axios, { type AxiosInstance } from "axios";
-import { parse as parseCookieHeader } from "cookie";
+import { randomUUID } from "node:crypto";
+import { getAuthSessionToken, hashAuthSessionToken } from "../authSessionSecurity";
 import type { Request } from "express";
 import { SignJWT, jwtVerify } from "jose";
 import type { User } from "../../drizzle/schema";
@@ -30,11 +31,10 @@ const GET_USER_INFO_WITH_JWT_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserI
 
 class OAuthService {
   constructor(private client: ReturnType<typeof axios.create>) {
-    console.log("[OAuth] Initialized with baseURL:", ENV.oAuthServerUrl);
-    if (!ENV.oAuthServerUrl) {
-      console.error(
-        "[OAuth] ERROR: OAUTH_SERVER_URL is not configured! Set OAUTH_SERVER_URL environment variable."
-      );
+    // Email OTP deployments intentionally omit the optional external OAuth
+    // service. Do not log a scary error or expose a provider URL at startup.
+    if (process.env.MANUS_OAUTH_SERVER_ENABLED === "1" && !ENV.oAuthServerUrl) {
+      console.warn("[OAuth] External provider is enabled but not configured");
     }
   }
 
@@ -144,15 +144,6 @@ class SDKServer {
     } as GetUserInfoResponse;
   }
 
-  private parseCookies(cookieHeader: string | undefined) {
-    if (!cookieHeader) {
-      return new Map<string, string>();
-    }
-
-    const parsed = parseCookieHeader(cookieHeader);
-    return new Map(Object.entries(parsed));
-  }
-
   private getSessionSecret() {
     const secret = ENV.cookieSecret;
     return new TextEncoder().encode(secret);
@@ -167,14 +158,24 @@ class SDKServer {
     openId: string,
     options: { expiresInMs?: number; name?: string } = {}
   ): Promise<string> {
-    return this.signSession(
+    const token = await this.signSession(
       {
         openId,
         appId: ENV.appId || "ai-for-students-local",
-        name: options.name || "",
+        name: options.name || "Member",
       },
       options
     );
+    if (process.env.AUTH_SESSIONS_ENFORCED === "1") {
+      const account = await db.getUserByOpenId(openId);
+      if (!account) throw new Error("Cannot issue an untracked account session");
+      const expiresInMs = options.expiresInMs ?? ONE_YEAR_MS;
+      await db.registerAuthSession({
+        tokenHash: hashAuthSessionToken(token), userId: account.id,
+        expiresAt: new Date(Date.now() + expiresInMs),
+      });
+    }
+    return token;
   }
 
   async signSession(
@@ -192,6 +193,10 @@ class SDKServer {
       name: payload.name,
     })
       .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+      // A unique jti prevents same-second logins from sharing a signed token,
+      // colliding in authSessions or accidentally revoking each other.
+      .setJti(randomUUID())
+      .setIssuedAt(Math.floor(issuedAt / 1000))
       .setExpirationTime(expirationSeconds)
       .sign(secretKey);
   }
@@ -256,19 +261,8 @@ class SDKServer {
   }
 
   async authenticateRequest(req: Request): Promise<AuthenticatedUser> {
-    // 1. Prefer the session cookie (regular OAuth login).
-    const cookies = this.parseCookies(req.headers.cookie);
-    let sessionToken = cookies.get(COOKIE_NAME);
-
-    // 2. Fallback to the Authorization header (Preview auto-login via
-    //    sessionStorage), used when the browser blocks iframe cookies such as
-    //    Safari ITP, private browsing, or iOS/Android WebView.
-    if (!sessionToken) {
-      const authHeader = req.headers.authorization;
-      if (typeof authHeader === "string" && authHeader.startsWith("Bearer ")) {
-        sessionToken = authHeader.slice(7);
-      }
-    }
+    // First-party session cookie, or the explicitly supplied Bearer fallback.
+    const sessionToken = getAuthSessionToken(req);
 
     const session = await this.verifySession(sessionToken);
 
@@ -289,7 +283,14 @@ class SDKServer {
     const signedInAt = new Date();
     let user = await db.getUserByOpenId(sessionUserId);
 
-    // If user not in DB, sync from OAuth server automatically
+    // With DB session enforcement, a missing user cannot be auto-created by
+    // a legacy signed token after account deletion. Fresh OAuth callbacks
+    // explicitly upsert before issuing their new tracked token.
+    if (!user && process.env.AUTH_SESSIONS_ENFORCED === "1") {
+      throw ForbiddenError("Account is unavailable");
+    }
+
+    // Compatibility for existing deployments without DB-backed sessions.
     if (!user) {
       try {
         const userInfo = await this.getUserInfoWithJwt(sessionToken ?? "");
@@ -309,6 +310,14 @@ class SDKServer {
 
     if (!user) {
       throw ForbiddenError("User not found");
+    }
+
+    if (process.env.AUTH_SESSIONS_ENFORCED === "1") {
+      // Every protected API call checks the shared DB; no in-process cache can
+      // extend a session after logout or account deletion on another worker.
+      if (!sessionToken || !await db.isAuthSessionActive(hashAuthSessionToken(sessionToken), user.id)) {
+        throw ForbiddenError("Session expired or revoked");
+      }
     }
 
     await db.upsertUser({

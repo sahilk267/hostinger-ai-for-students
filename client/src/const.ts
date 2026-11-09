@@ -12,7 +12,22 @@ export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 // call would desync it from an in-flight login and the callback would reject it
 // with "invalid oauth state". It returns void by design, so there is no URL to
 // stash across renders.
+// Manus OAuth is opt-in; local Hostinger email OTP stays the normal path.
+// Never navigate to an "undefined/app-auth" URL when OAuth is not configured.
+export const isOAuthLoginConfigured = () => {
+  const portal = import.meta.env.VITE_OAUTH_PORTAL_URL?.trim();
+  const appId = import.meta.env.VITE_APP_ID?.trim();
+  if (import.meta.env.VITE_MANUS_OAUTH_ENABLED !== "1" || !portal || !appId) return false;
+  try {
+    const url = new URL(portal);
+    return url.protocol === "https:" && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+};
+
 export const startLogin = () => {
+  if (!isOAuthLoginConfigured()) return;
   const oauthPortalUrl = import.meta.env.VITE_OAUTH_PORTAL_URL;
   const appId = import.meta.env.VITE_APP_ID;
   const redirectUri = `${window.location.origin}/api/oauth/callback`;
