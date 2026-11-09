@@ -10,7 +10,7 @@ export default function ParentsGuidePage() {
   const [ageBand,setAgeBand]=useState<AdventureAgeBand>(()=>readSelectedJourneyBand(safeJourneyStorage()));
   const [locale,setLocale]=useState<AdventureLocale>("hinglish");
   const report=getBrowserJourneyReport(ageBand,safeJourneyStorage());
-  return <div className="phase14-page">
+  return <div className="phase14-page" lang={locale==="hi"?"hi-IN":locale==="hinglish"?"en-IN":"en"}>
     <header className="phase14-page-header"><a href="/" className="phase14-wordmark">✦ AI for Students</a><nav aria-label="Parent navigation"><a href="/explorer/adventure">Adventure</a><a href="/my-journey">My Journey</a></nav><AuthControls/></header>
     <main className="phase14-page-main">
       <div className="phase14-page-eyebrow"><HeartHandshake size={17}/> FOR PARENTS & GUARDIANS</div>

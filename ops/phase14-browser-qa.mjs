@@ -189,6 +189,12 @@ try {
   check(await evalPage(home.sid,
     "!!document.querySelector('a[href=\"/for-parents\"]')"),
     "Parent guide visible from homepage");
+  await poll(()=>evalPage(home.sid,
+    "!!document.querySelector('.hero-image-frame .home-image-fallback')"),
+    "Offline homepage has a branded editorial illustration instead of broken hero art",40);
+  check(await evalPage(home.sid,
+    "Array.from(document.querySelectorAll('img')).filter(img=>img.complete && img.naturalWidth===0).length===0"),
+    "Offline homepage has no broken image placeholders");
   await waitText(home,"Adult email notes are not accepting subscriptions yet.");
   check(!(await textIncludes(home,"You're on the list")),
     "Newsletter does not falsely claim the browser subscribed");
@@ -245,6 +251,9 @@ try {
     "document.querySelector('.phase14-session h3')?.textContent");
   check(Boolean(after)&&before!==after,
     "Parent plan language switch changes visible activity");
+  check(await evalPage(parent.sid,
+    "document.querySelector('.phase14-page')?.getAttribute('lang')==='hi-IN'"),
+    "Hindi guide language metadata is exposed to assistive technologies");
   await snapshot(parent,"04-parent-guide-desktop-hindi");
   await ws.send("Emulation.setEmulatedMedia",{media:"print"},parent.sid);
   const isPrintHidden=await evalPage(parent.sid,

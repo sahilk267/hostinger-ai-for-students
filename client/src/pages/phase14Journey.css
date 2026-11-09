@@ -84,3 +84,61 @@
 .phase14-token-card{max-width:650px;margin:24px 0;background:#fff;border:1px solid #dce5d8;border-radius:16px;padding:25px}
 .phase14-feedback-panel button:disabled,.phase14-newsletter-form button:disabled{opacity:.58;cursor:not-allowed}
 @media(max-width:760px){.phase14-feedback-fields{grid-template-columns:1fr}.phase14-feedback-panel{padding:17px}}
+
+/* Provide Devanagari glyphs and normal cluster spacing in Hindi mode. */
+.phase14-age-tabs button {font-family:"DM Sans","Noto Sans Devanagari","Nirmala UI","Mangal",sans-serif}
+.phase14-page[lang="hi-IN"],.discovery-adventure[lang="hi-IN"]{
+  font-family:"Noto Sans Devanagari","Nirmala UI","Mangal",system-ui,sans-serif;
+  letter-spacing:normal;
+}
+.phase14-page[lang="hi-IN"] :is(h1,h2,h3),
+.discovery-adventure[lang="hi-IN"] :is(h1,h2,h3){
+  font-family:"Noto Serif Devanagari","Noto Sans Devanagari","Nirmala UI","Mangal",serif;
+  letter-spacing:normal;
+}
+.phase14-page[lang="hi-IN"] .phase14-session :is(p,strong,h4){
+  font-family:"Noto Sans Devanagari","Nirmala UI","Mangal",sans-serif;
+  letter-spacing:normal;
+}
+/* Branded CSS-only fallback for editorial imagery blocked by offline networks. */
+.home-brand-fallback{
+  display:inline-grid;place-items:center;flex:0 0 auto;width:35px;height:35px;
+  background:#236b57;color:#fff3c8;border-radius:11px;font-size:27px;line-height:1;
+}
+.newsletter-symbol .home-brand-fallback{width:53px;height:53px;font-size:32px}
+.footer-brand .home-brand-fallback{grid-row:span 2;width:38px;height:38px}
+.home-image-fallback{
+  position:relative;isolation:isolate;width:100%;height:100%;min-height:225px;
+  display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(135deg,#173b35,#2e7364 65%,#88bfa4);
+}
+.home-image-fallback--study{background:linear-gradient(135deg,#294b60,#557d96 65%,#c2d4c9)}
+.home-image-fallback--career{background:linear-gradient(135deg,#805a48,#ad8867 65%,#eed2a6)}
+.feature-image-wrap .home-image-fallback,.career-visual .home-image-fallback{aspect-ratio:4/3}
+.home-image-fallback__orbit{
+  position:absolute;width:330px;height:330px;border:2px solid #ffffff55;
+  border-radius:50%;right:-70px;top:-100px;box-shadow:0 0 0 70px #ffffff0f;
+}
+.home-image-fallback__sheet{
+  position:relative;display:flex;flex-direction:column;gap:15px;
+  width:min(60%,245px);min-height:230px;padding:26px 22px 22px;
+  border-radius:5px;background:#fff9e8;transform:rotate(-9deg) translate(18px,-10px);
+  box-shadow:20px 18px 0 #16372b80,0 20px 50px #0003;
+}
+.home-image-fallback__sheet-title{
+  font-family:Georgia,serif;color:#234d3d;letter-spacing:.06em;font-size:19px;font-weight:bold;
+}
+.home-image-fallback__line{display:block;background:#d6e1d0;border-radius:10px;height:9px;width:85%}
+.home-image-fallback__line:nth-of-type(3){width:60%}
+.home-image-fallback__check{
+  margin-top:auto;color:#30694f;font-family:system-ui,sans-serif;font-size:12px;font-weight:750;
+}
+.home-image-fallback__spark{
+  position:absolute;right:14%;bottom:23%;font-size:70px;line-height:1;color:#f1c468;
+  text-shadow:0 8px 20px #17423a50;transform:rotate(-18deg);
+}
+.hero-image-frame:has(.home-image-fallback) .image-caption{
+  color:#fffdf3;text-shadow:0 3px 14px #143d34df;
+}
+@media(max-width:560px){.home-image-fallback__sheet{min-height:195px;padding:18px 16px}.home-image-fallback__spark{font-size:50px}}
+@media(prefers-reduced-motion:reduce){.home-image-fallback,.home-brand-fallback{animation:none}}
