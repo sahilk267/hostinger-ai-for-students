@@ -728,3 +728,13 @@
 - [x] Correct the visual contract regression assertion to check the actual duplicate-round protection implementation without relying on a comment word.
 - [x] Ensure assistance/timeout/exposure quality flags are preserved as `review` when evidence is also incomplete, without changing the score.
 - [x] Deploy the latest visual-game commit to Hostinger and recheck `/discovery-lab`; user confirmed deployment, and live homepage, Learn, Study, Progress, Robotics and Discovery Lab routes now load.
+
+## Family practice guidance — November 2026
+
+- [x] Add a visible, actionable family practice suggestion to the Progress dashboard instead of leaving recommendations hidden in game data.
+- [x] Base suggestions only on recorded completions and unfinished sessions; avoid ability scores, diagnoses and career conclusions.
+- [x] Link the suggestion directly to the relevant playable Discovery Lab game and provide a parent-child discussion prompt.
+- [x] Add unit tests for first play, unfinished play, varied play and replay selection.
+- [ ] Run `pnpm check && pnpm test && pnpm build` in a checked-out environment; GitHub contents editing does not run the project toolchain.
+- [ ] Verify the new Progress card visually on desktop/mobile and with keyboard/screen reader before production release.
+- [ ] Gather anonymous facilitator evidence before interpreting strengths or revising learning content.
