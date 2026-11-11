@@ -4,9 +4,10 @@ import path from "node:path";
 import { getPublicGuide, publicGuides } from "../../client/src/data/publicGuides";
 
 const ORIGIN = "https://aiforstudents.in";
-const escapeHtml = (value: string): string => value.replace(/[&<>"']/g, (char) => ({
+const htmlEntities: Record<string, string> = {
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-}[char] ?? char));
+};
+const escapeHtml = (value: string): string => value.replace(/[&<>"']/g, (char) => htmlEntities[char] ?? char);
 
 function renderHtml(title: string, description: string, urlPath: string, body: string, schema?: object): string {
   const base = readFileSync(path.resolve(process.cwd(), "dist/public/index.html"), "utf8");
