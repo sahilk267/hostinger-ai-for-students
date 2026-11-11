@@ -272,10 +272,15 @@ try {
   const focused=await evalPage(parent.sid,
     "(()=>{const b=[...document.querySelectorAll('.phase14-parent-controls button')].find(e=>e.textContent.includes('English'));if(!b)return false;b.focus();return document.activeElement===b;})()");
   check(focused,"Parent language selection is keyboard focusable");
+  await ws.send("Target.activateTarget",{targetId:parent.targetId});
+  await ws.send("Page.bringToFront",{},parent.sid);
   await ws.send("Input.dispatchKeyEvent",
-    {type:"keyDown",key:"Enter",code:"Enter",windowsVirtualKeyCode:13},parent.sid);
+    {type:"rawKeyDown",key:"Enter",code:"Enter",windowsVirtualKeyCode:13,nativeVirtualKeyCode:13},parent.sid);
   await ws.send("Input.dispatchKeyEvent",
-    {type:"keyUp",key:"Enter",code:"Enter",windowsVirtualKeyCode:13},parent.sid);
+    {type:"char",key:"Enter",code:"Enter",text:"\\r",unmodifiedText:"\\r",
+      windowsVirtualKeyCode:13,nativeVirtualKeyCode:13},parent.sid);
+  await ws.send("Input.dispatchKeyEvent",
+    {type:"keyUp",key:"Enter",code:"Enter",windowsVirtualKeyCode:13,nativeVirtualKeyCode:13},parent.sid);
   await poll(()=>evalPage(parent.sid,
     "document.querySelector('.phase14-page')?.getAttribute('lang')==='en'"),
     "Keyboard Enter changes language",30);
