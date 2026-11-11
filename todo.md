@@ -738,3 +738,18 @@
 - [ ] Run `pnpm check && pnpm test && pnpm build` in a checked-out environment; GitHub contents editing does not run the project toolchain.
 - [ ] Verify the new Progress card visually on desktop/mobile and with keyboard/screen reader before production release.
 - [ ] Gather anonymous facilitator evidence before interpreting strengths or revising learning content.
+
+## Organic search and visible-resource expansion — 11 November 2026
+
+- [x] Create a searchable public guide library that does not require a login.
+- [x] Publish six original, practical guides for AI study, prompts, verification, revision, family safety and beginner AI.
+- [x] Add hands-on checklists, copyable starter prompts and links to related games and learning workflows.
+- [x] Link public guides prominently from the homepage, footer and 120-topic directory.
+- [x] Add title, description, canonical, Open Graph, Twitter, and Article JSON-LD metadata for guide routes.
+- [x] Serve the article's semantic HTML in the initial production response, not only after client JavaScript.
+- [x] Add curated XML sitemap and robots policy, excluding account/report views from crawler requests.
+- [x] Remove the homepage's false newsletter success flow; link directly to genuine free resources.
+- [x] Document SEO operations and performance metrics in SEO-GROWTH-PLAN.md.
+- [ ] Deploy, confirm the production canonical host and submit sitemap in Search Console.
+- [ ] Measure organic impressions, indexing and engaged guide-to-game sessions before claiming traffic growth.
+- [ ] Establish an ongoing editorial calendar for genuinely useful guides based on observed search demand.
