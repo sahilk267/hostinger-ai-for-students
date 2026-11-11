@@ -19,6 +19,9 @@ import ContactPage from "./pages/ContactPage";
 import MissionPage from "./pages/MissionPage";
 import JourneyPage from "./pages/JourneyPage";
 import ExplorerPage from "./pages/ExplorerPage";
+import MyJourneyPage from "./pages/MyJourneyPage";
+import ParentsGuidePage from "./pages/ParentsGuidePage";
+import NewsletterActionPage from "./pages/NewsletterActionPage";
 
 import ExplorerReportPage from "./pages/ExplorerReportPage";
 import ExplorerSharePage from "./pages/ExplorerSharePage";
@@ -43,6 +46,10 @@ function Router() {
       <Route path="/explorer/share/:token" component={ExplorerSharePage} />
       <Route path="/explorer/pilot-review" component={PilotReviewPage} />
       <Route path="/progress" component={ProgressPage} />
+      <Route path="/my-journey" component={MyJourneyPage} />
+      <Route path="/for-parents" component={ParentsGuidePage} />
+      <Route path="/newsletter/confirm" component={NewsletterActionPage} />
+      <Route path="/newsletter/unsubscribe" component={NewsletterActionPage} />
       <Route path="/certificate" component={CertificatePage} />
       <Route path="/account" component={AccountPage} />
       <Route path="/guardian" component={GuardianRecordsPage} />

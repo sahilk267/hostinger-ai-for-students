@@ -84,3 +84,25 @@ For OTP-only sites, leave `VITE_MANUS_OAUTH_ENABLED` unset or `0`; the UI will h
 - Public child share-token lookup is now denied when `EXPLORER_CLOUD_SAVE_ENABLED` is unset/`0`; previous share links intentionally stop working under that privacy boundary.
 - The Stage Operator Preflight uses `DEPLOY_TARGET`, `STAGING_DATA_MODE`, `STAGING_PUBLIC_ORIGIN`, `PRODUCTION_PUBLIC_ORIGIN`, `PRODUCTION_DATABASE_NAME` and `PRODUCTION_DATABASE_USER`. These are comparison/verification identifiers for **staging**, not production settings; do not add them to a live application merely to satisfy a checklist.
 - Safe commands: `node ops/check-phase11-staging.mjs` (static only), `node ops/check-phase11-schema.mjs` (SELECT-only against **staging** DB after reviewed migration), `node ops/check-phase11-stage-http.mjs` (public GETs against **staging** HTTPS only). Each exits nonzero on a detected gap and reports codes without displaying secrets. Neither proves a verified guardian, official certification, live git SHA, or production safety.
+
+## Phase 14 visible product (code only — rollout postponed)
+
+New pages `/my-journey`, `/for-parents`, homepage CTA and private report navigation **do not need additional ENV variables or migrations**. Discovery Adventure remains browser-local; existing login/cloud settings do not change.
+
+The new adult email-note opt-in is **default disabled**. Do not enable it until an isolated staging environment has passed consent/privacy review and the `ops/phase14-adult-newsletter.sql` **additional table** is installed there. New optional flag:
+
+| Variable | Purpose | Default / safety rule |
+|---|---|---|
+| `NEWSLETTER_SIGNUP_ENABLED` | Enables adult-only email confirmation and subscription management endpoints | **Unset / 0**. If `1`, production startup requires `AUTH_ABUSE_DB_ENABLED=1` plus configured MySQL and Hostinger Mail sender; do not enable on live before staging. |
+
+Confirmation email needs existing `HOSTINGER_MAIL_API_TOKEN`, `AUTH_MAIL_FROM`, `JWT_SECRET` (at least 32 chars), and canonical HTTPS `PUBLIC_SITE_ORIGIN`. Adult email subscribers are stored in `newsletterSubscribers` only after a request and are **not active** until the recipient explicitly confirms. All replies/marketing require a separate human-controlled compliant sending process; no automated campaign has been configured. Existing personal child cloud-save flags must stay 0.
+
+The new adult tester feedback form uses the **existing** `contact.submit`/Hostinger Mail API integration and does not need a new table. It collects only the explicitly submitted adult name, email, category, and message; the UI warns not to include child details.
+
+**DO NOT** import `hostinger-schema-import.sql` into the already-populated production database. Do not add `NEWSLETTER_SIGNUP_ENABLED=1` just because the code is present. See `ops/phase14-visible-product-completion.md`.
+
+## Phase 15 visual QA — no ENV changes
+
+The new `ops/phase14-browser-qa.mjs` is a **CI-only** compiled-app Chromium test runner. It uses local `http://127.0.0.1:43179` and the explicit pair `CI=true`, `ALLOW_INSECURE_LOOPBACK_ORIGIN_FOR_CI=1` strictly in its *child test process*. **Never add these values to Hostinger staging or production**. No new production ENV variable, database table or email provider setting was needed for this QA phase.
+
+QA evidence: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677 (`phase14-browser-qa`, 8 screenshots). More detail: `ops/phase15-browser-acceptance.md`. Real Hostinger staging and privacy/marketing approval remain prerequisites to any new rollout.

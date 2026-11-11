@@ -72,3 +72,21 @@
 - [ ] Verify production served commit, safe release/rollback, HTTP behavior behind Hostinger CDN, real OTP and guardian privacy, independent proxy IPs and human mobile/safeguarding review.
 
 **Release decision: STILL BLOCKED**. A green CI and passing synthetic/isolated database checks do not complete the real hosting, consent, provider or operator evidence gates. Live feature-branch deployment should remain unchanged until staging approval.
+
+## Phase 14 — user-facing product readiness (2026-11-10)
+
+A separate feature branch `feature/phase14-visible-learning-journey-20261110` adds prominent homepage Discovery entry, `/my-journey` dashboard, `/for-parents` three-session family plan and real adult feedback. This is **not merged or deployed** to the earlier owner-reported live feature branch. Parent insights are local educational practice evidence, not verified psychometrics.
+
+The earlier homepage newsletter form falsely displayed a success without a backend. Phase 14 removes it. New adult-only double-opt-in subscriber persistence is implemented but requires separate `newsletterSubscribers` staging-only migration and `NEWSLETTER_SIGNUP_ENABLED=1`. This flag is default OFF and requires the Phase 11 shared-IP budget plus verified privacy/mail configuration; unsubscribing remains available even if signups later close. Campaign sending/retention owner are outstanding.
+
+Details and P1–P5 evidence: `ops/phase14-visible-product-completion.md`. **Release remains blocked** by real staging/manual QA/approval; do not enable learner cloud storage, paid AI feedback, certificate checkpoints or marketing signup without the documented safeguards.
+
+## Phase 15 — evidence-based browser acceptance (2026-11-10)
+
+Implemented isolated CI Chromium browser acceptance tests after Phase 14 product delivery, including a test-only 9+3 saved-state continuity route, private milestone, local deletion, 320px and 360px responsiveness, three-session parent guide, Hindi switch and print stylesheet. Browser HTTP response validation confirms newsletter token referrer/cache protection and direct-link query clearing. **44 assertions, nine PNG screenshots**, full GitHub CI pass on SHA `3495b86b344a670cfd256a961ae0c47405bbb2a3`: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677. Artifact `phase14-browser-qa`.
+
+Review `ops/phase15-browser-acceptance.md` for exactly what was tested and what was NOT. No real design review, browser assistive-tech testing, actual Hostinger staging, privacy approval or production deployment is implied by synthetic CI. Phase 11–15 code is pending PR integration and acceptance; release remains blocked.
+
+## Phase 15.1 QA correction and final acceptance evidence (2026-11-11)
+
+The UI branch additionally fixes narrow-mobile overflow, provides offline image illustrations, full core Parent Guide copy in Hindi/Hinglish/English, the **Game account** label instead of ambiguous Discovery sync, and a clean A4 print layout. Chrome keyboard Enter now verifies language switching. GitHub Actions **PASS** with 54 browser assertions / nine PNG screenshots and isolated MySQL integration at SHA `c90c2c7735a052be41fde7b3f3d3cd02a8352c56`: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42929033272. The artifact `phase14-browser-qa` is retained for 14 days. Earlier 44-assertion runs are historical evidence, not the latest. Production release remains **BLOCKED** pending real-host isolation, privacy/consent, actual mail, physical device testing and release approval.

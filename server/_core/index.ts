@@ -39,6 +39,17 @@ async function startServer() {
   }
   const app = express();
   const server = createServer(app);
+  // Avoid leaking private email-link tokens via Referer, proxies or caches.
+  // Explicitly protect the first HTML response (before client JS can clear
+  // the token from browser history); this applies to both SPA and API routes.
+  app.use((req, res, next) => {
+    res.set("Referrer-Policy", "no-referrer");
+    res.set("X-Content-Type-Options", "nosniff");
+    if (req.path === "/newsletter/confirm" || req.path === "/newsletter/unsubscribe") {
+      res.set("Cache-Control", "private, no-store");
+    }
+    next();
+  });
   // Liveness does not depend on database availability, and reveals no configuration.
   // The CI smoke test uses this endpoint to verify the compiled Express app boots.
   app.get("/healthz", (_req, res) => {

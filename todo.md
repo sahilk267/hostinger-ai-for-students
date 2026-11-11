@@ -778,3 +778,37 @@ Evidence/status: `ops/release-readiness-phase11.md`. Account login and Discovery
 - [x] Sync Phase 11-13 documentation and tracking, and verify GitHub Actions for the complete review-branch commit.
 - [ ] Independent real Hostinger staging isolation, live HTTP/DB probe result, OTP browser revocation, proxy peer address, privacy/safeguarding, mobile/print and deployment approval evidence.
 - [ ] Promote only after all staging gates pass, authorized release plan and backup; production/auto-deploy feature branch is intentionally untouched by this work.
+
+## Phase 14 — visible learner and parent experience (2026-11-10)
+
+- [x] P1: Put Discovery Adventure in main header/hero as the primary free experience; preserve the 30-day Journey and existing product paths.
+- [x] P2: Show four-stage learning map with 9/9 mission gate and direct route to three Thinking Challenges; parent report accessible at any time.
+- [x] P3: Build unified /my-journey dashboard with device-local Discovery metrics, next CTA and existing game-progress links; insert Discovery card on /progress.
+- [x] P4: Publish /for-parents with age/language choices and visible three-session evidence-based home plan (explicit no-evidence limitation). Keep private milestone non-accredited.
+- [x] P5 feedback: Add a real adult tester feedback form to homepage, dashboard and parent guide via existing server mail adapter. Success only after mail service resolves.
+- [x] P5 newsletter: Remove fake homepage success; implement adult self-attested double opt-in, one-use hashed confirmation, unsubscribe, 15-minute email cooldown, optional MySQL schema, and 3/hour request budget. Default OFF pending stage/privacy gates.
+- [x] Write `ops/phase14-visible-product-completion.md`; update ENV handoff and release tracker. Add journey, newsletter unit/route and isolated MySQL coverage.
+- [ ] Manually verify mobile, keyboard, languages, browser print, actual test-mail delivery and participant usefulness.
+- [ ] Apply `ops/phase14-adult-newsletter.sql` only after independently backed-up *isolated staging* migration and privacy approval. Do not enable `NEWSLETTER_SIGNUP_ENABLED` or production.
+- [ ] Confirm actual served Git SHA and human-approved deployment after staging. Live feature branch remains unchanged.
+
+## Phase 15 — browser acceptance and visible regression coverage (2026-11-10)
+
+- [x] Implement isolated compiled-app Chromium runner with no new npm/lockfile dependencies, no production requests, no real email and all child-cloud/AI/certificate flags OFF.
+- [x] Verify homepage/mobile navigation, visible Adventure CTA, legacy links, parent guide, Hindi translation, no horizontal overflow at 320/360px, print media, and newsletter default-off messaging.
+- [x] Verify private confirmation link query sanitization, response no-referrer/no-store policies, and deliberate—not automatic—opt-in.
+- [x] Generate deterministic synthetic authored 9+3 state and verify actual browser routes: locked challenge before nine solved; unlocked after nine; milestone after twelve; local records deleted and dashboard reset.
+- [x] CI PASS: 44 assertions and 9 screenshots in `phase14-browser-qa` artifact: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677.
+- [x] Record exact test evidence and limitations in `ops/phase15-browser-acceptance.md`.
+- [ ] Human design review of screenshots/physical devices, accessibility/print QA, family learning evaluation and verified real staging; no deployment without operator sign-off.
+
+## Phase 15.1 — final code/browser polish (2026-11-11)
+
+- [x] Fix 320px horizontal overflow and retain discoverable mobile Adventure navigation.
+- [x] Provide branded accessible fallback illustrations for blocked CDN imagery, instead of broken images.
+- [x] Ensure Devanagari fonts are installed in isolated Chromium CI and render Hindi correctly.
+- [x] Translate parent-facing core UI across Hindi/Hinglish/English, including truthful no-evidence copy and private-browser caveat.
+- [x] Make game-account action explicit: Discovery Adventure remains browser-only, **not** synced to login.
+- [x] Confirm keyboard Enter switches parent language; ensure A4 print hides feedback fields, navigation and hero.
+- [x] CI PASS for complete code: `c90c2c7735a052be41fde7b3f3d3cd02a8352c56`; 54 Chromium assertions, 9 screenshots, full TypeScript/build/isolated MySQL test: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42929033272.
+- [ ] Real physical devices, full screen-reader/wcag review, human design and educational pilot, actual printed A4 page, privacy/guardian/marketing approval and staging/production promotion remain externally unverified/deferred.

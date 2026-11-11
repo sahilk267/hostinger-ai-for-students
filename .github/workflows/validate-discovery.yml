@@ -6,7 +6,7 @@ on:
   # Run this isolated security branch's full checks without pushing to the
   # already-deployed feature branch. Remove this temporary filter after review.
   push:
-    branches: ['feature/phase11-origin-*']
+    branches: ['feature/phase11-origin-*', 'feature/phase14-visible-*']
   workflow_dispatch:
 
 permissions:
@@ -43,6 +43,21 @@ jobs:
         run: pnpm build
       - name: Smoke built application without a database or external mail
         run: node ops/smoke-built-app.mjs
+      - name: Install Devanagari fonts for Hindi browser acceptance
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-core
+          fc-match -f '%{family}\n' ':lang=hi' | head -1
+      - name: Browser QA at desktop, 360px and 320px (offline test app only)
+        run: node ops/phase14-browser-qa.mjs
+      - name: Save browser screenshots and QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase14-browser-qa
+          path: artifacts/phase14-browser-qa/
+          if-no-files-found: warn
+          retention-days: 14
       - name: Verify Hostinger PR-preview separation guardrails
         run: node --test ops/preview-safety.test.mjs
       - name: Verify Phase 11 staging policy (static, no live credentials)
@@ -88,7 +103,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Check OTP and guardian records against real MySQL
-        run: pnpm exec vitest run server/auth.mysql.integration.test.ts server/guardian.mysql.integration.test.ts server/auth.session-abuse.mysql.integration.test.ts
+        run: pnpm exec vitest run server/auth.mysql.integration.test.ts server/guardian.mysql.integration.test.ts server/auth.session-abuse.mysql.integration.test.ts server/phase14.newsletter.mysql.test.ts
       - name: Validate Phase 11 security schema with read-only metadata queries
         env:
           DEPLOY_TARGET: staging

@@ -57,12 +57,24 @@ try {
   }
   await assert(healthy, "compiled Express did not become healthy");
 
-  for (const route of ["/", "/explorer/adventure", "/guardian", "/explorer/checkpoint"]) {
+  for (const route of ["/", "/explorer/adventure", "/guardian", "/explorer/checkpoint",
+      "/my-journey", "/for-parents", "/newsletter/confirm", "/newsletter/unsubscribe"]) {
     const response = await request(route);
     const html = await response.text();
     await assert(response.status === 200 && html.includes('id="root"'),
       "expected SPA fallback for " + route);
   }
+  const newsletterPage = await request("/newsletter/confirm?key=" + "a".repeat(64) + "&token=" + "b".repeat(43));
+  await assert(newsletterPage.headers.get("cache-control")?.includes("no-store"),
+    "private newsletter email-link HTML must never be cached");
+  await assert(newsletterPage.headers.get("referrer-policy") === "no-referrer",
+    "private email-link tokens must not leak as HTTP Referer");
+  const newsletterOff = await request("/api/trpc/newsletter.availability", {
+    headers: {Origin:base},
+  });
+  await assert(newsletterOff.status === 200 &&
+    (await newsletterOff.text()).includes('"enabled":false'),
+    "adult signup must remain disabled by default");
   const oauthDisabled = await request("/api/oauth/callback?code=sample&state=sample");
   await assert(oauthDisabled.status === 404,
     "external OAuth callback must remain unavailable on OTP-only deployments");

@@ -143,3 +143,18 @@ export const authRequestBuckets = mysqlTable("authRequestBuckets", {
   expiresAt: timestamp("expiresAt").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
+
+
+/** Adult-only newsletter opt-in (self-declared 18+, NOT verified age).
+ * Requires ops/phase14-adult-newsletter.sql and explicit rollout flag.
+ * Only confirmed, non-unsubscribed rows are valid subscribers.
+ */
+export const newsletterSubscribers = mysqlTable("newsletterSubscribers", {
+  emailKey: varchar("emailKey", { length: 64 }).primaryKey(),
+  email: varchar("email", { length: 320 }).notNull(),
+  confirmHash: varchar("confirmHash", { length: 64 }).notNull(),
+  confirmExpiresAt: timestamp("confirmExpiresAt").notNull(),
+  requestedAt: timestamp("requestedAt").notNull(),
+  confirmedAt: timestamp("confirmedAt"),
+  unsubscribedAt: timestamp("unsubscribedAt"),
+});
