@@ -1,16 +1,16 @@
 # Phase 15 — Pre-deployment visible UX and browser acceptance
 
-**Date:** 2026-11-10  
+**Date:** 2026-11-11  
 **Repository:** `sahilk267/hostinger-ai-for-students`  
 **Branch:** `feature/phase14-visible-learning-journey-20261110`  
 **PR:** https://github.com/sahilk267/hostinger-ai-for-students/pull/3 (Draft)  
-**Latest fully tested code SHA:** `3495b86b344a670cfd256a961ae0c47405bbb2a3`  
-**CI PASS:** https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677  
-**Evidence artifact:** `phase14-browser-qa` (9 PNG screenshots plus JSON report, in the CI run's Artifacts area; expires November 23, 2026)
+**Latest fully tested code SHA:** `c90c2c7735a052be41fde7b3f3d3cd02a8352c56`  
+**CI PASS:** https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42929033272  
+**Evidence artifact:** `phase14-browser-qa` (9 PNG screenshots plus JSON report, in the CI run's Artifacts area; expires November 25, 2026)
 
 ## Summary
 
-44 automated Chromium browser acceptance assertions passed, on **isolated localhost compiled Express** with *no production database, real OTP, mail delivery, actual learner records or production deployment*. CI also passed TypeScript, Vitest, production build, compiled-app API smoke and real isolated MySQL security/auth/guardian/newsletter integration.
+54 automated Chromium browser acceptance assertions passed, on **isolated localhost compiled Express** with *no production database, real OTP, mail delivery, actual learner records or production deployment*. CI also passed TypeScript, Vitest, production build, compiled-app API smoke and real isolated MySQL security/auth/guardian/newsletter integration.
 
 ### Screenshot evidence and checks
 
@@ -26,7 +26,7 @@
 | `08-private-milestone-12tasks-desktop.png` | Desktop synthetic 9+3 completion | All 9 missions and all 3 transfer cases solved by **test-only fixture**, private milestone correctly unlocked; delete control verified |
 | `07-email-confirmation-sanitized.png` | Desktop adult email confirmation | Private query token removed from address bar; server sets `Referrer-Policy: no-referrer` and `Cache-Control: private, no-store`, confirmation not performed automatically |
 
-Screenshots are snapshots of the isolated compiled test build. Remote hero imagery/fonts may be blocked by the CI Chrome offline host resolution. This is **not** a human visual-art-direction sign-off.
+Screenshots are snapshots of the isolated compiled test build. Remote editorial images are deliberately blocked by CI and now render **branded CSS-only fallback illustrations**, while CI installs Devanagari fonts for the Hindi view. This is **not** a human visual-art-direction sign-off.
 
 ### Verified cross-component journey
 
@@ -49,10 +49,29 @@ Screenshots are snapshots of the isolated compiled test build. Remote hero image
 ## What remains **not** completed, despite a green CI
 
 - [ ] Human visual review of actual screenshots and polish of artwork, contrast, colors, copy and spacing across physical Android/iOS/desktop devices.
-- [ ] Real keyboard-only, screen reader, high zoom/200%, network throttling and print-to-paper/A4 usability QA. CI checks one print media rule but not an actual printed sheet or every assistive technology.
+- [ ] Real keyboard-only, screen reader, high zoom/200%, network throttling and print-to-paper/A4 usability QA. CI checks print media exclusion of navigation, feedback form and page hero, but not an actual printed sheet or every assistive technology.
 - [ ] Real beginner/guardian usability sessions with consent; genuine mission-solving, explanation quality, completion comprehension and feedback usefulness. Synthetic localStorage records verify navigation, **not learner answer quality**.
 - [ ] Live isolated Hostinger staging with separate database and mailbox, real OTP/contact email and newsletter confirmation/unsubscribe; backup, cache/CDN and proxy-IP behavior.
 - [ ] Parent/child privacy legal and safeguarding sign-off, adult newsletter retention and marketing-compliance review. `NEWSLETTER_SIGNUP_ENABLED` and child-cloud/AI/checkpoint flags must remain OFF until separately approved.
 - [ ] Reviewed release/rollback owner, pull request merge and live deployment (explicitly postponed).
 
 **Status:** P1–P5 code + Phase 15 automated browser acceptance COMPLETE. **Production release and independently validated quality are NOT complete.** Do not claim the live website already shows these pages. Draft PR #3 remains the review artifact.
+
+## Phase 15.1 — evidence-based visible polish (2026-11-11)
+
+**Final tested source:** `c90c2c7735a052be41fde7b3f3d3cd02a8352c56`  
+**Full CI:** https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42929033272  
+**Artifact:** `phase14-browser-qa` in the successful run; **54 browser assertions and 9 screenshots** (retained until November 25, 2026).
+
+Completed and tested, without live deployment:
+
+- [x] Fixed previously reproduced horizontal overflow at 320px in the phone header/asset fallback. No-overflow assertion now passes at 320px and 360px.
+- [x] Replaced broken remote editorial images with branded, CSS-based offline fallbacks, preserving descriptive accessible text. Chrome in CI blocks external hosts intentionally.
+- [x] Installed Noto Devanagari fonts in CI and added `lang=hi-IN` and appropriate Devanagari font stacks for Hindi content; screenshot legibility verified by screenshot inspection.
+- [x] Translated **core Parent Guide interface** (intro, titles, evidence limitation, session/parent prompts, CTAs and local-data disclaimer) into Hindi, Hinglish and English. Adult feedback form is explicitly identified as English-only when language is not English.
+- [x] Changed My Journey and Parent Guide account CTA to **Game account** to avoid falsely suggesting that anonymous Discovery Adventure syncs to the cloud.
+- [x] Verified by Chromium that the Hindi parent introduction, plan title and activities change visibly; a focused native language button switches back to English using **Enter keyboard event**, with `aria-pressed` semantics retained.
+- [x] Cleaned the A4 print stylesheet so only parent practice-plan content and privacy caveat print; navigation, large page intro and feedback form are hidden. Chromium print-media CSS assertions pass; **physical A4 print remains unverified**.
+- [x] Repeated full GitHub Actions TypeScript, Vitest, production build, compiled-app smoke, browser screenshots and isolated real MySQL integrations; all passed at the exact source SHA above.
+
+**Evidence limit:** Browser test uses synthetically completed tasks, not a real learner. No user identity, regulated child-data features, external mail, newsletter subscriptions, or live Hostinger production changes were made. Real physical Android/iOS, assistive tech, actual A4 print, professional design review, guardian/child consent and real-life usefulness tests remain separate acceptance gates.

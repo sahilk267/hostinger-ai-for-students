@@ -67,3 +67,9 @@ The visible educational MVP is implemented in code, but it is not a paid/verifie
 **Pass:** https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677 on test code `3495b86b344a670cfd256a961ae0c47405bbb2a3`. Chromium performed 44 UI assertions and saved 9 screenshots in `phase14-browser-qa` artifact: desktop homepage, 360px+320px home/menu, 360px dashboard, desktop Hindi parent plan, 320px parent plan, 360px Adventure, desktop 12-task milestone, and sanitized adult confirmation page. It verified synthetic state 0/9 → 9/9 → direct Thinking Challenge → 3/3 → local milestone → delete → 0/9. Privacy headers and no-history email tokens checked.
 
 **Still to do manually:** actual learner game completion, real visual polish review, Android/iOS/screen-reader/A4 print QA, genuine guardian feedback and real isolated Hostinger deployment. No production change or real newsletter signup is part of this pass. Complete details: `ops/phase15-browser-acceptance.md`.
+
+## Phase 15.1 update — fully localized parent journey and browser acceptance
+
+**Latest verified code:** `c90c2c7735a052be41fde7b3f3d3cd02a8352c56` — CI PASS https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42929033272. Chromium completed **54 assertions / 9 screenshots** (artifact `phase14-browser-qa`).
+
+The 320px overflow, broken offline hero-image placeholder and missing CI Hindi glyphs were fixed. Parent Guide has core Hindi/Hinglish/English copy beyond mission titles, keyboard language selection and A4 print excludes the feedback form; My Journey and Parent Guide label the account action **Game account** because anonymous Discovery records remain local only. These are code and automated browser passes; they are not real Hostinger/manual UX approval. Remaining operator gates and exact evidence limits are in `ops/phase15-browser-acceptance.md`.

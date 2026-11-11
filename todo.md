@@ -801,3 +801,14 @@ Evidence/status: `ops/release-readiness-phase11.md`. Account login and Discovery
 - [x] CI PASS: 44 assertions and 9 screenshots in `phase14-browser-qa` artifact: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42718752677.
 - [x] Record exact test evidence and limitations in `ops/phase15-browser-acceptance.md`.
 - [ ] Human design review of screenshots/physical devices, accessibility/print QA, family learning evaluation and verified real staging; no deployment without operator sign-off.
+
+## Phase 15.1 — final code/browser polish (2026-11-11)
+
+- [x] Fix 320px horizontal overflow and retain discoverable mobile Adventure navigation.
+- [x] Provide branded accessible fallback illustrations for blocked CDN imagery, instead of broken images.
+- [x] Ensure Devanagari fonts are installed in isolated Chromium CI and render Hindi correctly.
+- [x] Translate parent-facing core UI across Hindi/Hinglish/English, including truthful no-evidence copy and private-browser caveat.
+- [x] Make game-account action explicit: Discovery Adventure remains browser-only, **not** synced to login.
+- [x] Confirm keyboard Enter switches parent language; ensure A4 print hides feedback fields, navigation and hero.
+- [x] CI PASS for complete code: `c90c2c7735a052be41fde7b3f3d3cd02a8352c56`; 54 Chromium assertions, 9 screenshots, full TypeScript/build/isolated MySQL test: https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/42929033272.
+- [ ] Real physical devices, full screen-reader/wcag review, human design and educational pilot, actual printed A4 page, privacy/guardian/marketing approval and staging/production promotion remain externally unverified/deferred.
