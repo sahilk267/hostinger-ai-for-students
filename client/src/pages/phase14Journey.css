@@ -165,3 +165,29 @@
   .feature-layout>*{min-width:0;max-width:100%}
   .feature-image-wrap .home-image-fallback{min-width:0;max-width:100%}
 }
+
+/* A4 family practice handout: only the instructional plan and its privacy
+ * caveat print. Never print feedback form inputs or navigation on paper. */
+@media print {
+  @page { size: A4; margin: 12mm; }
+  .phase14-parent-page .phase14-page-main {width:100%;max-width:none;padding:0;margin:0}
+  .phase14-parent-page .phase14-page-main > :is(h1,.phase14-page-eyebrow,.phase14-page-lede,.phase14-feedback-language-note),
+  .phase14-parent-page .phase14-feedback-panel {display:none!important}
+  .phase14-parent-page .phase14-plan {
+    display:block!important;background:#fff;border:0;box-shadow:none;
+    padding:0;margin:0;break-inside:auto
+  }
+  .phase14-parent-page .phase14-plan-head {margin-bottom:7mm}
+  .phase14-parent-page .phase14-plan h2 {font-size:19pt;line-height:1.15}
+  .phase14-parent-page .phase14-session-grid {grid-template-columns:repeat(3,minmax(0,1fr));gap:3mm}
+  .phase14-parent-page .phase14-session {
+    padding:3mm;border:1px solid #b9c4b6;background:#fff;box-shadow:none;
+    break-inside:avoid;page-break-inside:avoid
+  }
+  .phase14-parent-page .phase14-session h3 {font-size:13pt;letter-spacing:0}
+  .phase14-parent-page .phase14-session :is(p,strong,h4) {font-size:8.5pt;line-height:1.35}
+  .phase14-parent-page .phase14-trust-note {
+    display:flex!important;background:#fff;border-top:1px solid #aaa;
+    border-radius:0;margin-top:6mm;padding:3mm 0;font-size:8pt
+  }
+}

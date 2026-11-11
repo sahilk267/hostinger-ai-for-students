@@ -285,6 +285,15 @@ try {
   const isPrintHidden=await evalPage(parent.sid,
     "getComputedStyle(document.querySelector('.phase14-page-header')).display==='none'");
   check(isPrintHidden,"Parent print mode hides navigation");
+  check(await evalPage(parent.sid,
+    "getComputedStyle(document.querySelector('.phase14-feedback-panel')).display==='none'"),
+    "A4 handout excludes adult feedback form and private entry fields");
+  check(await evalPage(parent.sid,
+    "getComputedStyle(document.querySelector('.phase14-parent-page .phase14-page-main > h1')).display==='none'"),
+    "A4 handout omits full-screen page hero while retaining session plan");
+  check(await evalPage(parent.sid,
+    "document.querySelectorAll('.phase14-plan .phase14-session').length===3"),
+    "A4 handout retains all three family practice sessions");
   await ws.send("Emulation.setEmulatedMedia",{media:"screen"},parent.sid);
   await closePage(parent);
 

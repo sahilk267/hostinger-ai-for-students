@@ -12,7 +12,7 @@ export default function ParentsGuidePage() {
   const [locale,setLocale]=useState<AdventureLocale>("hinglish");
   const copy=parentGuideCopy[locale];
   const report=getBrowserJourneyReport(ageBand,safeJourneyStorage());
-  return <div className="phase14-page" lang={locale==="hi"?"hi-IN":locale==="hinglish"?"en-IN":"en"}>
+  return <div className="phase14-page phase14-parent-page" lang={locale==="hi"?"hi-IN":locale==="hinglish"?"en-IN":"en"}>
     <header className="phase14-page-header">
       <a href="/" className="phase14-wordmark">✦ AI for Students</a>
       <nav aria-label={copy.introLabel}>
