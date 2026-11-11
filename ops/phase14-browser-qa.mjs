@@ -257,7 +257,30 @@ try {
   check(await evalPage(parent.sid,
     "document.querySelector('.phase14-page')?.getAttribute('lang')==='hi-IN'"),
     "Hindi guide language metadata is exposed to assistive technologies");
+  await poll(()=>textIncludes(parent,"तीन छोटे सत्र"),
+    "Hindi language switch updates the full parent guide heading",30);
+  check(await textIncludes(parent,"अभी किसी मिशन का परिणाम नहीं है"),
+    "Hindi no-evidence notice is truthful and localized");
+  check(await textIncludes(parent,"10 मिनट की गतिविधि"),
+    "Parent activity and coaching headings are localized");
+  check(await evalPage(parent.sid,
+    "!!document.querySelector('.phase14-page-header .auth-action') && document.querySelector('.phase14-page-header .auth-action').textContent.includes('Game account')"),
+    "Parent account action distinguishes games from browser-only Discovery");
   await snapshot(parent,"04-parent-guide-desktop-hindi");
+  // Native keyboard interaction (not element.click): selecting language with Enter
+  // must work when focus is moved via keyboard or assistive technology.
+  const focused=await evalPage(parent.sid,
+    "(()=>{const b=[...document.querySelectorAll('.phase14-parent-controls button')].find(e=>e.textContent.includes('English'));if(!b)return false;b.focus();return document.activeElement===b;})()");
+  check(focused,"Parent language selection is keyboard focusable");
+  await ws.send("Input.dispatchKeyEvent",
+    {type:"keyDown",key:"Enter",code:"Enter",windowsVirtualKeyCode:13},parent.sid);
+  await ws.send("Input.dispatchKeyEvent",
+    {type:"keyUp",key:"Enter",code:"Enter",windowsVirtualKeyCode:13},parent.sid);
+  await poll(()=>evalPage(parent.sid,
+    "document.querySelector('.phase14-page')?.getAttribute('lang')==='en'"),
+    "Keyboard Enter changes language",30);
+  check(await textIncludes(parent,"Three small sessions."),
+    "Keyboard language change restores English translation");
   await ws.send("Emulation.setEmulatedMedia",{media:"print"},parent.sid);
   const isPrintHidden=await evalPage(parent.sid,
     "getComputedStyle(document.querySelector('.phase14-page-header')).display==='none'");
