@@ -14,7 +14,7 @@ export default function MyJourneyPage() {
   const gamesTried=Object.values(games).filter(game=>game.attempts>0).length;
   const gamesComplete=Object.values(games).filter(game=>game.completions>0).length;
   return <div className="phase14-page">
-    <header className="phase14-page-header"><a href="/" className="phase14-wordmark">✦ AI for Students</a><nav aria-label="Journey navigation"><a href="/explorer/adventure">Adventure</a><a href="/for-parents">For parents</a><a href="/progress">All games</a></nav><AuthControls/></header>
+    <header className="phase14-page-header"><a href="/" className="phase14-wordmark">✦ AI for Students</a><nav aria-label="Journey navigation"><a href="/explorer/adventure">Adventure</a><a href="/for-parents">For parents</a><a href="/progress">All games</a></nav><AuthControls label="Game account"/></header>
     <main className="phase14-page-main">
       <div className="phase14-page-eyebrow"><Sparkles size={18}/> YOUR LEARNING DESK</div>
       <h1>One place for your<br/><em>next learning step.</em></h1>

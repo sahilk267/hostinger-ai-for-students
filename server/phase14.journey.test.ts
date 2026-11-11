@@ -54,7 +54,14 @@ describe("Phase 14 visible journey and parent plan",()=>{
     expect(app).toContain('path="/for-parents"');
     expect(journey).toContain("<DiscoveryJourneyCard");
     expect(parent).toContain("report.growthPlan.map");
-    expect(parent).toContain("No mission results yet");
+    const copy=src("client/src/data/parentGuideCopy.ts");
+    expect(parent).toContain("copy.noEvidence");
+    expect(copy).toContain("No mission results yet");
+    expect(copy).toContain("अभी किसी मिशन का परिणाम नहीं है");
+    expect(copy).toContain("तीन छोटे सत्र");
+    expect(parent).toContain("copy.planTitle");
+    expect(parent).toContain("copy.trust");
+    expect(parent).toContain('label="Game account"');
     expect(adventure).toContain('get("view") === "report"');
     expect(adventure).toContain('get("view") === "challenge"');
   });
