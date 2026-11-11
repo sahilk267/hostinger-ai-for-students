@@ -67,3 +67,8 @@ Each visual game is a catalog item plus a `GameId`, a local progress slot, a rou
 The current Discovery Lab contains nine visual worlds: Pattern Builder, Memory Adventure, Mini Scientist, Bridge Builder, Robot Programmer, Traffic Controller, Mission Commander, Creative Studio and Performance Arena. They use colors, shapes, memory tiles, balance blocks, arrows, lanes, symbols and silent rhythm patterns. Text is helper copy, not the primary interaction. Their visual signals map to the centralized taxonomy only as practice areas, and the Progress dashboard shows source-game counts plus non-diagnostic fields worth exploring after at least two matching signals.
 
 The next safe engineering slice is to add elapsed-time context, optional hint/retry events, idle/rapid-click quality flags and tests around the engine. Those signals must affect evidence confidence rather than punish a child, and they must never be presented as a fixed ability score. Age-normalized estimates remain disabled until varied, reviewed evidence exists.
+
+
+## November 2026 — visible family practice guidance
+
+The Progress route now includes an above-the-discovery-signals section named **A small thing to try together**. It uses `getPracticeNextStep` to choose a concrete Discovery Lab game from completion/attempt data, explain why varied practice is useful, and provide a short parent-child discussion prompt. Its recommendation is an activity selection only, never a diagnostic statement. It works with existing local and account-merged progress without introducing new stored learner data or sending identifiable analytics. This slice includes four Vitest cases. TypeScript, test runner, build and browser checks remain verification gates until executed in a project-capable environment.
