@@ -277,7 +277,7 @@ try {
   await ws.send("Input.dispatchKeyEvent",
     {type:"rawKeyDown",key:"Enter",code:"Enter",windowsVirtualKeyCode:13,nativeVirtualKeyCode:13},parent.sid);
   await ws.send("Input.dispatchKeyEvent",
-    {type:"char",key:"Enter",code:"Enter",text:"\\r",unmodifiedText:"\\r",
+    {type:"char",key:"Enter",code:"Enter",text:String.fromCharCode(13),unmodifiedText:String.fromCharCode(13),
       windowsVirtualKeyCode:13,nativeVirtualKeyCode:13},parent.sid);
   await ws.send("Input.dispatchKeyEvent",
     {type:"keyUp",key:"Enter",code:"Enter",windowsVirtualKeyCode:13,nativeVirtualKeyCode:13},parent.sid);
