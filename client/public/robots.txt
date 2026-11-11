@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /progress
+Disallow: /certificate
+Disallow: /explorer/report
+Disallow: /explorer/share/
+Disallow: /explorer/pilot-review
+Sitemap: https://aiforstudents.in/sitemap.xml
