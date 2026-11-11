@@ -753,3 +753,15 @@
 - [ ] Deploy, confirm the production canonical host and submit sitemap in Search Console.
 - [ ] Measure organic impressions, indexing and engaged guide-to-game sessions before claiming traffic growth.
 - [ ] Establish an ongoing editorial calendar for genuinely useful guides based on observed search demand.
+
+## Full product / business / SEO audit — 12 November 2026
+
+- [x] Re-audit current frontend entry points, course/game catalog, SEO shell and public resource architecture.
+- [x] Research current offerings and pricing signals from Khanmigo, Quizlet, Knowt, Wayground, MagicSchool and Duolingo.
+- [x] Review revenue opportunities, child privacy constraints and differentiating positioning.
+- [x] Create a detailed prioritized 90-day integration plan in `PRODUCT-BUSINESS-SEO-AUDIT-2026-11.md`.
+- [ ] Execute P0 homepage activation journey and mapping from topic titles to substantive learning content.
+- [ ] Correct public SSR/canonical and not-found HTTP status architecture before expanding SEO pages.
+- [ ] Establish Search Console baseline and privacy-safe acquisition-to-completion reporting.
+- [ ] Validate a parent/family paid-value proposition before implementing checkout.
+- [ ] Independently review unapproved learning scenarios before changing pedagogical approval labels.
