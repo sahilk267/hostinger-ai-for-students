@@ -26,6 +26,7 @@ import GuidesPage from "./pages/GuidesPage";
 import GuideArticlePage from "./pages/GuideArticlePage";
 import ParentsPage from "./pages/ParentsPage";
 import TeachersPage from "./pages/TeachersPage";
+import StartLearningPage from "./pages/StartLearningPage";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/guides/:slug" component={GuideArticlePage} />
       <Route path="/learn" component={LearnPage} />
       <Route path="/parents" component={ParentsPage} />
+      <Route path="/start" component={StartLearningPage} />
       <Route path="/teachers" component={TeachersPage} />
       <Route path="/study" component={StudyPage} />
       <Route path="/robotics" component={RoboticsPage} />
