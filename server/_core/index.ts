@@ -53,16 +53,29 @@ async function startServer() {
     serveStatic(app);
   }
 
-  const preferredPort = parseInt(process.env.PORT || "3000");
-  const port = await findAvailablePort(preferredPort);
+  const preferredPort = Number(process.env.PORT || "3000");
+  if (!Number.isInteger(preferredPort) || preferredPort < 1 || preferredPort > 65535) {
+    throw new Error("PORT must be an integer from 1 to 65535");
+  }
+  // Managed production hosting expects the exact assigned PORT, not an arbitrary fallback.
+  const port = process.env.NODE_ENV === "production"
+    ? preferredPort
+    : await findAvailablePort(preferredPort);
 
   if (port !== preferredPort) {
-    console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
+    console.log(`Port ${preferredPort} is busy, using ${port} for local development`);
   }
 
+  server.on("error", (error) => {
+    console.error("HTTP server failed to listen", error);
+    process.exitCode = 1;
+  });
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
   });
 }
 
-startServer().catch(console.error);
+startServer().catch((error) => {
+  console.error("Failed to start AI for Students", error);
+  process.exitCode = 1;
+});
