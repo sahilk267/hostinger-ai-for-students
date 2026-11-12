@@ -54,6 +54,40 @@ function articleMarkup(slug: string): string | null {
 /** Serve indexable, server-visible public content before the SPA bundle replaces the shell. */
 export function registerPublicSeoPages(app: Express) {
   if (process.env.NODE_ENV !== "production") return;
+  const ecosystemPages = [
+    {
+      route: "/parents",
+      title: "Parent Guidance: Safe AI Learning Activities for Kids",
+      description: "Free parent-child learning activities, privacy guidance and practical next steps for AI literacy and visual play.",
+      heading: "Parent Guidance: AI learning activities to try together",
+      intro: "Choose short, age-appropriate visual games, discuss what your child tried and support safer AI habits without fixed ability labels.",
+      links: [
+        {href: "/discovery-lab", label: "Visual Discovery Lab activities"},
+        {href: "/progress", label: "Review private local learning progress"},
+        {href: "/guides/ai-safety-for-kids-and-parents", label: "AI safety for parents and children"},
+      ],
+    },
+    {
+      route: "/teachers",
+      title: "Free AI Literacy Lesson Planner for Teachers",
+      description: "Free short classroom AI literacy activities for prompting, fact-checking, privacy and robotics with copyable teacher lesson packs.",
+      heading: "Free AI literacy classroom activities and lesson planner",
+      intro: "Build a 15, 30 or 45-minute classroom pack with a learning objective, warm-up, guided practice and reflection. No class roster required.",
+      links: [
+        {href: "/play", label: "Prompt writing practice"},
+        {href: "/play?game=fact", label: "Fact checking activity"},
+        {href: "/robotics", label: "Robot route planning game"},
+      ],
+    },
+  ];
+  for (const page of ecosystemPages) {
+    app.get(page.route, (_req, res, next) => {
+      try {
+        const body = `<main><header><h1>${escapeHtml(page.heading)}</h1><p>${escapeHtml(page.intro)}</p></header><h2>Explore the learning resources</h2><ul>${page.links.map(link=>`<li><a href="${link.href}">${escapeHtml(link.label)}</a></li>`).join("")}</ul><p>Practice suggestions are not intelligence tests, diagnoses or predictions.</p><a href="/">AI for Students home</a></main>`;
+        res.type("html").send(renderHtml(page.title,page.description,page.route,body));
+      } catch(error) { next(error); }
+    });
+  }
   app.get("/guides", (_req, res, next) => {
     try {
       const body = `<main><h1>Free AI guides for students and parents</h1><p>Practical learning, study skills, safe prompting and fact-checking.</p><ul>${publicGuides.map((guide) =>
