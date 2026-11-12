@@ -82,6 +82,17 @@ export function serveStatic(app: Express) {
       }
       return res.status(404).end();
     }
+    // Personal and result routes should not return a public homepage canonical.
+    const privateRoute = new Set([
+      "/account", "/progress", "/certificate", "/explorer/report", "/explorer/pilot-review"
+    ]).has(pathname) || pathname.startsWith("/explorer/share/");
+    if (privateRoute) {
+      const html = fs.readFileSync(path.resolve(distPath, "index.html"), "utf8")
+        .replace(/<meta name="robots"[^>]*>/i, '<meta name="robots" content="noindex,nofollow">')
+        .replace(/<link rel="canonical"[^>]*>/i, "")
+        .replace(/<meta property="og:url"[^>]*>/i, "");
+      return res.type("html").send(html);
+    }
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
