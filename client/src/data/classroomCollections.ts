@@ -1,3 +1,4 @@
+import { publicUrl } from "@/lib/siteUrl";
 export type ClassroomCollection = {
   id: string;
   title: string;
@@ -53,7 +54,7 @@ export function formatClassroomCollection(collection: ClassroomCollection): stri
       `${i+1}. ${session.title} (${session.minutes} min)`,
       `Goal: ${session.goal}`,
       `Activity: ${session.activity}`,
-      `Open: https://aiforstudents.in${session.href}`,
+      `Open: ${publicUrl(session.href)}`,
       `Reflect: ${session.reflect}`,""
     ]),
     "FACILITATOR NOTES",
