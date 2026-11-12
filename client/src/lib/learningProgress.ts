@@ -1,3 +1,4 @@
+import { trackLearningEvent } from "./analytics";
 export type GameId = "prompt-detective" | "fact-check-quest" | "ai-safety-lab" | "prompt-workshop" | "source-hunt" | "bias-buster" | "ai-decoder" | "data-detective" | "creative-director" | "code-coach" | "decision-studio" | "tool-match" | "robotics" | "pattern-builder" | "memory-adventure" | "mini-scientist" | "bridge-builder" | "robot-programmer" | "traffic-controller" | "mission-commander" | "creative-studio" | "performance-arena";
 
 export type GameProgress = { attempts: number; completions: number; bestScore: number; lastScore: number; lastPlayed: string | null };
@@ -79,6 +80,7 @@ export function startGame(gameId: GameId) {
   progress[gameId].lastPlayed = new Date().toISOString();
   window.localStorage.setItem(KEY, JSON.stringify(progress));
   touchGuestSession();
+  trackLearningEvent("learning_practice_started", { game: gameId });
 }
 
 export function completeGame(gameId: GameId, score: number) {
@@ -89,6 +91,7 @@ export function completeGame(gameId: GameId, score: number) {
   progress[gameId].lastPlayed = new Date().toISOString();
   window.localStorage.setItem(KEY, JSON.stringify(progress));
   touchGuestSession();
+  trackLearningEvent("learning_practice_completed", { game: gameId });
 }
 
 export function resetLearningProgress() {
