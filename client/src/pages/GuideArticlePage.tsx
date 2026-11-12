@@ -6,6 +6,8 @@ import AuthControls from "@/components/AuthControls";
 import { SEO } from "@/components/SEO";
 import { getPublicGuide, publicGuides } from "@/data/publicGuides";
 import NotFound from "./NotFound";
+import { learningClusters } from "@/data/learningClusters";
+import { trackLearningEvent } from "@/lib/analytics";
 
 export default function GuideArticlePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -51,9 +53,10 @@ export default function GuideArticlePage() {
             </label>)}
             {checked.length === guide.checklist.length && <p role="status"><CheckCircle2 size={16} /> Checklist complete. Now apply the ideas to a real task.</p>}
           </section>
-          <div style={{ marginTop: 36 }}><a className="button button--primary" href={guide.relatedHref}>Put this into practice <ExternalLink size={16}/></a><p>{guide.relatedLabel}</p></div>
+          <div style={{ marginTop: 36 }}><a className="button button--primary" href={guide.relatedHref} onClick={()=>trackLearningEvent("guide_practice_click",{guide:guide.slug,destination:guide.relatedHref})}>Put this into practice <ExternalLink size={16}/></a><p>{guide.relatedLabel}</p></div>
         </section>
       </article>
+      <section aria-label="Related learning collections" className="learn-path-panel"><h2>Choose a connected learning path</h2><div className="topic-grid">{learningClusters.filter(cluster=>cluster.guides.some(item=>item.href==="/guides/"+guide.slug)).map(cluster=><a href={"/resources/"+cluster.slug} className="topic-card" key={cluster.slug}><div><strong>{cluster.title}</strong><small>{cluster.description}</small></div><ArrowRight size={16}/></a>)}</div></section>
       <section style={{ marginTop: 48 }}><h2 style={{ fontSize: "1.7rem", marginBottom: 20 }}>Keep learning</h2><div className="topic-grid">{more.map(item => <a className="topic-card" href={`/guides/${item.slug}`} key={item.slug}><div><small>{item.category}</small><strong>{item.title}</strong></div><ArrowRight size={16}/></a>)}</div></section>
       <p style={{ marginTop: 36 }}><a className="text-link" href="/guides"><ArrowLeft size={16}/> Browse every free guide</a></p>
     </main>
