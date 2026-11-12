@@ -60,8 +60,28 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath));
 
-  // fall through to index.html if the file doesn't exist
-  app.use("*", (_req, res) => {
+  // Only known client-side routes should return the application shell.
+  // Unknown HTML routes and missing files must return HTTP 404 (not a soft-404 200).
+  const knownRoutes = new Set([
+    "/", "/play", "/mission", "/journey", "/explorer", "/explorer/report",
+    "/explorer/pilot-review", "/progress", "/certificate", "/account",
+    "/topics", "/guides", "/learn", "/parents", "/start", "/teachers",
+    "/plans", "/study", "/robotics", "/discovery-lab", "/contact"
+  ]);
+  app.use("*", (req, res) => {
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      return res.status(404).end();
+    }
+    const pathname = req.path.length > 1 ? req.path.replace(/\\/$/, "") : req.path;
+    const known = knownRoutes.has(pathname) || /^\\/explorer\\/share\\/[a-zA-Z0-9_-]+$/.test(pathname);
+    if (!known) {
+      if (req.accepts("html") && !pathname.includes(".")) {
+        return res.status(404).type("html").send(
+          '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><title>Page not found | AI for Students</title></head><body><main><h1>Page not found</h1><p>This page is unavailable.</p><a href="/">Return to AI for Students</a></main></body></html>'
+        );
+      }
+      return res.status(404).end();
+    }
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
