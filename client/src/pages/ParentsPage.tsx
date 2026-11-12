@@ -4,6 +4,7 @@ import AuthControls from "@/components/AuthControls";
 import { SEO } from "@/components/SEO";
 import { downloadTextFile, printPlainText } from "@/lib/resourceExport";
 import { getLearningProgress, type GameId } from "@/lib/learningProgress";
+import { buildFamilyPracticeSnapshot, formatFamilySnapshot, type FamilyPracticeSnapshot } from "@/lib/familyPracticeSummary";
 
 const activities = [
   { goal: "Make AI answers easier to verify", ages: "8+", duration: "10 minutes", href: "/play?game=fact", action: "Pick one claim and look for the original source together.", reflect: "Which part was a fact, and which was still uncertain?" },
@@ -16,8 +17,10 @@ export default function ParentsPage() {
   const [selected, setSelected] = useState(0);
   const [sessionMinutes, setSessionMinutes] = useState(10);
   const [practice, setPractice] = useState<{attempts:number;completions:number}[]>([]);
+  const [snapshot, setSnapshot] = useState<FamilyPracticeSnapshot | null>(null);
   const refreshPractice = () => {
     const recorded = getLearningProgress();
+    setSnapshot(buildFamilyPracticeSnapshot(recorded));
     const games: GameId[] = ["fact-check-quest","pattern-builder","robotics","ai-safety-lab"];
     setPractice(games.map(id=>({attempts:recorded[id].attempts,completions:recorded[id].completions})));
   };
@@ -83,6 +86,28 @@ export default function ParentsPage() {
           <div className="learn-card-footer"><a href={activity.href}>Explore this activity <ArrowRight size={15}/></a></div>
         </article>)}</div>
         <button type="button" className="button button--ink" onClick={refreshPractice} style={{marginTop:18}}>Refresh practice records</button>
+      </section>
+      <section className="learn-path-panel" aria-labelledby="family-check-in-title">
+        <div className="learn-panel-heading"><div><span className="game-kicker">FAMILY CHECK-IN / LAST RECORDED ACTIVITY</span><h2 id="family-check-in-title">A practical learning conversation</h2></div><HeartHandshake size={23}/></div>
+        <p>{snapshot?.summary ?? "Read the available practice records on this device."}</p>
+        <div className="topic-grid">
+          <article className="learn-card"><div className="learn-card-top"><span>ACTIVITY COVERAGE</span></div><h3>{snapshot?.gamesTried ?? 0} different games started</h3><p>{snapshot?.gamesCompleted ?? 0} different games completed at least once. These are lifetime records on this device, not this week's scores.</p></article>
+          <article className="learn-card"><div className="learn-card-top"><span>LAST SEVEN DAYS</span></div><h3>{snapshot?.recentGames.length ?? 0} recently visited activities</h3><p>Only the latest visit per game is saved. This is not a count of all sessions or total study time.</p></article>
+        </div>
+        <h3 style={{marginTop:22}}>Recently visited</h3>
+        {snapshot?.recentGames.length ? <ul>{snapshot.recentGames.map(game=><li key={game.id}>{game.title} — {game.lastPlayed.slice(0,10)} (latest recorded visit)</li>)}</ul> : <p>No last-played timestamps found for the past seven days.</p>}
+        <div className="learn-card" style={{marginTop:20}}>
+          <span className="game-kicker">NEXT FAMILY CONVERSATION</span>
+          <h3>{snapshot?.nextSuggestion.title ?? "Explore a short challenge"}</h3>
+          <p>{snapshot?.nextSuggestion.prompt ?? "Discuss what you notice while playing."}</p>
+          <div className="learn-card-footer"><a href={snapshot?.nextSuggestion.href ?? "/start"}>Try together <ArrowRight size={16}/></a></div>
+        </div>
+        <div className="learn-card-footer" style={{marginTop:18}}>
+          <button type="button" onClick={refreshPractice}>Refresh check-in</button>
+          <button type="button" disabled={!snapshot} onClick={()=>snapshot && downloadTextFile("ai-for-students-family-check-in.txt",formatFamilySnapshot(snapshot))}><Download size={16}/> Download summary</button>
+          <button type="button" disabled={!snapshot} onClick={()=>{if(snapshot && !printPlainText("Family practice check-in",formatFamilySnapshot(snapshot))) alert("Allow pop-ups to print or use Download.");}}><Printer size={16}/> Print summary</button>
+        </div>
+        <p style={{marginTop:12}}>This summary stays on your device unless you choose to download or print it. It does not infer intelligence, strengths or future careers.</p>
       </section>
       <section className="learn-path-panel" aria-labelledby="family-week-title">
         <div className="learn-panel-heading"><div><span className="game-kicker">FAMILY PLAN / NO LOGIN REQUIRED</span><h2 id="family-week-title">Build your five-day practice week</h2></div><CalendarDays size={22}/></div>
