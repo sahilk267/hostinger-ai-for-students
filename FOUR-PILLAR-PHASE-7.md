@@ -19,7 +19,7 @@
 - Added `.github/workflows/source-quality.yml` to run on pushes and PRs against `main`.
 - Uses Node 22, pnpm lockfile installation, `pnpm run check` for TypeScript and `pnpm run build` for Vite + Node bundle, then verifies `dist/index.js`, `dist/public/index.html`, `dist/public/sitemap.xml`, and `dist/public/robots.txt`.
 - The first CI run revealed a genuine missing parenthesis in `GuideArticlePage.tsx`'s checklist onChange handler; corrected via commit `332b3838ca724d6d477fe7253c3eb7f93f4dd2e6`.
-- **CI success is not claimed unless a completed successful run is observed.** Failed workflow logs should be inspected and the cause corrected.
+- **Verified CI success:** GitHub Actions run 43268220664 completed successfully for commit `332b3838ca724d6d477fe7253c3eb7f93f4dd2e6`, including locked installation, TypeScript check, production build and bundled entrypoint verification. Subsequent pushes trigger separate checks; they are not automatically covered by this successful run.
 - GitHub Actions do not substitute for full live browser, accessibility, crawling and privacy verification.
 
 ## Before a real deployment
