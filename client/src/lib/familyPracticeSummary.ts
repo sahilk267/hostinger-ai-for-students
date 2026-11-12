@@ -1,3 +1,4 @@
+import { publicUrl } from "./siteUrl";
 import type { GameId, LearningProgress } from "./learningProgress";
 
 export type FamilyPracticeSnapshot = {
@@ -50,7 +51,7 @@ export function formatFamilySnapshot(snapshot: FamilyPracticeSnapshot): string {
     "RECENTLY VISITED ACTIVITIES (LAST 7 DAYS)",
     ...(snapshot.recentGames.length ? snapshot.recentGames.map(row=>`- ${row.title}: most recent visit ${row.lastPlayed.slice(0,10)}; total recorded completions: ${row.completions}`) : ["- None recorded in this window"]),
     "", "PRACTICAL NEXT STEP", snapshot.nextSuggestion.title, snapshot.nextSuggestion.prompt,
-    `Practice link: https://aiforstudents.in${snapshot.nextSuggestion.href}`,
+    `Practice link: ${publicUrl(snapshot.nextSuggestion.href)}`,
     "", "Discuss: What did you try? What would you change next time?",
     "Not an assessment, diagnosis, IQ score, career prediction or full history of weekly sessions.",
     "No child's name or personal identity is included.",
