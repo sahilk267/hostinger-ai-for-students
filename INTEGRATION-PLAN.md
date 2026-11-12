@@ -101,3 +101,5 @@ Six priority free guides now show original fictional worked exercises with self-
 
 ## 2026-11-12 — Phase 7 production SEO, automated quality gates and adult feedback workflow
 Unknown Node-served SPA routes and missing files now return HTTP 404 instead of misleading 200 responses; private/account result routes receive noindex and no homepage canonical. Ten more public learning routes have initial SEO HTML. The free/plans page now routes adult parent/teacher research prompts to the existing contact form via allowlisted topic IDs, with optional category-only submitted feedback events. A locked-dependency GitHub Actions TypeScript/build workflow identified and resolved an actual guide checklist syntax error; successful run 43268220664 verified commit 332b3838ca72. Later commits require their own run confirmation. All source changes and remaining browser/domain/crawl/privacy checks are recorded in FOUR-PILLAR-PHASE-7.md. No live deployment or payments were performed.
+
+Production startup now honours the exact assigned PORT (with validation and error reporting), while development retains a fallback port finder.
