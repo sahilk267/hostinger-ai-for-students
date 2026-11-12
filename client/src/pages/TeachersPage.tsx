@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, BookOpen, Check, ClipboardCopy, GraduationCap, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, Check, ClipboardCopy, GraduationCap, ShieldCheck, Download, Printer } from "lucide-react";
 import { toast } from "sonner";
 import AuthControls from "@/components/AuthControls";
 import { SEO } from "@/components/SEO";
+import { downloadTextFile, printPlainText } from "@/lib/resourceExport";
 
 type LessonTopic = "prompting" | "fact-checking" | "privacy" | "robotics";
 const topics: Record<LessonTopic, {label:string; goal:string; warmup:string; practice:string; reflect:string; href:string}> = {
@@ -56,11 +57,14 @@ Facilitator checklist:
           <div className="learn-card-top"><span>FREE TEACHER PACK</span><span>{duration} MINUTES</span></div>
           <h2>{lesson.label}</h2><p><strong>Learning objective:</strong> {lesson.goal}</p>
           <pre style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere",fontFamily:"inherit",lineHeight:1.7,margin:"20px 0",fontSize:"0.95rem"}}>{plan}</pre>
-          <div className="learn-card-footer"><button type="button" onClick={copy}>{copied?<Check size={16}/>:<ClipboardCopy size={16}/>} {copied?"Copied":"Copy classroom pack"}</button><a href={lesson.href}>Preview student activity <ArrowRight size={16}/></a></div>
+          <div className="learn-card-footer"><button type="button" onClick={copy}>{copied?<Check size={16}/>:<ClipboardCopy size={16}/>} {copied?"Copied":"Copy classroom pack"}</button>
+          <button type="button" onClick={()=>downloadTextFile("ai-literacy-"+topic+"-"+duration+"min.txt",plan)}><Download size={16}/> Download editable pack</button>
+          <button type="button" onClick={()=>{if(!printPlainText("AI literacy classroom pack",plan)) toast.error("Allow pop-ups to print, or download the pack.");}}><Printer size={16}/> Print / Save PDF</button>
+          <a href={lesson.href}>Preview student activity <ArrowRight size={16}/></a></div>
         </div>
       </section>
       <section aria-labelledby="teacher-resources-title"><h2 id="teacher-resources-title">More resources for educators</h2><div className="topic-grid"><a className="topic-card" href="/guides/how-to-check-ai-answers"><BookOpen size={19}/><div><strong>Fact-checking guide</strong><small>Source evaluation and uncertainty in plain language</small></div><ArrowRight size={16}/></a><a className="topic-card" href="/discovery-lab"><GraduationCap size={19}/><div><strong>Visual practice activities</strong><small>Choose short games for patterns, planning and experimentation</small></div><ArrowRight size={16}/></a></div></section>
-      <aside className="learn-safety-note"><ShieldCheck size={19}/><p><strong>Teacher review required:</strong> Adapt activities to your students' ages, accessibility needs, local curriculum and school policies. No roster, grades or student identifiers are collected by this planner, and it does not provide verified learning-outcome scores.</p></aside>
+      <aside className="learn-safety-note"><ShieldCheck size={19}/><p><strong>Teacher review required:</strong> Adapt activities to your students' ages, accessibility needs, local curriculum and school policies. The planner runs locally without collecting rosters, grades or student identifiers, and it does not provide verified learning-outcome scores.</p></aside>
       <p><a className="text-link" href="/contact">Need a classroom resource? Contact us <ArrowRight size={16}/></a></p>
     </main><footer className="game-page-footer"><span>AI for Students</span><a href="/contact">Contact</a></footer>
   </div>;
