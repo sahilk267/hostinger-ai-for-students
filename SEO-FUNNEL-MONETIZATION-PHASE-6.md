@@ -40,7 +40,7 @@
 5. Confirm `/guides/nonexistent` and `/resources/nonexistent` return HTTP 404/noindex.
 6. Inspect actual `<link rel=canonical>`, OG tags, sitemap.xml and robots.txt after deployment. Verify there is exactly one relevant canonical per route. Vite static-only deployment may retain the base HTML homepage canonical.
 7. Verify guide→activity journey, all 22 practice start/completion events (using a *test* environment), mobile layout, keyboard navigation, text export and browser printing.
-8. Decide whether the analytics provider is permissible for a children-oriented service in the operating jurisdiction. Configure `VITE_ANALYTICS_ENDPOINT` and `VITE_ANALYTICS_WEBSITE_ID` only after privacy review. The currently connected code expects the existing provider's `/umami` script path; verify it matches the deployed analytics integration.
+8. Decide whether the analytics provider is permissible for a children-oriented service in the operating jurisdiction. Configure `VITE_ANALYTICS_ENDPOINT` and `VITE_ANALYTICS_WEBSITE_ID` only after privacy review. The default script path uses the existing provider's `/umami` endpoint; set `VITE_ANALYTICS_SCRIPT_URL` to your provider's full HTTPS script URL if it differs (e.g., a `/script.js` deployment), and verify it before launch.
 9. Verify Search Console ownership, submit canonical sitemap, inspect priority URLs, then benchmark organic impressions, click-through, guide→practice clicks and aggregate practice completion over a minimum observation window.
 10. Validate adult product interest with parents and teachers **before** implementing subscription backend or displaying a public paid tier.
 
