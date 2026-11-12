@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 
-const siteOverride = import.meta.env.VITE_SITE_URL?.trim();
-const SITE_URL = siteOverride && /^https:\/\/[a-z0-9.-]+(?::\d+)?\/?$/i.test(siteOverride)
-  ? siteOverride.replace(/\/$/, "")
-  : "https://aiforstudents.in"; // Set VITE_SITE_URL to the verified public canonical host.
+import { publicSiteOrigin } from "@/lib/siteUrl";
 type Props = { title: string; description: string; path: string; type?: "website" | "article"; jsonLd?: Record<string, unknown> };
 
 function updateMeta(selector: string, attribute: "name" | "property", key: string, value: string) {
@@ -19,7 +16,7 @@ function updateMeta(selector: string, attribute: "name" | "property", key: strin
 export function SEO({ title, description, path, type = "website", jsonLd }: Props) {
   useEffect(() => {
     const oldTitle = document.title;
-    const canonical = SITE_URL + (path === "/" ? "/" : path);
+    const canonical = publicSiteOrigin + (path === "/" ? "/" : path);
     document.title = `${title} | AI for Students`;
     updateMeta('meta[name="description"]', "name", "description", description);
     updateMeta('meta[property="og:title"]', "property", "og:title", document.title);
