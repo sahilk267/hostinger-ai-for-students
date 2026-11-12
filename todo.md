@@ -810,3 +810,14 @@
 - [x] Document scope and limitations in FOUR-PILLAR-PHASE-4.md.
 - [ ] Verify browser rendering, link behavior, printing and accessibility prior to production deployment.
 - [ ] Strengthen SEO topic-to-lesson mapping and content quality before introducing monetization.
+
+## SEO discovery → practice conversion (Phase 5 — 12 November 2026)
+- [x] Author three public intent-based learning resource clusters with guides, practice links and original Q&A.
+- [x] Provide route-specific server HTML SEO for all three clusters and real 404/noindex for unknown cluster and guide slugs.
+- [x] Replace misleading generic game mapping in 120-topic catalog with clear related reading/practice pathways and disclosure.
+- [x] Cross-link clusters from homepage, guide library and related guide articles; publish paths in sitemap.
+- [x] Instrument optional anonymous public resource-to-guide and resource-to-practice events through existing analytics adapter.
+- [x] Record SEO and conversion delivery boundaries in SEO-CONVERSION-PHASE-5.md.
+- [ ] Confirm canonical production domain before release; replace unverified hard-coded host if needed.
+- [ ] Verify actual Node-served crawl HTML / Search Console indexing and privacy-safe analytics setup after deployment.
+- [ ] Verify TypeScript/build and mobile/browser behavior before launch.
