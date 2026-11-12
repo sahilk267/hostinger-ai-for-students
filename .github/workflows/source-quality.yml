@@ -28,6 +28,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Check TypeScript
         run: pnpm run check
+      - name: Regression-test learning journeys and robotics scoring
+        run: pnpm exec vitest run client/src/lib/learningEcosystem.test.ts
       - name: Build Vite client and production Node bundle
         run: pnpm run build
       - name: Verify built server and client entrypoints
