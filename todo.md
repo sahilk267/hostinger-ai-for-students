@@ -799,3 +799,14 @@
 - [x] Document architecture and remaining phases in FOUR-PILLAR-PHASE-3.md.
 - [ ] Verify all completion screens and links in a real browser before production deployment.
 - [ ] Implement deeper skill-aligned practice sequencing after external content review and observed learning evidence.
+
+## Four-pillar phase 4 — Family check-ins and teacher collections (12 November 2026)
+
+- [x] Provide parent-facing activity summary based on actual device-local starts, completions and latest play dates.
+- [x] Clearly distinguish past-seven-day activity visits from cumulative game completions.
+- [x] Add local download / browser print for family check-ins with a safe next discussion suggestion.
+- [x] Add three multi-session teacher collections (10 sessions in total) with linked practice, observable goals and reflection prompts.
+- [x] Allow educators to copy, download and print complete collections without learner rosters.
+- [x] Document scope and limitations in FOUR-PILLAR-PHASE-4.md.
+- [ ] Verify browser rendering, link behavior, printing and accessibility prior to production deployment.
+- [ ] Strengthen SEO topic-to-lesson mapping and content quality before introducing monetization.
