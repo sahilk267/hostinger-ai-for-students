@@ -130,6 +130,7 @@ export default function ParentsPage() {
       </section>
       <section aria-labelledby="parent-next-steps"><h2 id="parent-next-steps">Your family learning toolkit</h2><div className="topic-grid">{related.map((link,index)=><a className="topic-card" href={link.href} key={link.href}>{index===0?<ClipboardCheck size={19}/>:index===1?<ShieldCheck size={19}/>:<BookOpen size={19}/>}<div><strong>{link.title}</strong><small>{link.detail}</small></div><ArrowRight size={17}/></a>)}</div></section>
       <aside className="learn-safety-note"><ShieldCheck size={19}/><p><strong>Important:</strong> Supervise age-appropriate use, follow the AI tool's age requirements and school rules, and avoid entering identifiable child information. Activity suggestions are non-diagnostic and are not medical or educational assessments.</p></aside>
+      <p><a className="text-link" href="/plans">See free features and future family plan ideas <ArrowRight size={16}/></a></p>
       <p><a className="text-link" href="/teachers">Are you an educator? See free classroom tools <ArrowRight size={16}/></a></p>
     </main>
     <footer className="game-page-footer"><span>AI for Students</span><a href="/contact">Contact</a></footer>
