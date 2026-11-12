@@ -72,3 +72,8 @@ The next safe engineering slice is to add elapsed-time context, optional hint/re
 ## November 2026 — visible family practice guidance
 
 The Progress route now includes an above-the-discovery-signals section named **A small thing to try together**. It uses `getPracticeNextStep` to choose a concrete Discovery Lab game from completion/attempt data, explain why varied practice is useful, and provide a short parent-child discussion prompt. Its recommendation is an activity selection only, never a diagnostic statement. It works with existing local and account-merged progress without introducing new stored learner data or sending identifiable analytics. This slice includes four Vitest cases. TypeScript, test runner, build and browser checks remain verification gates until executed in a project-capable environment.
+
+
+## 2026-11-12 — Four-pillar ecosystem implementation
+
+The homepage, header and footer now prioritize four explicit entry paths: **Free Learning** (`/learn`), **Visual Practice** (`/discovery-lab`), **Parent Guidance** (`/parents`) and **Teacher Solutions** (`/teachers`). Existing student content, visual games, progress and responsible AI guidance remain accessible and are not duplicated. New parent-facing activity selection and teacher-facing lesson-pack builder provide immediate, actionable value without login, student data collection or unvalidated learner scores. New parent/teacher public route metadata and initial server HTML support organic discovery. Detailed coverage and remaining quality gates are in `FOUR-PILLAR-ECOSYSTEM.md`.
