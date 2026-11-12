@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { getPublicGuide, publicGuides } from "../../client/src/data/publicGuides";
 import { getLearningCluster, learningClusters } from "../../client/src/data/learningClusters";
+import { guideExercises } from "../../client/src/data/guideExercises";
 
 const ORIGIN = "https://aiforstudents.in";
 const htmlEntities: Record<string, string> = {
@@ -45,6 +46,7 @@ function articleMarkup(slug: string): string | null {
     `<article><header><p>${esc(guide.category)}</p><h1>${esc(guide.title)}</h1><p>${esc(guide.intro)}</p></header>`,
     `<h2>Step-by-step guide</h2>`,
     ...guide.steps.map((step) => `<section><h3>${esc(step.heading)}</h3><p>${esc(step.body)}</p></section>`),
+    `<section><h2>Worked examples and exercises</h2>${(guideExercises[slug]??[]).map(item=>`<section><h3>${esc(item.label)}</h3><p><strong>Situation:</strong> ${esc(item.scenario)}</p><p><strong>Task:</strong> ${esc(item.task)}</p><p><strong>Example approach:</strong> ${esc(item.modelApproach)}</p><p><strong>Check:</strong> ${esc(item.check)}</p></section>`).join("")}</section>`,
     `<section><h2>Example prompt</h2><p>${esc(guide.example)}</p></section>`,
     `<section><h2>Quick checklist</h2><ul>${guide.checklist.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>`,
     `<p><a href="${guide.relatedHref}">${esc(guide.relatedLabel)}</a></p></article>`,
