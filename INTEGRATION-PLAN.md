@@ -77,3 +77,8 @@ The Progress route now includes an above-the-discovery-signals section named **A
 ## 2026-11-12 — Four-pillar ecosystem implementation
 
 The homepage, header and footer now prioritize four explicit entry paths: **Free Learning** (`/learn`), **Visual Practice** (`/discovery-lab`), **Parent Guidance** (`/parents`) and **Teacher Solutions** (`/teachers`). Existing student content, visual games, progress and responsible AI guidance remain accessible and are not duplicated. New parent-facing activity selection and teacher-facing lesson-pack builder provide immediate, actionable value without login, student data collection or unvalidated learner scores. New parent/teacher public route metadata and initial server HTML support organic discovery. Detailed coverage and remaining quality gates are in `FOUR-PILLAR-ECOSYSTEM.md`.
+
+
+## 2026-11-12 — Four-pillar phase 2: learner activation and resource exports
+
+A guided /start experience now connects lessons, four existing playable activities and their recorded local completions. Parent Guidance now generates a five-day browser-only activity schedule with selectable durations and downloadable/printable output. Teacher Solutions now exports and prints the generated classroom pack without student roster storage. The homepage CTA, sitemap and public server HTML include the learner starter route. Scope, privacy boundaries, and pending post-game completion flow are tracked in FOUR-PILLAR-PHASE-2.md.
