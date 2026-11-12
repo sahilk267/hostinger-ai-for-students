@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { trackLearningEvent } from "@/lib/analytics";
+import { publicGuides } from "@/data/publicGuides";
+import { learningClusters } from "@/data/learningClusters";
 
 /** Public, allowlisted path-level funnel measurement. No query strings or learner attributes. */
 const isPublicFunnelPage = (path: string) =>
