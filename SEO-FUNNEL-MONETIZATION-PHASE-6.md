@@ -16,7 +16,7 @@
 - Guide/resource links continue to emit `guide_practice_click`, `resource_practice_click` and `resource_guide_click`; adult-access links emit `adult_plan_resource_click`.
 - All use `trackLearningEvent`, which forwards only if the optional Umami integration is configured; Do Not Track is respected by the event wrapper and the optional script loader.
 - There is **no new analytics database, cookie identifier, student event stream or revenue event**. Conversion rates cannot be claimed without deployed measurement and consent/compliance review.
-- A pageview event can be missed if the optional script has not loaded at mount; use the analytics provider's normal pageview metrics as the acquisition baseline and treat custom events as indicative until validated.
+- A bounded, non-persistent in-memory queue (maximum 40 events) buffers custom events while the optional provider loads and flushes them on script load. Blocked or failed analytics can still lose events; provider-native pageview reports remain the acquisition baseline.
 
 ## Delivered: transparent monetization readiness (not paid plans)
 - New `/plans` page gives an accurate comparison of existing **free** Student Learning, Parent Guidance, Teacher Solutions.
