@@ -776,3 +776,15 @@
 - [ ] Run TypeScript, build and key browser checks before deploying this release; not performed in this feature implementation pass.
 - [ ] Continue learner completion journeys, parent printable plans and teacher resource exports without claiming validated assessments.
 - [ ] Confirm live production URLs and Search Console indexing after a deliberate deployment.
+
+## Four-pillar phase 2 — 12 November 2026
+
+- [x] Introduce a guided first-session learning route (/start) with four practical goals.
+- [x] Read genuine local game completion records and show next-practice suggestions without diagnostic claims.
+- [x] Connect homepage primary CTA and sitemap to the new learner journey.
+- [x] Build five-day family practice plan with selectable focus/daily duration, local download and print options.
+- [x] Add printable/downloadable teacher classroom packs, preserving copyable resource workflow.
+- [x] Extend initial server HTML for the new public starter route.
+- [x] Document delivered scope and pending work in FOUR-PILLAR-PHASE-2.md.
+- [ ] Confirm production build and browser compatibility, particularly print pop-up behavior, before deployment.
+- [ ] Uniform post-game next-action experiences and accessible teacher resource collections remain future work.
