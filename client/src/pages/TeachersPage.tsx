@@ -5,6 +5,7 @@ import AuthControls from "@/components/AuthControls";
 import { SEO } from "@/components/SEO";
 import { downloadTextFile, printPlainText } from "@/lib/resourceExport";
 import { classroomCollections, formatClassroomCollection } from "@/data/classroomCollections";
+import { publicUrl } from "@/lib/siteUrl";
 
 type LessonTopic = "prompting" | "fact-checking" | "privacy" | "robotics";
 const topics: Record<LessonTopic, {label:string; goal:string; warmup:string; practice:string; reflect:string; href:string}> = {
@@ -36,7 +37,7 @@ Learning objective: ${lesson.goal}
 2. GUIDED PRACTICE (${practice} min): ${lesson.practice}
 3. REFLECTION (${reflection} min): ${lesson.reflect}
 
-Student practice link: https://aiforstudents.in${lesson.href}
+Student practice link: ${publicUrl(lesson.href)}
 Facilitator checklist:
 - Use fictional or anonymised examples; do not paste student personal data.
 - Allow students to explain their own reasoning before offering feedback.
