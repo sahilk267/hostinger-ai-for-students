@@ -6,6 +6,7 @@ import AuthControls from "@/components/AuthControls";
 import { assetUrls } from "@/lib/assets";
 import { trackLearningEvent } from "@/lib/analytics";
 import { completeGame, startGame, type GameId } from "@/lib/learningProgress";
+import { assessRobotRoute } from "@/lib/roboticsScoring";
 
 type Block = { id: string; icon: string; label: string; kind: string };
 type Round = { id: string; age: string; level: string; title: string; brief: string; target: string[]; blocks: Block[]; hint: string };
@@ -38,11 +39,12 @@ export default function RoboticsPage() {
   const runPlan = () => {
     if (roundSolved) return; // Never award points twice for the same round.
     if (order.length !== round.target.length) { toast.error(`Use all ${round.target.length} blocks before running the plan`); return; }
-    const correct = order.every((item, index) => item === round.target[index]);
+    const result = assessRobotRoute(order, round.target, score, roundSolved);
+    if (!result.checked) return;
     setRoundChecked(true);
-    if (correct) {
+    if (result.correct) {
       setRoundSolved(true);
-      setScore((value) => value + 1);
+      setScore(result.score);
       trackLearningEvent("robotics_round_complete", { round: roundIndex + 1, ageBand: round.age, correct: true });
       toast.success("The robot completed the plan");
     } else {
