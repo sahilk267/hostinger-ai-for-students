@@ -28,6 +28,7 @@ import ParentsPage from "./pages/ParentsPage";
 import TeachersPage from "./pages/TeachersPage";
 import StartLearningPage from "./pages/StartLearningPage";
 import LearningClusterPage from "./pages/LearningClusterPage";
+import FunnelObserver from "./components/FunnelObserver";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -67,6 +68,7 @@ export default function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster position="bottom-right" />
+          <FunnelObserver />
           <Router />
         </TooltipProvider>
       </ThemeProvider>
