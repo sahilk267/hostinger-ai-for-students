@@ -13,12 +13,14 @@ const queryClient = new QueryClient();
 
 const analyticsEndpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT?.trim();
 const analyticsWebsiteId = import.meta.env.VITE_ANALYTICS_WEBSITE_ID?.trim();
+const analyticsScriptUrl = import.meta.env.VITE_ANALYTICS_SCRIPT_URL?.trim();
 if (analyticsEndpoint && analyticsWebsiteId && typeof document !== "undefined" && navigator.doNotTrack !== "1" && navigator.doNotTrack !== "yes") {
   const analyticsScript = document.createElement("script");
   enableLearningAnalytics();
   analyticsScript.defer = true;
   analyticsScript.addEventListener("load", flushPendingLearningEvents);
-  analyticsScript.src = `${analyticsEndpoint.replace(/\/$/, "")}/umami`;
+  analyticsScript.src = analyticsScriptUrl && /^https:\/\//i.test(analyticsScriptUrl)
+    ? analyticsScriptUrl : `${analyticsEndpoint.replace(/\/$/, "")}/umami`;
   analyticsScript.dataset.websiteId = analyticsWebsiteId;
   document.head.appendChild(analyticsScript);
 }
