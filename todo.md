@@ -836,3 +836,17 @@
 - [ ] Run TypeScript/build/browser, verify true crawl responses, mobile UX, exports and analytics provider configuration before deployment.
 - [ ] Establish Search Console impressions and opt-in aggregate conversion baseline; no live tracking data available in this pass.
 - [ ] Validate adult parent/teacher paid value with actual interviews/pilots before engineering checkout.
+
+## Phase 7 — SEO production fallback, CI, adult value research (12 November 2026)
+- [x] Return a genuine production HTTP 404 for unknown app paths and missing static assets.
+- [x] Apply initial noindex responses to private progress/account/certificate/explorer result routes, without homepage canonical.
+- [x] Extend initial SEO HTML to 10 additional public content/activity routes.
+- [x] Add adult-only feedback entry points to /plans and safe prefilled topics on the existing contact form.
+- [x] Record successful adult feedback submissions through category-only optional analytics.
+- [x] Add GitHub Actions TypeScript/build quality gates with locked pnpm installation.
+- [x] Fix guide checklist TS syntax error discovered by GitHub Actions.
+- [x] Confirm a successful CI run on commit 332b3838ca72 (Actions run 43268220664).
+- [x] Record delivery and pre-deployment requirements in FOUR-PILLAR-PHASE-7.md.
+- [ ] Check subsequent main HEAD run conclusion separately; passing an earlier SHA is not equivalent to passing HEAD.
+- [ ] Confirm actual domain, browser/mobile/accessibility checks and indexation before deploying.
+- [ ] Review qualitative adult feedback and child-data obligations before deciding whether any premium product deserves checkout.
