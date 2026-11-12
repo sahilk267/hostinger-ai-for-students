@@ -72,8 +72,8 @@ export function serveStatic(app: Express) {
     if (req.method !== "GET" && req.method !== "HEAD") {
       return res.status(404).end();
     }
-    const pathname = req.path.length > 1 ? req.path.replace(/\\/$/, "") : req.path;
-    const known = knownRoutes.has(pathname) || /^\\/explorer\\/share\\/[a-zA-Z0-9_-]+$/.test(pathname);
+    const pathname = req.path.length > 1 && req.path.endsWith("/") ? req.path.slice(0, -1) : req.path;
+    const known = knownRoutes.has(pathname) || new RegExp("^/explorer/share/[a-zA-Z0-9_-]+$").test(pathname);
     if (!known) {
       if (req.accepts("html") && !pathname.includes(".")) {
         return res.status(404).type("html").send(
