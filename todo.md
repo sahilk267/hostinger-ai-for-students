@@ -821,3 +821,18 @@
 - [ ] Confirm canonical production domain before release; replace unverified hard-coded host if needed.
 - [ ] Verify actual Node-served crawl HTML / Search Console indexing and privacy-safe analytics setup after deployment.
 - [ ] Verify TypeScript/build and mobile/browser behavior before launch.
+
+## Phase 6 — SEO Content Quality, Funnel Analytics, Business Readiness (12 November 2026)
+
+- [x] Add eight fictional worked exercises across six priority guides and expose them in SSR guide article content.
+- [x] Add privacy-safe, allowlisted public funnel landing events and consistent game start/completion events for all 22 game IDs.
+- [x] Respect Do Not Track for optional analytics events and script loading; avoid free-text or user query parameters in event payloads.
+- [x] Add transparent /plans page showing current free value and distinguishing research-stage parent/teacher features from real subscriptions.
+- [x] Connect plans page through home/parent/teacher navigation, sitemap and server HTML.
+- [x] Make canonical host configurable via SITE_URL (server) and VITE_SITE_URL (client); align dynamic Node-served sitemap/robots with configured origin.
+- [x] Use deploy-relative built HTML path in SEO server and shared public link helper in downloadable parent/teacher content.
+- [x] Document implementation and 10 outstanding production verification gates in SEO-FUNNEL-MONETIZATION-PHASE-6.md.
+- [ ] Confirm actual canonical production domain and set matching build/runtime values.
+- [ ] Run TypeScript/build/browser, verify true crawl responses, mobile UX, exports and analytics provider configuration before deployment.
+- [ ] Establish Search Console impressions and opt-in aggregate conversion baseline; no live tracking data available in this pass.
+- [ ] Validate adult parent/teacher paid value with actual interviews/pilots before engineering checkout.
