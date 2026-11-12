@@ -29,6 +29,7 @@ import TeachersPage from "./pages/TeachersPage";
 import StartLearningPage from "./pages/StartLearningPage";
 import LearningClusterPage from "./pages/LearningClusterPage";
 import FunnelObserver from "./components/FunnelObserver";
+import PlansPage from "./pages/PlansPage";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -52,6 +53,7 @@ function Router() {
       <Route path="/parents" component={ParentsPage} />
       <Route path="/start" component={StartLearningPage} />
       <Route path="/teachers" component={TeachersPage} />
+      <Route path="/plans" component={PlansPage} />
       <Route path="/study" component={StudyPage} />
       <Route path="/robotics" component={RoboticsPage} />
       <Route path="/discovery-lab" component={DiscoveryLabPage} />
