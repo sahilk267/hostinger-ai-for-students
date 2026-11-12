@@ -12,7 +12,7 @@ const queryClient = new QueryClient();
 
 const analyticsEndpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT?.trim();
 const analyticsWebsiteId = import.meta.env.VITE_ANALYTICS_WEBSITE_ID?.trim();
-if (analyticsEndpoint && analyticsWebsiteId && typeof document !== "undefined") {
+if (analyticsEndpoint && analyticsWebsiteId && typeof document !== "undefined" && navigator.doNotTrack !== "1" && navigator.doNotTrack !== "yes") {
   const analyticsScript = document.createElement("script");
   analyticsScript.defer = true;
   analyticsScript.src = `${analyticsEndpoint.replace(/\/$/, "")}/umami`;
