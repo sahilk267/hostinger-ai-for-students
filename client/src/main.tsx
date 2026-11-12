@@ -5,6 +5,7 @@ import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "./App";
+import { enableLearningAnalytics, flushPendingLearningEvents } from "@/lib/analytics";
 import { startLogin } from "./const";
 import "./index.css";
 
@@ -14,7 +15,9 @@ const analyticsEndpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT?.trim();
 const analyticsWebsiteId = import.meta.env.VITE_ANALYTICS_WEBSITE_ID?.trim();
 if (analyticsEndpoint && analyticsWebsiteId && typeof document !== "undefined" && navigator.doNotTrack !== "1" && navigator.doNotTrack !== "yes") {
   const analyticsScript = document.createElement("script");
+  enableLearningAnalytics();
   analyticsScript.defer = true;
+  analyticsScript.addEventListener("load", flushPendingLearningEvents);
   analyticsScript.src = `${analyticsEndpoint.replace(/\/$/, "")}/umami`;
   analyticsScript.dataset.websiteId = analyticsWebsiteId;
   document.head.appendChild(analyticsScript);
