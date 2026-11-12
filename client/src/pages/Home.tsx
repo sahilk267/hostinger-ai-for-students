@@ -68,6 +68,7 @@ function Header() {
     {label:"Parent Guidance", href:"/parents"},
     {label:"Teacher Solutions", href:"/teachers"},
     {label:"Free Guides", href:"/guides"},
+    {label:"Access & Plans", href:"/plans"},
   ];
   return (
     <header className="site-header">
@@ -205,7 +206,7 @@ export default function Home() {
 
         <section className="newsletter-section" id="newsletter"><div className="container newsletter-layout"><div className="newsletter-symbol"><img src={markImage} alt="" /><span>FREE GUIDE<br />STARTER KIT</span></div><div className="newsletter-copy"><SectionLabel>THE FREE AI STARTER KIT</SectionLabel><h2>One practical idea.<br /><em>A better next step.</em></h2><p>Get started immediately with free guides to study prompts, source checking and responsible AI habits. No email or account is required.</p><a href="/guides" className="button button--ink">Open free AI guides <ArrowUpRight size={16}/></a><small>Free to read. No newsletter subscription is collected on this page.</small></div></div></section>
       </main>
-      <footer className="site-footer"><div className="container footer-inner"><div className="footer-brand"><img src={markImage} alt="" /><strong>AI for Students</strong><p>Learn the tool. Keep the thinking.</p></div><div className="footer-links"><a href="/learn">Free Learning</a><a href="/start">Start a Challenge</a><a href="/discovery-lab">Visual Practice</a><a href="/parents">Parent Guidance</a><a href="/teachers">Teacher Solutions</a><a href="/guides">Free Guides</a><a href="/resources/ai-study-skills">Study Resources</a><a href="/study">Study with AI</a><a href="/progress">Progress</a><a href="/contact">Contact</a></div><div className="footer-meta"><span>Made for curious minds.</span><span>© 2026 AI for Students</span></div></div></footer>
+      <footer className="site-footer"><div className="container footer-inner"><div className="footer-brand"><img src={markImage} alt="" /><strong>AI for Students</strong><p>Learn the tool. Keep the thinking.</p></div><div className="footer-links"><a href="/learn">Free Learning</a><a href="/start">Start a Challenge</a><a href="/discovery-lab">Visual Practice</a><a href="/parents">Parent Guidance</a><a href="/teachers">Teacher Solutions</a><a href="/guides">Free Guides</a><a href="/resources/ai-study-skills">Study Resources</a><a href="/study">Study with AI</a><a href="/progress">Progress</a><a href="/contact">Contact</a><a href="/plans">Access & Plans</a></div><div className="footer-meta"><span>Made for curious minds.</span><span>© 2026 AI for Students</span></div></div></footer>
     </div>
   );
 }
