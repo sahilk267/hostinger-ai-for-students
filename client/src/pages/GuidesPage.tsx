@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import AuthControls from "@/components/AuthControls";
 import { SEO } from "@/components/SEO";
 import { publicGuides } from "@/data/publicGuides";
+import { learningClusters } from "@/data/learningClusters";
 
 export default function GuidesPage() {
   const [query, setQuery] = useState("");
@@ -15,6 +16,11 @@ export default function GuidesPage() {
     <main className="topics-main">
       <section className="topics-hero"><span className="game-kicker">FREE STUDENT LEARNING RESOURCES</span><h1>AI guides you can<br /><em>actually use.</em></h1><p>Practical how-to guides, reusable prompt examples, safety checks and a related activity in every guide. Free to read, without sign-in.</p>
         <div className="topics-search"><Search size={18}/><input aria-label="Search free AI guides" placeholder="Find a guide about studying, prompts, safety..." value={query} onChange={event => setQuery(event.target.value)} /></div>
+      </section>
+      <section aria-labelledby="learning-collections-title" className="learn-path-panel">
+        <h2 id="learning-collections-title">Choose a practical learning collection</h2>
+        <p>Each collection connects useful guides, hands-on practice and common questions.</p>
+        <div className="topic-grid">{learningClusters.map(cluster=><a href={"/resources/"+cluster.slug} key={cluster.slug} className="topic-card"><div><strong>{cluster.title}</strong><small>{cluster.description}</small></div><ArrowRight size={16}/></a>)}</div>
       </section>
       <section aria-label="Free AI guides" className="topic-grid">
         {guides.map((guide) => <a key={guide.slug} href={`/guides/${guide.slug}`} className="topic-card"><BookOpen size={18} /><div><small>{guide.category}</small><strong>{guide.title}</strong><small>{guide.description}</small></div><ArrowRight size={18}/></a>)}
