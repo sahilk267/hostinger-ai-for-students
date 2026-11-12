@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { getPublicGuide, publicGuides } from "../../client/src/data/publicGuides";
+import { getLearningCluster, learningClusters } from "../../client/src/data/learningClusters";
 
 const ORIGIN = "https://aiforstudents.in";
 const htmlEntities: Record<string, string> = {
@@ -101,6 +102,25 @@ export function registerPublicSeoPages(app: Express) {
       } catch(error) { next(error); }
     });
   }
+  app.get("/resources/:slug", (req, res, next) => {
+    const cluster = getLearningCluster(req.params.slug);
+    if (!cluster) return res.status(404).type("html").send("<!doctype html><html lang=\"en\"><head><meta name=\"robots\" content=\"noindex\"><title>Resource not found</title></head><body><main><h1>Resource not found</h1><a href=\"/guides\">Browse free guides</a></main></body></html>");
+    try {
+      const body = [
+        `<main><nav><a href="/">Home</a> / <a href="/guides">Free guides</a></nav><h1>${escapeHtml(cluster.title)}</h1><p>${escapeHtml(cluster.intro)}</p><p>For: ${escapeHtml(cluster.audience)}</p>`,
+        "<h2>Step-by-step learning resources</h2>",
+        ...cluster.guides.map(item=>`<section><h3><a href="${item.href}">${escapeHtml(item.title)}</a></h3><p>${escapeHtml(item.summary)}</p></section>`),
+        "<h2>Try a learning activity</h2>",
+        ...cluster.practice.map(item=>`<section><h3><a href="${item.href}">${escapeHtml(item.title)}</a></h3><p>${escapeHtml(item.why)}</p></section>`),
+        "<h2>Common questions</h2>",
+        ...cluster.questions.map(item=>`<section><h3>${escapeHtml(item.question)}</h3><p>${escapeHtml(item.answer)}</p></section>`),
+        "<nav><h2>More learning collections</h2><ul>",
+        ...learningClusters.filter(item=>item.slug!==cluster.slug).map(item=>`<li><a href="/resources/${item.slug}">${escapeHtml(item.title)}</a></li>`),
+        "</ul></nav></main>"
+      ].join("");
+      res.type("html").send(renderHtml(cluster.title,cluster.description,"/resources/"+cluster.slug,body));
+    } catch(error){ next(error); }
+  });
   app.get("/guides", (_req, res, next) => {
     try {
       const body = `<main><h1>Free AI guides for students and parents</h1><p>Practical learning, study skills, safe prompting and fact-checking.</p><ul>${publicGuides.map((guide) =>
@@ -111,7 +131,7 @@ export function registerPublicSeoPages(app: Express) {
   });
   app.get("/guides/:slug", (req, res, next) => {
     const guide = getPublicGuide(req.params.slug);
-    if (!guide) return next();
+    if (!guide) return res.status(404).type("html").send("<!doctype html><html lang=\"en\"><head><meta name=\"robots\" content=\"noindex\"><title>Guide not found</title></head><body><main><h1>Guide not found</h1><a href=\"/guides\">Browse free guides</a></main></body></html>");
     try {
       const schema = {
         "@context": "https://schema.org", "@type": "Article",
