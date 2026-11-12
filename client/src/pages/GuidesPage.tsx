@@ -21,6 +21,17 @@ export default function GuidesPage() {
       </section>
       {guides.length === 0 && <p className="topics-empty">No matching guides. Try a broader search.</p>}
       <section className="learn-safety-note"><BookOpen size={19}/><p>Use these resources to build skills, not to outsource assignments. Verify important claims and respect your school rules.</p></section>
+      <section aria-label="Explore learning pathways" className="learn-path-panel">
+        <h2>Choose your next learning path</h2>
+        <div className="topic-grid">
+          {[
+            {title:"Free Learning",href:"/learn",desc:"Learn foundational AI skills"},
+            {title:"Visual Practice",href:"/discovery-lab",desc:"Try visual games and robotics"},
+            {title:"Parent Guidance",href:"/parents",desc:"Family activities and AI safety"},
+            {title:"Teacher Solutions",href:"/teachers",desc:"Build a classroom activity pack"},
+          ].map(item=><a href={item.href} className="topic-card" key={item.href}><div><strong>{item.title}</strong><small>{item.desc}</small></div><ArrowRight size={16}/></a>)}
+        </div>
+      </section>
       <a className="text-link" href="/topics">Browse all 120 AI learning topics <ArrowRight size={16}/></a>
     </main>
     <footer className="game-page-footer"><span>AI for Students</span><a href="/contact">Contact</a></footer>
