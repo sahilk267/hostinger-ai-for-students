@@ -8,6 +8,7 @@ import { getPublicGuide, publicGuides } from "@/data/publicGuides";
 import NotFound from "./NotFound";
 import { learningClusters } from "@/data/learningClusters";
 import { trackLearningEvent } from "@/lib/analytics";
+import { guideExercises } from "@/data/guideExercises";
 
 export default function GuideArticlePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -39,6 +40,18 @@ export default function GuideArticlePage() {
             <span className="game-kicker">STEP {index + 1} OF {guide.steps.length}</span><h3 style={{ fontSize: "1.35rem", margin: "8px 0" }}>{step.heading}</h3>
             <p style={{ fontSize: "1.05rem", lineHeight: 1.8, maxWidth: 750 }}>{step.body}</p>
           </section>)}
+          <section aria-labelledby="worked-exercises-title" className="learn-path-panel" style={{margin:"32px 0"}}>
+            <h2 id="worked-exercises-title">Worked examples and practice</h2>
+            <p>These fictional exercises help you practise the skill yourself. No name, account or private text is required.</p>
+            {(guideExercises[guide.slug] ?? []).map((exercise,index)=><article key={exercise.label} style={{padding:"18px 0",borderBottom:"1px solid #d5cdbd"}}>
+              <span className="game-kicker">EXERCISE {index+1}</span>
+              <h3>{exercise.label}</h3>
+              <p><strong>Situation:</strong> {exercise.scenario}</p>
+              <p><strong>Your task:</strong> {exercise.task}</p>
+              <details style={{marginTop:12}}><summary style={{cursor:"pointer",fontWeight:700}}>Show one possible approach</summary><p>{exercise.modelApproach}</p></details>
+              <p><strong>Check your work:</strong> {exercise.check}</p>
+            </article>)}
+          </section>
           <section style={{ padding: 24, background: "#e9e6dc", borderRadius: 14, margin: "36px 0" }}>
             <h2 style={{ fontSize: "1.5rem" }}>Try this example prompt</h2>
             <p style={{ whiteSpace: "pre-wrap", lineHeight: 1.75, margin: "18px 0" }}>{guide.example}</p>
