@@ -27,6 +27,24 @@ export default function PlansPage() {
           <article className="learn-card"><span className="game-kicker">EDUCATORS / IDEA</span><h3>Educator workflow toolkit</h3><p>Possible extras: editable lesson libraries, classroom assignment workflows and privacy-safe aggregate reporting.</p><p><strong>Status:</strong> Exploring teacher pilots. No school licence or checkout is live.</p></article>
         </div>
       </section>
+      <section aria-labelledby="adult-feedback-title" className="learn-path-panel">
+        <h2 id="adult-feedback-title">Help prioritise the next adult tools</h2>
+        <p>For parents and educators aged 18+ only. Choose a real need, then send optional feedback through our existing contact form. This is not a waitlist, purchase request or subscription.</p>
+        <div className="topic-grid">
+          {[
+            {label:"Parent: printable weekly activity packs",audience:"family",topic:"family-packs",question:"Would offline family activities be useful?"},
+            {label:"Parent: reviewed progress conversations",audience:"family",topic:"family-summary",question:"Which family guidance would be worth improving?"},
+            {label:"Teacher: more editable lesson collections",audience:"educator",topic:"teacher-lessons",question:"Which AI literacy lesson topics do you actually need?"},
+            {label:"Teacher: classroom planning workflow",audience:"educator",topic:"teacher-workflow",question:"Which time-consuming classroom task should we solve first?"}
+          ].map(item=><article className="learn-card" key={item.topic}>
+            <div className="learn-card-top"><span>{item.audience.toUpperCase()} / RESEARCH</span><span>NO PURCHASE</span></div>
+            <h3>{item.label}</h3>
+            <p>{item.question}</p>
+            <div className="learn-card-footer"><a href={"/contact?topic="+item.topic} onClick={()=>trackLearningEvent("adult_research_feedback_click",{category:item.topic})}>Share optional feedback <ArrowRight size={16}/></a></div>
+          </article>)}
+        </div>
+        <p style={{marginTop:16}}>Please don't include children's names, school records, learning profiles or student contact information.</p>
+      </section>
       <section className="learn-safety-note"><ShieldCheck size={19}/><p><strong>Our boundary:</strong> Basic AI safety, core student practice and open learning guidance should remain accessible. Future adult-managed features require privacy and product validation. No intelligence scores, diagnoses or individual child-targeted advertising.</p></section>
       <p><a href="/contact" className="text-link">Adult educators and parents can share feedback through our contact page <ArrowRight size={16}/></a></p>
     </main><footer className="game-page-footer"><span>AI for Students</span><a href="/">Home</a></footer>
