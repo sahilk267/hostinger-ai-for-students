@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpen, ClipboardCheck, HeartHandshake, Lightbulb, ShieldCheck, Download, Printer, CalendarDays } from "lucide-react";
 import AuthControls from "@/components/AuthControls";
 import { SEO } from "@/components/SEO";
 import { downloadTextFile, printPlainText } from "@/lib/resourceExport";
+import { getLearningProgress, type GameId } from "@/lib/learningProgress";
 
 const activities = [
   { goal: "Make AI answers easier to verify", ages: "8+", duration: "10 minutes", href: "/play?game=fact", action: "Pick one claim and look for the original source together.", reflect: "Which part was a fact, and which was still uncertain?" },
@@ -14,6 +15,18 @@ const activities = [
 export default function ParentsPage() {
   const [selected, setSelected] = useState(0);
   const [sessionMinutes, setSessionMinutes] = useState(10);
+  const [practice, setPractice] = useState<{attempts:number;completions:number}[]>([]);
+  const refreshPractice = () => {
+    const recorded = getLearningProgress();
+    const games: GameId[] = ["fact-check-quest","pattern-builder","robotics","ai-safety-lab"];
+    setPractice(games.map(id=>({attempts:recorded[id].attempts,completions:recorded[id].completions})));
+  };
+  useEffect(()=>{
+    refreshPractice();
+    const handleFocus = () => refreshPractice();
+    window.addEventListener("focus",handleFocus);
+    return () => window.removeEventListener("focus",handleFocus);
+  }, []);
   const item = activities[selected];
   const week = useMemo(() => Array.from({length: 5}, (_, day) => {
     const activity = activities[(selected + day) % activities.length];
@@ -59,6 +72,17 @@ export default function ParentsPage() {
           <div className="learn-try"><Lightbulb size={18}/><span><strong>Afterwards, ask:</strong> {item.reflect}</span></div>
           <div className="learn-card-footer"><a href={item.href}>Open activity <ArrowRight size={16}/></a></div>
         </div>
+      </section>
+      <section className="learn-path-panel" aria-labelledby="family-practice-snapshot">
+        <div className="learn-panel-heading"><div><span className="game-kicker">OBSERVED PRACTICE / THIS DEVICE</span><h2 id="family-practice-snapshot">See what has been tried</h2></div><ClipboardCheck size={21}/></div>
+        <p>These are activity records saved locally on this device. They are not an ability assessment, and they may not include activity on other devices.</p>
+        <div className="topic-grid">{activities.map((activity,index)=><article className="learn-card" key={activity.goal}>
+          <div className="learn-card-top"><span>ACTIVITY {index+1}</span><span>{practice[index]?.completions??0} completed rounds</span></div>
+          <h3>{activity.goal}</h3>
+          <p>{practice[index]?.attempts??0} starts recorded. {practice[index]?.completions ? "Discuss one strategy used in the activity." : "There is no completed round on this device yet."}</p>
+          <div className="learn-card-footer"><a href={activity.href}>Explore this activity <ArrowRight size={15}/></a></div>
+        </article>)}</div>
+        <button type="button" className="button button--ink" onClick={refreshPractice} style={{marginTop:18}}>Refresh practice records</button>
       </section>
       <section className="learn-path-panel" aria-labelledby="family-week-title">
         <div className="learn-panel-heading"><div><span className="game-kicker">FAMILY PLAN / NO LOGIN REQUIRED</span><h2 id="family-week-title">Build your five-day practice week</h2></div><CalendarDays size={22}/></div>
