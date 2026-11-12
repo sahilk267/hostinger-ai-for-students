@@ -87,3 +87,7 @@ A guided /start experience now connects lessons, four existing playable activiti
 ## 2026-11-12 — Four-pillar phase 3: visible learning continuation
 
 The platform now shares one practical next-step completion card across its core games, interactive labs, seven additional AI games, all nine Discovery Lab games and Robotics. The follow-up mapping covers all 22 game IDs, leading to a complementary game, learning path or relevant safety guide. Parent Guidance now displays local observed practice starts and completions for four family activities. See FOUR-PILLAR-PHASE-3.md for scope and limitations. These practice summaries are not validated intelligence or aptitude measures; app source is pushed but deployment and browser testing remain outstanding.
+
+## 2026-11-12 — Four-pillar phase 4
+
+Parent Guidance now includes a device-local family activity check-in with honest lifetime vs latest-seven-day distinctions, a recommended family conversation and optional text/print export. Teacher Solutions includes three curated multi-session AI literacy collections with observable objectives, direct game/guide links, facilitator reflection prompts, and copy/download/print actions. This is a source implementation, not a production deployment or verified educational efficacy claim. Details and limitations are in FOUR-PILLAR-PHASE-4.md.
