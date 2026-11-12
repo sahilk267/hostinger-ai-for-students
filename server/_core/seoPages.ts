@@ -60,6 +60,21 @@ function articleMarkup(slug: string): string | null {
 /** Serve indexable, server-visible public content before the SPA bundle replaces the shell. */
 export function registerPublicSeoPages(app: Express) {
   if (process.env.NODE_ENV !== "production") return;
+  // Keep sitemap and robots aligned with the configured canonical host when served by Node.
+  app.get("/sitemap.xml", (_req, res, next) => {
+    try {
+      const xml = readFileSync(path.resolve(import.meta.dirname, "public", "sitemap.xml"), "utf8")
+        .replace(/https:\/\/aiforstudents\.in/g, ORIGIN);
+      res.type("application/xml").send(xml);
+    } catch(error) { next(error); }
+  });
+  app.get("/robots.txt", (_req, res, next) => {
+    try {
+      const robots = readFileSync(path.resolve(import.meta.dirname, "public", "robots.txt"), "utf8")
+        .replace(/https:\/\/aiforstudents\.in/g, ORIGIN);
+      res.type("text/plain").send(robots);
+    } catch(error) { next(error); }
+  });
   const ecosystemPages = [
     {
       route: "/start",
