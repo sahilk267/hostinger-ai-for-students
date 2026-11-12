@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowUpRight, Check, Mail, Send } from "lucide-react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { trackLearningEvent } from "@/lib/analytics";
 
 const SUPPORT_EMAIL = "auth@aiforstudents.in";
 
@@ -19,7 +20,12 @@ export default function ContactPage() {
   const adultFeedback = topic && Object.prototype.hasOwnProperty.call(adultTopics, topic)
     ? adultTopics[topic as keyof typeof adultTopics] : null;
   const submitContact = trpc.contact.submit.useMutation({
-    onSuccess: () => setSent(true),
+    onSuccess: () => {
+      setSent(true);
+      if (topic && Object.prototype.hasOwnProperty.call(adultTopics, topic)) {
+        trackLearningEvent("adult_research_feedback_submitted", { category: topic });
+      }
+    },
   });
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
