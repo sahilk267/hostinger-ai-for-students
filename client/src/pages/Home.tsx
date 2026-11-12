@@ -62,7 +62,13 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function Header() {
   const [open, setOpen] = useState(false);
-  const navItems = ["Learn AI", "Study with AI", "30-day Journey", "Explorer Lab", "Prompts", "Tools", "Career"];
+  const navItems = [
+    {label:"Free Learning", href:"/learn"},
+    {label:"Visual Practice", href:"/discovery-lab"},
+    {label:"Parent Guidance", href:"/parents"},
+    {label:"Teacher Solutions", href:"/teachers"},
+    {label:"Free Guides", href:"/guides"},
+  ];
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -71,7 +77,7 @@ function Header() {
           <span className="brand-type"><strong>AI</strong> for <em>Students</em></span>
         </a>
         <nav className={`desktop-nav ${open ? "is-open" : ""}`} aria-label="Primary navigation">
-          {navItems.map((item) => <a key={item} href={item === "Learn AI" ? "/learn" : item === "Study with AI" ? "/study" : item === "30-day Journey" ? "/journey" : item === "Explorer Lab" ? "/explorer" : `#${item.toLowerCase().replaceAll(" ", "-")}`}>{item}</a>)}
+          {navItems.map((item) => <a key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}</a>)}
         </nav>
         <div className="header-actions">
           <a className="header-link" href="/progress">Your progress <ArrowUpRight size={14} /></a>
@@ -114,11 +120,11 @@ export default function Home() {
           <div className="hero-inner">
             <div className="hero-copy">
               <SectionLabel>THE PRACTICAL AI DESK</SectionLabel>
-              <h1>Learn the tool.<br /><span>Keep the thinking.</span></h1>
-              <p className="hero-lede">A clear, useful place for students and curious learners to understand AI, build better habits and get unstuck—without handing over the work that makes learning matter.</p>
+              <h1>Learn AI. Practise skills.<br /><span>Grow with guidance.</span></h1>
+              <p className="hero-lede">Free AI lessons and visual learning games for students, practical guidance for parents, and ready-to-use classroom activities for teachers.</p>
               <div className="hero-actions">
-                <a href="/mission" className="button button--primary">Solve a real task <ArrowUpRight size={16} /></a>
-                <a href="#prompts" className="text-link">Browse prompts <ChevronRight size={16} /></a><a href="/journey" className="text-link">Start 30-day journey <ChevronRight size={16} /></a><a href="/explorer" className="text-link">Explore your strengths <ChevronRight size={16} /></a>
+                <a href="/discovery-lab" className="button button--primary">Try a free visual challenge <ArrowUpRight size={16} /></a>
+                <a href="/learn" className="text-link">Start learning AI <ChevronRight size={16} /></a>
               </div>
               <div className="hero-note"><span className="note-pin" /> No hype. No shortcuts. Just useful next steps.</div>
             </div>
@@ -136,16 +142,25 @@ export default function Home() {
           <div className="hero-bottom-note"><span>Scroll to find your next useful thing</span><span className="scroll-line" /></div>
         </section>
 
-        <section className="path-section" id="learn-ai">
+        <section className="path-section" id="learning-ecosystem" aria-labelledby="ecosystem-heading">
           <div className="container path-layout">
-            <div className="path-intro"><SectionLabel>START WHERE YOU ARE</SectionLabel><h2>Choose a path,<br /><em>not a rabbit hole.</em></h2><p>AI is a tool. The right workflow is what makes it useful. Pick the problem in front of you and we will point you toward a sensible first move.</p></div>
+            <div className="path-intro">
+              <SectionLabel>FOUR WAYS TO GET STARTED</SectionLabel>
+              <h2 id="ecosystem-heading">One learning home.<br/><em>Four useful paths.</em></h2>
+              <p>Choose the experience that fits today. Every path leads to real lessons, practice or helpful guidance—not a placeholder.</p>
+              <a className="text-link" href="/guides">Browse free AI guides <ChevronRight size={16}/></a>
+            </div>
             <div className="path-list">
               {[
-                ["01", "I want to understand AI", "Plain-language lessons for the curious beginner", "Learn the essentials"],
-                ["02", "I want to study better", "Prompts and workflows that protect your thinking", "Explore study tools"],
-                ["03", "I want to discover how I learn", "Age-appropriate missions and next experiments", "Explore the lab"],
-                ["04", "I want to get career-ready", "Practical help for CVs, interviews and new skills", "Build your edge"],
-              ].map(([num, title, copy, cta]) => <a className="path-row" href={num === "01" ? "/learn" : num === "02" ? "/study" : num === "03" ? "/explorer" : "#career"} key={num}><span className="path-number">{num}</span><span className="path-content"><strong>{title}</strong><small>{copy}</small></span><span className="path-cta">{cta} <ArrowUpRight size={15} /></span></a>)}
+                ["01","Free Learning","Short AI lessons, study workflows and practical guides","/learn","Learn an AI concept"],
+                ["02","Visual Practice","Play patterns, robotics, reasoning and safe AI challenges","/discovery-lab","Try a free challenge"],
+                ["03","Parent Guidance","Choose an activity and discuss next steps together","/parents","Explore family activities"],
+                ["04","Teacher Solutions","Build and copy a ready-to-adapt classroom activity","/teachers","Create a classroom pack"],
+              ].map(([num,title,copy,href,cta])=><a className="path-row" href={href} key={num}>
+                <span className="path-number">{num}</span>
+                <span className="path-content"><strong>{title}</strong><small>{copy}</small></span>
+                <span className="path-cta">{cta} <ArrowUpRight size={15}/></span>
+              </a>)}
             </div>
           </div>
         </section>
@@ -178,7 +193,7 @@ export default function Home() {
 
         <section className="newsletter-section" id="newsletter"><div className="container newsletter-layout"><div className="newsletter-symbol"><img src={markImage} alt="" /><span>FREE GUIDE<br />STARTER KIT</span></div><div className="newsletter-copy"><SectionLabel>THE FREE AI STARTER KIT</SectionLabel><h2>One practical idea.<br /><em>A better next step.</em></h2><p>Get started immediately with free guides to study prompts, source checking and responsible AI habits. No email or account is required.</p><a href="/guides" className="button button--ink">Open free AI guides <ArrowUpRight size={16}/></a><small>Free to read. No newsletter subscription is collected on this page.</small></div></div></section>
       </main>
-      <footer className="site-footer"><div className="container footer-inner"><div className="footer-brand"><img src={markImage} alt="" /><strong>AI for Students</strong><p>Learn the tool. Keep the thinking.</p></div><div className="footer-links"><a href="#learn-ai">Learn AI</a><a href="#study-with-ai">Study</a><a href="#prompts">Prompts</a><a href="#tools">Tools</a><a href="/guides">Resources</a><a href="/contact">Contact</a><a href="/guides">Free AI guides</a><a href="/progress">Progress</a></div><div className="footer-meta"><span>Made for curious minds.</span><span>© 2026 AI for Students</span></div></div></footer>
+      <footer className="site-footer"><div className="container footer-inner"><div className="footer-brand"><img src={markImage} alt="" /><strong>AI for Students</strong><p>Learn the tool. Keep the thinking.</p></div><div className="footer-links"><a href="/learn">Free Learning</a><a href="/discovery-lab">Visual Practice</a><a href="/parents">Parent Guidance</a><a href="/teachers">Teacher Solutions</a><a href="/guides">Free Guides</a><a href="/study">Study with AI</a><a href="/progress">Progress</a><a href="/contact">Contact</a></div><div className="footer-meta"><span>Made for curious minds.</span><span>© 2026 AI for Students</span></div></div></footer>
     </div>
   );
 }
