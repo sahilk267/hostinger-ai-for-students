@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import AuthControls from "@/components/AuthControls";
 import { SEO } from "@/components/SEO";
 import { downloadTextFile, printPlainText } from "@/lib/resourceExport";
+import { classroomCollections, formatClassroomCollection } from "@/data/classroomCollections";
 
 type LessonTopic = "prompting" | "fact-checking" | "privacy" | "robotics";
 const topics: Record<LessonTopic, {label:string; goal:string; warmup:string; practice:string; reflect:string; href:string}> = {
@@ -18,6 +19,9 @@ export default function TeachersPage() {
   const [topic,setTopic] = useState<LessonTopic>("prompting");
   const [duration,setDuration] = useState<number>(30);
   const [copied,setCopied] = useState(false);
+  const [collectionId,setCollectionId] = useState(classroomCollections[0].id);
+  const collection = classroomCollections.find(item=>item.id===collectionId) ?? classroomCollections[0];
+  const collectionText = useMemo(()=>formatClassroomCollection(collection),[collection]);
   const lesson = topics[topic];
   const plan = useMemo(()=>{
     const warmup = Math.max(3,Math.round(duration*.2));
@@ -61,6 +65,30 @@ Facilitator checklist:
           <button type="button" onClick={()=>downloadTextFile("ai-literacy-"+topic+"-"+duration+"min.txt",plan)}><Download size={16}/> Download editable pack</button>
           <button type="button" onClick={()=>{if(!printPlainText("AI literacy classroom pack",plan)) toast.error("Allow pop-ups to print, or download the pack.");}}><Printer size={16}/> Print / Save PDF</button>
           <a href={lesson.href}>Preview student activity <ArrowRight size={16}/></a></div>
+        </div>
+      </section>
+      <section className="learn-path-panel" aria-labelledby="teacher-collections-title">
+        <div className="learn-panel-heading"><div><span className="game-kicker">CURATED CLASSROOM SERIES / FREE</span><h2 id="teacher-collections-title">Teach across several sessions</h2></div><BookOpen size={22}/></div>
+        <p>Choose a reviewed-for-structure teaching sequence with a learning objective, real activity and reflection prompt for each session. These are adaptable starting points, not curriculum-accredited courses.</p>
+        <div className="topic-filters" role="group" aria-label="Classroom collections">
+          {classroomCollections.map(item=><button type="button" key={item.id} className={collectionId===item.id?"is-active":""} aria-pressed={collectionId===item.id} onClick={()=>setCollectionId(item.id)}>{item.title}</button>)}
+        </div>
+        <div className="learn-card" style={{marginTop:22}}>
+          <div className="learn-card-top"><span>{collection.sessions.length} CONNECTED SESSIONS</span><span>TEACHER-ADAPTABLE</span></div>
+          <h2>{collection.title}</h2><p>{collection.description}</p><p><strong>Suggested audience:</strong> {collection.audience}</p>
+          <h3>Learning outcomes</h3>
+          <ul>{collection.outcomes.map(outcome=><li key={outcome}>{outcome}</li>)}</ul>
+        </div>
+        <div className="topic-grid" style={{marginTop:22}}>{collection.sessions.map((session,index)=><article className="learn-card" key={session.title}>
+          <div className="learn-card-top"><span>SESSION {index+1}</span><span>{session.minutes} MINUTES</span></div>
+          <h3>{session.title}</h3><p><strong>Objective:</strong> {session.goal}</p><p>{session.activity}</p>
+          <div className="learn-try"><BookOpen size={16}/><span><strong>Reflect:</strong> {session.reflect}</span></div>
+          <div className="learn-card-footer"><a href={session.href}>Open learning activity <ArrowRight size={15}/></a></div>
+        </article>)}</div>
+        <div className="learn-card-footer" style={{marginTop:22}}>
+          <button type="button" onClick={()=>downloadTextFile("ai-literacy-collection-"+collection.id+".txt",collectionText)}><Download size={16}/> Download collection</button>
+          <button type="button" onClick={()=>{if(!printPlainText(collection.title,collectionText)) toast.error("Allow pop-ups or use Download.");}}><Printer size={16}/> Print / Save PDF</button>
+          <button type="button" onClick={async()=>{try{await navigator.clipboard.writeText(collectionText);toast.success("Collection copied");}catch{toast.error("Clipboard unavailable. Try downloading.");}}}><ClipboardCopy size={16}/> Copy collection</button>
         </div>
       </section>
       <section aria-labelledby="teacher-resources-title"><h2 id="teacher-resources-title">More resources for educators</h2><div className="topic-grid"><a className="topic-card" href="/guides/how-to-check-ai-answers"><BookOpen size={19}/><div><strong>Fact-checking guide</strong><small>Source evaluation and uncertainty in plain language</small></div><ArrowRight size={16}/></a><a className="topic-card" href="/discovery-lab"><GraduationCap size={19}/><div><strong>Visual practice activities</strong><small>Choose short games for patterns, planning and experimentation</small></div><ArrowRight size={16}/></a></div></section>
