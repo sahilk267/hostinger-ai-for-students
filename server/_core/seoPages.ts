@@ -5,14 +5,17 @@ import { getPublicGuide, publicGuides } from "../../client/src/data/publicGuides
 import { getLearningCluster, learningClusters } from "../../client/src/data/learningClusters";
 import { guideExercises } from "../../client/src/data/guideExercises";
 
-const ORIGIN = "https://aiforstudents.in";
+const configuredOrigin = process.env.SITE_URL?.trim();
+const ORIGIN = configuredOrigin && /^https:\/\/[a-z0-9.-]+(?::\d+)?\/?$/i.test(configuredOrigin)
+  ? configuredOrigin.replace(/\/$/, "")
+  : "https://aiforstudents.in"; // Replace with verified SITE_URL before deploying on a different domain.
 const htmlEntities: Record<string, string> = {
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
 };
 const escapeHtml = (value: string): string => value.replace(/[&<>"']/g, (char) => htmlEntities[char] ?? char);
 
 function renderHtml(title: string, description: string, urlPath: string, body: string, schema?: object): string {
-  const base = readFileSync(path.resolve(process.cwd(), "dist/public/index.html"), "utf8");
+  const base = readFileSync(path.resolve(import.meta.dirname, "public", "index.html"), "utf8");
   const fullTitle = `${title} | AI for Students`;
   const canonical = ORIGIN + urlPath;
   const tags = [
@@ -121,6 +124,12 @@ export function registerPublicSeoPages(app: Express) {
         "</ul></nav></main>"
       ].join("");
       res.type("html").send(renderHtml(cluster.title,cluster.description,"/resources/"+cluster.slug,body));
+    } catch(error){ next(error); }
+  });
+  app.get("/plans", (_req, res, next) => {
+    try {
+      const body = `<main><h1>Free AI Learning Resources and Future Adult Plans</h1><p>Free student games, lessons, parent activities and teacher packs are available. No paid plans or checkout are live.</p><h2>Available free resources</h2><ul><li><a href="/start">Student learning journey</a></li><li><a href="/parents">Parent Guidance</a></li><li><a href="/teachers">Teacher Solutions</a></li></ul><h2>Future plans under research</h2><p>Parent-managed features and educator workflows are ideas being validated; no price or availability is promised.</p><a href="/contact">Share feedback</a></main>`;
+      res.type("html").send(renderHtml("Free Learning and Future Family & Teacher Plans", "Explore free learning, parent and teacher resources; optional premium features are only being researched.", "/plans", body));
     } catch(error){ next(error); }
   });
   app.get("/guides", (_req, res, next) => {
