@@ -16,8 +16,9 @@ export function downloadTextFile(filename: string, content: string) {
 
 /** Print only the resource via a dedicated temporary print window. */
 export function printPlainText(title: string, content: string) {
-  const tab = window.open("", "_blank", "noopener,noreferrer,width=800,height=800");
+  const tab = window.open("", "_blank", "width=800,height=800");
   if (!tab) return false;
+  tab.opener = null;
   const escape = (value: string) => value.replace(/[&<>"']/g, (character) => {
     const entities: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
     return entities[character] ?? character;
