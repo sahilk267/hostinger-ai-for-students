@@ -1,0 +1,36 @@
+name: Source quality gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck-and-build:
+    name: TypeScript and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check TypeScript
+        run: pnpm run check
+      - name: Build Vite client and production Node bundle
+        run: pnpm run build
+      - name: Verify built server and client entrypoints
+        run: |
+          test -f dist/index.js
+          test -f dist/public/index.html
+          test -f dist/public/sitemap.xml
+          test -f dist/public/robots.txt
