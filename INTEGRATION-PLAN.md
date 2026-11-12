@@ -106,3 +106,7 @@ Production startup now honours the exact assigned PORT (with validation and erro
 
 ## 2026-11-13 — Phase 7: gameplay correctness and SEO uniqueness
 Fixed Robotics double counting and repeat-run score inflation with explicit round verification, added pure scoring function and regression tests. Removed duplicate Express SEO route definitions whose earlier entries shadowed newer metadata. Extended existing source quality GitHub Action with targeted Vitest coverage for game follow-ups, authored learning content, sitemap, SEO route uniqueness and 404s. Deployment remains out of scope and the CI pass result has not been observed. See LEARNING-QUALITY-PHASE-7.md.
+
+
+## 2026-11-13 — Phase 8 direct-link and release-gate audit
+Existing production fallback already contained unknown-route 404 and privacy-oriented noindex logic. Updated it to classify the original URL reliably within wildcard Express middleware using pure functions; new regression tests cover deep links, share tokens, unknown routes and private pages. Authored links checked against published guide slugs did not reveal broken targets. Source-quality workflow updated to run those tests. Full CI execution and staging/browser verification remain pending, as recorded in RELEASE-GATES-PHASE-8.md.
