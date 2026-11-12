@@ -788,3 +788,14 @@
 - [x] Document delivered scope and pending work in FOUR-PILLAR-PHASE-2.md.
 - [ ] Confirm production build and browser compatibility, particularly print pop-up behavior, before deployment.
 - [ ] Uniform post-game next-action experiences and accessible teacher resource collections remain future work.
+
+## Four-pillar phase 3 — Game completion and parent summaries (12 November 2026)
+
+- [x] Define appropriate, non-diagnostic follow-up practice for all 22 game IDs.
+- [x] Add shared completion card to Prompt Detective, Fact Check Quest, AI Safety Lab, Interactive Labs and seven additional AI games.
+- [x] Add the same next-step guidance to nine visual Discovery Lab games and Robotics completion screens.
+- [x] Link game completion to the next relevant activity, learner starter journey and progress history.
+- [x] Add device-local practice starts and completions overview to Parent Guidance, with refresh and privacy boundaries.
+- [x] Document architecture and remaining phases in FOUR-PILLAR-PHASE-3.md.
+- [ ] Verify all completion screens and links in a real browser before production deployment.
+- [ ] Implement deeper skill-aligned practice sequencing after external content review and observed learning evidence.
