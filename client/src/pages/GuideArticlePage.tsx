@@ -9,6 +9,7 @@ import NotFound from "./NotFound";
 import { learningClusters } from "@/data/learningClusters";
 import { trackLearningEvent } from "@/lib/analytics";
 import { guideExercises } from "@/data/guideExercises";
+import { publicUrl } from "@/lib/siteUrl";
 
 export default function GuideArticlePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -19,7 +20,7 @@ export default function GuideArticlePage() {
     description: guide.description, inLanguage: "en",
     author: { "@type": "Organization", name: "AI for Students" },
     publisher: { "@type": "Organization", name: "AI for Students" },
-    mainEntityOfPage: `https://aiforstudents.in/guides/${guide.slug}`,
+    mainEntityOfPage: publicUrl(`/guides/${guide.slug}`),
     isAccessibleForFree: true,
   } : undefined, [guide]);
   if (!guide) return <NotFound />;
