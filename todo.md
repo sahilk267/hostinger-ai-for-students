@@ -850,3 +850,5 @@
 - [ ] Check subsequent main HEAD run conclusion separately; passing an earlier SHA is not equivalent to passing HEAD.
 - [ ] Confirm actual domain, browser/mobile/accessibility checks and indexation before deploying.
 - [ ] Review qualitative adult feedback and child-data obligations before deciding whether any premium product deserves checkout.
+
+- [x] Validate production `PORT`, avoid fallback port scanning in managed hosting and surface startup/listen failures.
