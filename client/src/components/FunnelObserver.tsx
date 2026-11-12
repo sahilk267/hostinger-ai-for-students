@@ -10,7 +10,8 @@ const isPublicFunnelPage = (path: string) =>
   path === "/parents" || path === "/teachers" || path === "/plans" ||
   path === "/discovery-lab" || path === "/play" || path === "/robotics" ||
   path === "/study" || path === "/topics" ||
-  /^\/guides\/[a-z0-9-]+$/.test(path) || /^\/resources\/[a-z0-9-]+$/.test(path);
+  publicGuides.some(guide => path === "/guides/" + guide.slug) ||
+  learningClusters.some(cluster => path === "/resources/" + cluster.slug);
 
 export default function FunnelObserver() {
   const [location] = useLocation();
