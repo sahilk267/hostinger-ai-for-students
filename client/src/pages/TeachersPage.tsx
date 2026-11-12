@@ -93,6 +93,7 @@ Facilitator checklist:
       </section>
       <section aria-labelledby="teacher-resources-title"><h2 id="teacher-resources-title">More resources for educators</h2><div className="topic-grid"><a className="topic-card" href="/guides/how-to-check-ai-answers"><BookOpen size={19}/><div><strong>Fact-checking guide</strong><small>Source evaluation and uncertainty in plain language</small></div><ArrowRight size={16}/></a><a className="topic-card" href="/discovery-lab"><GraduationCap size={19}/><div><strong>Visual practice activities</strong><small>Choose short games for patterns, planning and experimentation</small></div><ArrowRight size={16}/></a></div></section>
       <aside className="learn-safety-note"><ShieldCheck size={19}/><p><strong>Teacher review required:</strong> Adapt activities to your students' ages, accessibility needs, local curriculum and school policies. The planner runs locally without collecting rosters, grades or student identifiers, and it does not provide verified learning-outcome scores.</p></aside>
+      <p><a className="text-link" href="/plans">See free educator resources and future plan research <ArrowRight size={16}/></a></p>
       <p><a className="text-link" href="/contact">Need a classroom resource? Contact us <ArrowRight size={16}/></a></p>
     </main><footer className="game-page-footer"><span>AI for Students</span><a href="/contact">Contact</a></footer>
   </div>;
