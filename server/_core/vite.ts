@@ -5,6 +5,7 @@ import { nanoid } from "nanoid";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
+import { spaPathFromOriginalUrl, isKnownSpaPath, isPrivateSpaPath } from "./spaRoutes";
 
 export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
@@ -62,18 +63,12 @@ export function serveStatic(app: Express) {
 
   // Only known client-side routes should return the application shell.
   // Unknown HTML routes and missing files must return HTTP 404 (not a soft-404 200).
-  const knownRoutes = new Set([
-    "/", "/play", "/mission", "/journey", "/explorer", "/explorer/report",
-    "/explorer/pilot-review", "/progress", "/certificate", "/account",
-    "/topics", "/guides", "/learn", "/parents", "/start", "/teachers",
-    "/plans", "/study", "/robotics", "/discovery-lab", "/contact"
-  ]);
   app.use("*", (req, res) => {
     if (req.method !== "GET" && req.method !== "HEAD") {
       return res.status(404).end();
     }
-    const pathname = req.path.length > 1 && req.path.endsWith("/") ? req.path.slice(0, -1) : req.path;
-    const known = knownRoutes.has(pathname) || new RegExp("^/explorer/share/[a-zA-Z0-9_-]+$").test(pathname);
+    const pathname = spaPathFromOriginalUrl(req.originalUrl);
+    const known = isKnownSpaPath(pathname);
     if (!known) {
       if (req.accepts("html") && !pathname.includes(".")) {
         return res.status(404).type("html").send(
@@ -83,9 +78,7 @@ export function serveStatic(app: Express) {
       return res.status(404).end();
     }
     // Personal and result routes should not return a public homepage canonical.
-    const privateRoute = new Set([
-      "/account", "/progress", "/certificate", "/explorer/report", "/explorer/pilot-review"
-    ]).has(pathname) || pathname.startsWith("/explorer/share/");
+    const privateRoute = isPrivateSpaPath(pathname);
     if (privateRoute) {
       const html = fs.readFileSync(path.resolve(distPath, "index.html"), "utf8")
         .replace(/<meta name="robots"[^>]*>/i, '<meta name="robots" content="noindex,nofollow">')
