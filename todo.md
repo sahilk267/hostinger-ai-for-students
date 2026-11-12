@@ -765,3 +765,14 @@
 - [ ] Establish Search Console baseline and privacy-safe acquisition-to-completion reporting.
 - [ ] Validate a parent/family paid-value proposition before implementing checkout.
 - [ ] Independently review unapproved learning scenarios before changing pedagogical approval labels.
+
+## Four-pillar ecosystem — 12 November 2026
+
+- [x] Reorganize primary homepage messaging and navigation around Free Learning, Visual Practice, Parent Guidance and Teacher Solutions.
+- [x] Build a public parent hub with activity selection, discussion guidance and a direct practice link.
+- [x] Build a functional teacher lesson-pack generator with learning objective, duration presets, copyable content and linked practice game.
+- [x] Connect new routes, footer entry points, sitemap and server-visible metadata/landing content.
+- [x] Document the integrated ecosystem and next development priorities in `FOUR-PILLAR-ECOSYSTEM.md`.
+- [ ] Run TypeScript, build and key browser checks before deploying this release; not performed in this feature implementation pass.
+- [ ] Continue learner completion journeys, parent printable plans and teacher resource exports without claiming validated assessments.
+- [ ] Confirm live production URLs and Search Console indexing after a deliberate deployment.
