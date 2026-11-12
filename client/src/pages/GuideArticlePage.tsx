@@ -62,7 +62,7 @@ export default function GuideArticlePage() {
             <h2 style={{ fontSize: "1.5rem" }}>Before you finish: a quick checklist</h2>
             <p>Tick each item as you practise. These ticks stay only on this page.</p>
             {guide.checklist.map((item, index) => <label key={item} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 0", cursor: "pointer" }}>
-              <input type="checkbox" checked={checked.includes(index)} onChange={() => setChecked((current) => current.includes(index) ? current.filter((i) => i !== index) : [...current, index]} />
+              <input type="checkbox" checked={checked.includes(index)} onChange={() => setChecked((current) => current.includes(index) ? current.filter((i) => i !== index) : [...current, index])} />
               <span>{item}</span>
             </label>)}
             {checked.length === guide.checklist.length && <p role="status"><CheckCircle2 size={16} /> Checklist complete. Now apply the ideas to a real task.</p>}
