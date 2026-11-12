@@ -865,3 +865,12 @@
 - [x] Record findings and remaining gates in LEARNING-QUALITY-PHASE-7.md.
 - [ ] Observe a completed green CI run; committed CI workflow is not itself proof of success.
 - [ ] Complete mobile/keyboard/browser smoke tests, real domain validation and production crawl inspection before deployment.
+
+## Phase 8 — direct links and release-quality audit (13 November 2026)
+- [x] Audit authored learning links against published guide slug data; no missing guide targets found in checked references.
+- [x] Correct production wildcard fallback to use req.originalUrl rather than potentially mounted req.path.
+- [x] Extract direct-link/known-route/private-route classifiers into testable helper.
+- [x] Add regression coverage for student deep links, unknown paths, query strings, trailing slash and private noindex routes.
+- [x] Extend source-quality GitHub Action test list with direct-link regression tests.
+- [x] Document release checks and source-only verification limits in RELEASE-GATES-PHASE-8.md.
+- [ ] Observe a green GitHub Actions run, run full test/build suite and verify live browser and HTTP responses before deployment.
