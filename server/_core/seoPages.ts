@@ -56,6 +56,19 @@ export function registerPublicSeoPages(app: Express) {
   if (process.env.NODE_ENV !== "production") return;
   const ecosystemPages = [
     {
+      route: "/start",
+      title: "Start Learning AI — Your First Practice Journey",
+      description: "Start a free AI learning journey with visual logic, robot planning, science predictions and fact-checking activities.",
+      heading: "Start a free AI learning journey",
+      intro: "Choose a goal, play an age-appropriate learning activity and return to reflect on what you practised. No account is required.",
+      links: [
+        {href: "/discovery-lab?game=pattern-builder", label: "Visual pattern practice"},
+        {href: "/discovery-lab?game=mini-scientist", label: "Science prediction game"},
+        {href: "/discovery-lab?game=robot-programmer", label: "Robot planning practice"},
+        {href: "/play?game=fact", label: "Fact-checking game"},
+      ],
+    },
+    {
       route: "/parents",
       title: "Parent Guidance: Safe AI Learning Activities for Kids",
       description: "Free parent-child learning activities, privacy guidance and practical next steps for AI literacy and visual play.",
