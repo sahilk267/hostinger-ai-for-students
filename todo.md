@@ -854,3 +854,14 @@
 - [x] Validate production `PORT`, avoid fallback port scanning in managed hosting and surface startup/listen failures.
 
 - [x] Latest source-changing Phase 7 commit 3b66a2da1a42 passed CI workflow 43268784141 (typecheck, production build, output files).
+
+## Phase 7 — learning correctness and SEO regression gates (13 November 2026)
+- [x] Fix Robotics score inflation on repeated plan runs and final round.
+- [x] Require a checked route before advancing; preserve repair opportunities without invented scores.
+- [x] Extract pure robot round scoring helper with tests for wrong, corrected and repeated answers.
+- [x] Remove 10 duplicate Express public SEO page definitions shadowing improved metadata.
+- [x] Add regression checks for SEO handler uniqueness, sitemap coverage, valid 404 routes, 120 curriculum pathways, 22 game next steps, six guide exercise collections and teacher resources.
+- [x] Include targeted ecosystem and SEO regression tests in source-quality GitHub Actions workflow.
+- [x] Record findings and remaining gates in LEARNING-QUALITY-PHASE-7.md.
+- [ ] Observe a completed green CI run; committed CI workflow is not itself proof of success.
+- [ ] Complete mobile/keyboard/browser smoke tests, real domain validation and production crawl inspection before deployment.
