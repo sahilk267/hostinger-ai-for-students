@@ -5,6 +5,7 @@ import { SEO } from "@/components/SEO";
 import { downloadTextFile, printPlainText } from "@/lib/resourceExport";
 import { getLearningProgress, type GameId } from "@/lib/learningProgress";
 import { buildFamilyPracticeSnapshot, formatFamilySnapshot, type FamilyPracticeSnapshot } from "@/lib/familyPracticeSummary";
+import { publicUrl } from "@/lib/siteUrl";
 
 const activities = [
   { goal: "Make AI answers easier to verify", ages: "8+", duration: "10 minutes", href: "/play?game=fact", action: "Pick one claim and look for the original source together.", reflect: "Which part was a fact, and which was still uncertain?" },
@@ -45,7 +46,7 @@ export default function ParentsPage() {
     ...week.flatMap(({day,activity,discussion})=> [
       "DAY " + day + ": " + activity.goal,
       "Activity: " + activity.action,
-      "Open: https://aiforstudents.in" + activity.href,
+      "Open: " + publicUrl(activity.href),
       "Reflect together: " + discussion,
       "",
     ]),
