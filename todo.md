@@ -885,3 +885,13 @@
 - [x] Verify source commit a208175c3e97 has successful CI run 43334048657, including passing TypeScript, targeted tests, build and HTTP smoke.
 - [x] Document evidence and remaining production/browser gates in RELEASE-VERIFICATION-PHASE-9.md.
 - [ ] Browser/mobile end-to-end smoke tests; printable exports; login/database integration; live production domain and deployed SEO checks.
+
+## Phase 9 — Reliable guest progress and family guidance (13 November 2026)
+- [x] Guard all guest progress localStorage read/write/reset operations so restricted storage cannot crash games.
+- [x] Normalise invalid/unsafe counters and NaN/Infinity scores before storage.
+- [x] Add visible guest storage warnings to /start and /progress so persistence is not implied falsely.
+- [x] Add tests for guest storage failures, invalid records, score best tracking, 90-day expiry and weekly family summary limitations.
+- [x] Include these regression suites in the source-quality CI workflow.
+- [x] Document scope in FOUR-PILLAR-PHASE-9.md.
+- [ ] Verify current source SHA GitHub Actions outcome; separately test browser storage restrictions on mobile/desktop.
+- [ ] Verify signed-in sync/account data behavior and real host deployment in release phase.
