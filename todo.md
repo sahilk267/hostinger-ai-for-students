@@ -897,3 +897,16 @@
 - [ ] Verify signed-in sync/account data behavior and real host deployment in release phase.
 
 - [x] Verified Phase 9 final source SHA 4027d82e7d07 in successful GitHub Actions run 43337789030 (all configured checks green).
+
+## Phase 10 — Interactive QA and release verification (13 November 2026)
+- [x] Prevent double-tap duplicate answers/overlapping timers in the five-round Discovery Lab.
+- [x] Cancel stale round transition timers on visual world change, restart and component unmount.
+- [x] Expose selected visual worlds using aria-pressed and keep answer result announcements accessible.
+- [x] Add five-round visual scoring tests for duplicate answer events, separate sessions and quality boundaries.
+- [x] Add ten-session classroom collections tests covering export text and valid linked guides.
+- [x] Run new suites in GitHub Actions source-quality workflow.
+- [x] Verify successful CI run 43401986711 for latest source SHA 0474c80f4751.
+- [x] Prepare detailed manual QA matrix in FOUR-PILLAR-PHASE-10.md.
+- [ ] Run real Chrome/Safari/Firefox mobile and keyboard/screen-reader QA and record outcomes.
+- [ ] Verify parent/teacher copy/download/print and optional analytics with deployed host.
+- [ ] Confirm canonical domain, Search Console indexing and production safety before launch.
