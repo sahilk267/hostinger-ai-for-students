@@ -50,3 +50,10 @@ AI for Students is no longer presented as an undifferentiated collection of AI t
 
 ## Release scope
 This change updates source and documentation on GitHub only. It does not deploy code, configure a domain, connect Search Console, or enable checkout.
+
+
+## Phase 11 source checkpoint (2026-11-13)
+- Six published guides now contain an authored one-minute privacy-safe decision with retry, explanation and a link to real practice; guide index and initial Node SEO HTML expose this learning step.
+- Optional aggregate guide-check analytics is scoped to the published guide slug; no answer text is sent.
+- GitHub Actions run [43416149358](https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/43416149358) passed automated source/build/HTTP SEO checks for commit 3ae36c0. Live browser/device tests, production indexing, parent and teacher pilots, paid features and deployment are still pending.
+- See [FOUR-PILLAR-PHASE-11.md](FOUR-PILLAR-PHASE-11.md).

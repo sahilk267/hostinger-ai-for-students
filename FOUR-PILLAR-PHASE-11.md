@@ -16,7 +16,7 @@ Six published SEO guides already had steps, worked exercises and a checklist, bu
 
 ## Acceptance evidence and release caveats
 - **Source:** GitHub commit and changed-file review confirm authored content and wiring.
-- **Automation:** CI result for this source commit must be checked separately; the workflow definition alone is not a passing result.
+- **Automation (verified):** GitHub Actions run [43416149358](https://github.com/sahilk267/hostinger-ai-for-students/actions/runs/43416149358) completed successfully for source commit [3ae36c0](https://github.com/sahilk267/hostinger-ai-for-students/commit/3ae36c0a786babe54e8c5a0dbc57bf95e49040a4). All job steps passed: dependency installation, TypeScript, included learning and guide check tests, Vite/Node production build, server SEO bundle, HTTP smoke test and expected build artifacts. This does not verify browser UX, real traffic or indexing.
 - **Manual pending:** Test narrow mobile widths, zoom, keyboard / focus order, screen reader announcement, blocked storage, optional analytics and the real guide-to-game path in a deployed browser.
 - **SEO pending:** Confirm deployed Node response includes one canonical per guide, configured real host, crawlable text and Search Console coverage.
 - **Business pending:** No adult subscription feature, paid plan, checkout, demographic profiling or private student answer tracking was introduced.

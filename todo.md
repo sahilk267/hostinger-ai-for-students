@@ -917,4 +917,5 @@
 - [x] Add feedback, retries and relevant practice continuation without storing learner choices.
 - [x] Include decision content in initial Node HTML and document privacy-safe aggregate analytics.
 - [x] Add contract tests to GitHub Actions source-quality gate.
-- [ ] Verify CI outcome, mobile/keyboard/screen reader flows, deployed SEO response and pilot feedback before release claims.
+- [x] Verify source commit 3ae36c0 in GitHub Actions run 43416149358 (TypeScript, learning/guide checks, build and SEO HTTP smoke successful).
+- [ ] Complete real mobile/keyboard/screen-reader guide flows, deployed SEO validation and learner/parent pilot feedback before release claims.
