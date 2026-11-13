@@ -39,9 +39,21 @@ export function isGuestSessionExpired(touchedAt: string | null, now = Date.now()
   return Number.isFinite(parsed) && now - parsed > GUEST_RETENTION_MS;
 }
 
-function touchGuestSession() {
-  window.localStorage.setItem(SESSION_KEY, new Date().toISOString());
+function saveGuestProgress(progress: LearningProgress): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    window.localStorage.setItem(KEY, JSON.stringify(progress));
+    window.localStorage.setItem(SESSION_KEY, new Date().toISOString());
+    return true;
+  } catch {
+    // Private browsing, disabled storage and storage quotas must not block play.
+    return false;
+  }
 }
+const safeCount = (value: unknown): number =>
+  typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : 0;
+const safeScore = (value: unknown): number =>
+  typeof value === "number" && Number.isFinite(value) ? Math.max(0, value) : 0;
 
 function normalize(raw: Partial<LearningProgress>): LearningProgress {
   const base = empty();
@@ -49,10 +61,10 @@ function normalize(raw: Partial<LearningProgress>): LearningProgress {
     const incoming = raw?.[game];
     if (!incoming) continue;
     base[game] = {
-      attempts: Number.isFinite(incoming.attempts) ? Math.max(0, incoming.attempts) : 0,
-      completions: Number.isFinite(incoming.completions) ? Math.max(0, incoming.completions) : 0,
-      bestScore: Number.isFinite(incoming.bestScore) ? Math.max(0, incoming.bestScore) : 0,
-      lastScore: Number.isFinite(incoming.lastScore) ? Math.max(0, incoming.lastScore) : 0,
+      attempts: safeCount(incoming.attempts),
+      completions: safeCount(incoming.completions),
+      bestScore: safeScore(incoming.bestScore),
+      lastScore: safeScore(incoming.lastScore),
       lastPlayed: typeof incoming.lastPlayed === "string" ? incoming.lastPlayed : null,
     };
   }
@@ -69,34 +81,33 @@ export function getLearningProgress(): LearningProgress {
     }
     return normalize(JSON.parse(window.localStorage.getItem(KEY) || "{}"));
   } catch {
-    resetLearningProgress();
-    return empty();
+    return empty(); // Storage could be blocked; never throw during rendering.
   }
 }
 
 export function startGame(gameId: GameId) {
+  if (typeof window === "undefined") return;
   const progress = getLearningProgress();
   progress[gameId].attempts += 1;
   progress[gameId].lastPlayed = new Date().toISOString();
-  window.localStorage.setItem(KEY, JSON.stringify(progress));
-  touchGuestSession();
-  trackLearningEvent("learning_practice_started", { game: gameId });
+  if (saveGuestProgress(progress)) trackLearningEvent("learning_practice_started", { game: gameId });
 }
 
 export function completeGame(gameId: GameId, score: number) {
+  if (typeof window === "undefined") return;
   const progress = getLearningProgress();
+  const recordedScore = safeScore(score);
   progress[gameId].completions += 1;
-  progress[gameId].lastScore = Math.max(0, score);
-  progress[gameId].bestScore = Math.max(progress[gameId].bestScore, score);
+  progress[gameId].lastScore = recordedScore;
+  progress[gameId].bestScore = Math.max(progress[gameId].bestScore, recordedScore);
   progress[gameId].lastPlayed = new Date().toISOString();
-  window.localStorage.setItem(KEY, JSON.stringify(progress));
-  touchGuestSession();
-  trackLearningEvent("learning_practice_completed", { game: gameId });
+  if (saveGuestProgress(progress)) trackLearningEvent("learning_practice_completed", { game: gameId });
 }
 
 export function resetLearningProgress() {
-  if (typeof window !== "undefined") {
+  if (typeof window === "undefined") return;
+  try {
     window.localStorage.removeItem(KEY);
     window.localStorage.removeItem(SESSION_KEY);
-  }
+  } catch { /* Browser storage may be blocked. */ }
 }
