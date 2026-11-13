@@ -32,3 +32,6 @@ All these checks require a real browser and should be recorded with observed res
 - **Product:** Parent and teacher feedback and child-friendly accessibility require real manual trials before full rollout.
 - **Payments:** Adult premium ideas remain research-only; no monetization backend or transaction functionality was activated.
 - **Caveat:** Five-round visual scoring is a simple in-game practice score, not a validated learning or intelligence assessment.
+
+## Observed automated verification
+GitHub Actions run **43401986711** for latest source-changing commit **0474c80f47511851e3a63677c07c025c9f86ef24** completed successfully: TypeScript, regression tests (including visual scoring and teacher exports), Vite/Node production build, compiled SEO HTTP smoke target, real local HTTP SEO checks and expected built output files. This is automated code/HTTP verification, **not** a real desktop/mobile browser or user acceptance test.
