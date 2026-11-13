@@ -955,3 +955,10 @@
 - [x] Extend Chromium smoke with five-round Pattern Builder completion.
 - [x] Assert localStorage attempt/completion counts, reload persistence and /start recognition.
 - [ ] Verify Phase 16 CI and investigate failures, if any.
+
+
+## Phase 17 — expanded game browser tests
+- [x] Add Mini Scientist keyboard-driven five-round completion and isolated progress check.
+- [x] Add Robot Programmer interrupted-session test and /start readiness check.
+- [ ] Verify Phase 17 CI and fix failures if any.
+- [ ] Manual keyboard, screen-reader and real mobile acceptance remains pending.

@@ -58,6 +58,34 @@ try {
       await page.getByRole("button", { name: /Think with patterns/ }).click();
       await page.getByText("COMPLETED ON THIS DEVICE").waitFor();
 
+      // A second, distinct game checks independent progress records and keyboard play.
+      await visit("/discovery-lab?game=mini-scientist", "Think with your eyes.");
+      await page.getByRole("button", { name: "Start visual challenge" }).focus();
+      await page.keyboard.press("Enter");
+      await page.getByText("What will happen after the change?").waitFor();
+      for (let round = 1; round <= 5; round++) {
+        await page.locator(".visual-board-top").getByText("ROUND " + round + " / 5").waitFor();
+        const option = page.getByRole("button", { name: /It stays small/ });
+        await option.focus();
+        await page.keyboard.press("Enter");
+        if (round < 5) await page.locator(".visual-board-top").getByText("ROUND " + (round + 1) + " / 5").waitFor();
+      }
+      await page.getByRole("heading", { name: "Challenge complete" }).waitFor();
+      const records = await page.evaluate(() => JSON.parse(localStorage.getItem("ai-students-learning-progress") || "{}"));
+      assert.equal(records["mini-scientist"]?.attempts, 1, "Keyboard-played game attempt missing");
+      assert.equal(records["mini-scientist"]?.completions, 1, "Keyboard-played game completion missing");
+      assert.equal(records["pattern-builder"]?.completions, 1, "Second game must not overwrite first game");
+
+      // Starting a new game must not increment a completion until five rounds finish.
+      await page.getByRole("button", { name: /Robot Programmer/ }).click();
+      await page.getByText("Which arrow starts the safe route?").waitFor();
+      const inProgress = await page.evaluate(() => JSON.parse(localStorage.getItem("ai-students-learning-progress") || "{}"));
+      assert.equal(inProgress["robot-programmer"]?.attempts, 1);
+      assert.equal(inProgress["robot-programmer"]?.completions, 0);
+      await visit("/start", "What would you like to explore?");
+      await page.getByRole("button", { name: /Plan like a robot/ }).click();
+      await page.getByText("READY TO TRY").waitFor();
+
       await visit("/teachers", "Generate an activity pack");
       await page.getByRole("heading", { name: "End the lesson with an exit ticket" }).waitFor();
       await page.locator("#teacher-topic").selectOption("robotics");
@@ -78,7 +106,7 @@ try {
       await visit("/guides/how-to-check-ai-answers", "How to Fact-Check AI Answers and Spot Hallucinations");
       await page.getByRole("heading", { name: "Worked examples and practice" }).waitFor();
       assert.equal(errors.length, 0, "Browser runtime errors: " + errors.join(" | "));
-      console.log("PASS browser journeys at " + viewport.width + "px: start, game completion and persistence, teacher export, parent export, guide");
+      console.log("PASS browser journeys at " + viewport.width + "px: start, two game completions, keyboard play, interrupted game, persistence, teacher and parent exports, guide");
     } catch (error) {
       await page.screenshot({ path: evidence + "/failure-" + viewport.width + ".png", fullPage: true }).catch(() => {});
       throw error;
