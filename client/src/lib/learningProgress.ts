@@ -85,6 +85,17 @@ export function getLearningProgress(): LearningProgress {
   }
 }
 
+/** Detects restricted/private browser storage before promising persistent device progress. */
+export function isLearningProgressStorageAvailable(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const probe = "ai-students-storage-check";
+    window.localStorage.setItem(probe, "1");
+    window.localStorage.removeItem(probe);
+    return true;
+  } catch { return false; }
+}
+
 export function startGame(gameId: GameId) {
   if (typeof window === "undefined") return;
   const progress = getLearningProgress();
