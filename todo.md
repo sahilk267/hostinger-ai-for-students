@@ -926,3 +926,9 @@
 - [x] Add six-guide SEO HTTP checks for rendered decisions, feedback, single canonical and H1.
 - [ ] Record Phase 12 CI result for the new source commit.
 - [ ] Run actual browser E2E and accessibility/device tests; no deployment performed.
+
+
+## Phase 13 — teacher exit tickets
+- [x] Add visible topic-specific classroom exit tickets and copy/download/print actions.
+- [x] Add worksheet integrity tests to GitHub Actions.
+- [ ] Inspect Phase 13 CI run; browser/print/accessibility acceptance still pending.

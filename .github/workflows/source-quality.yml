@@ -29,7 +29,7 @@ jobs:
       - name: Check TypeScript
         run: pnpm run check
       - name: Regression-test learning journeys and robotics scoring
-        run: pnpm exec vitest run client/src/lib/learningEcosystem.test.ts client/src/data/guideSkillChecks.test.ts client/src/lib/visualGameEngine.test.ts client/src/data/classroomCollections.test.ts client/src/lib/learningProgress.test.ts client/src/lib/familyPracticeSummary.test.ts server/seo.routes.test.ts server/spa.routes.test.ts
+        run: pnpm exec vitest run client/src/lib/learningEcosystem.test.ts client/src/data/guideSkillChecks.test.ts client/src/lib/visualGameEngine.test.ts client/src/data/classroomCollections.test.ts client/src/data/teacherExitTicket.test.ts client/src/lib/learningProgress.test.ts client/src/lib/familyPracticeSummary.test.ts server/seo.routes.test.ts server/spa.routes.test.ts
       - name: Build Vite client and production Node bundle
         run: pnpm run build
       - name: Bundle public SEO HTTP smoke target

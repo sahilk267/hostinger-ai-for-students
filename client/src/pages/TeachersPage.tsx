@@ -6,6 +6,7 @@ import { SEO } from "@/components/SEO";
 import { downloadTextFile, printPlainText } from "@/lib/resourceExport";
 import { classroomCollections, formatClassroomCollection } from "@/data/classroomCollections";
 import { publicUrl } from "@/lib/siteUrl";
+import { formatExitTicket } from "@/data/teacherExitTicket";
 
 type LessonTopic = "prompting" | "fact-checking" | "privacy" | "robotics";
 const topics: Record<LessonTopic, {label:string; goal:string; warmup:string; practice:string; reflect:string; href:string}> = {
@@ -24,6 +25,7 @@ export default function TeachersPage() {
   const collection = classroomCollections.find(item=>item.id===collectionId) ?? classroomCollections[0];
   const collectionText = useMemo(()=>formatClassroomCollection(collection),[collection]);
   const lesson = topics[topic];
+  const exitTicket = useMemo(() => formatExitTicket(topic, lesson.label), [topic, lesson]);
   const plan = useMemo(()=>{
     const warmup = Math.max(3,Math.round(duration*.2));
     const reflection = Math.max(3,Math.round(duration*.2));
@@ -66,6 +68,19 @@ Facilitator checklist:
           <button type="button" onClick={()=>downloadTextFile("ai-literacy-"+topic+"-"+duration+"min.txt",plan)}><Download size={16}/> Download editable pack</button>
           <button type="button" onClick={()=>{if(!printPlainText("AI literacy classroom pack",plan)) toast.error("Allow pop-ups to print, or download the pack.");}}><Printer size={16}/> Print / Save PDF</button>
           <a href={lesson.href}>Preview student activity <ArrowRight size={16}/></a></div>
+        </div>
+      </section>
+      <section className="learn-path-panel" aria-labelledby="teacher-exit-ticket-title">
+        <div className="learn-panel-heading"><div><span className="game-kicker">PRINTABLE / NO STUDENT ACCOUNT</span><h2 id="teacher-exit-ticket-title">End the lesson with an exit ticket</h2></div><ClipboardCopy size={22}/></div>
+        <p>Three short, topic-specific reflection questions help learners explain a decision, show evidence or describe a revision. Review answers together; this is not an automated grade.</p>
+        <div className="learn-card" style={{marginTop:20}}>
+          <h3>{lesson.label} — reflection worksheet</h3>
+          <pre style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere",fontFamily:"inherit",lineHeight:1.7}}>{exitTicket}</pre>
+          <div className="learn-card-footer">
+            <button type="button" onClick={()=>downloadTextFile("ai-literacy-exit-ticket-"+topic+".txt",exitTicket)}><Download size={16}/> Download worksheet</button>
+            <button type="button" onClick={()=>{if(!printPlainText("Classroom exit ticket",exitTicket)) toast.error("Allow pop-ups or download the worksheet.");}}><Printer size={16}/> Print / Save PDF</button>
+            <button type="button" onClick={async()=>{try{await navigator.clipboard.writeText(exitTicket);toast.success("Exit ticket copied");}catch{toast.error("Clipboard unavailable. Download instead.");}}}><ClipboardCopy size={16}/> Copy questions</button>
+          </div>
         </div>
       </section>
       <section className="learn-path-panel" aria-labelledby="teacher-collections-title">
