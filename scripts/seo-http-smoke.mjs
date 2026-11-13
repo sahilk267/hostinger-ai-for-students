@@ -30,6 +30,27 @@ try {
   assert.match(article.body, /rel="canonical" href="https:\/\/example\.test\/guides\/how-to-check-ai-answers"/);
   assert.match(article.headers.get("content-type") ?? "", /text\/html/);
 
+  // All six published guides must render crawlable decision checks without browser JS.
+  const guideSlugs = [
+    "how-to-use-ai-for-studying",
+    "ai-prompts-for-students",
+    "how-to-check-ai-answers",
+    "ai-study-plan-for-exams",
+    "ai-safety-for-kids-and-parents",
+    "ai-tools-for-beginners",
+  ];
+  for (const slug of guideSlugs) {
+    const response = await read("/guides/" + slug, 200);
+    assert.match(response.body, /One-minute decision check/, slug + ": missing decision");
+    assert.match(response.body, /Learning note:/, slug + ": missing feedback");
+    assert.match(response.body, /Try the interactive choices/, slug + ": missing interaction disclosure");
+    assert.match(response.body, /Worked examples and exercises/, slug + ": missing worked examples");
+    const canonical = "https://example.test/guides/" + slug;
+    assert(response.body.includes('rel="canonical" href="' + canonical + '"'), slug + ": wrong canonical");
+    assert.equal((response.body.match(/rel="canonical"/g) ?? []).length, 1, slug + ": duplicate canonical");
+    assert.equal((response.body.match(/<h1(?:\s|>)/g) ?? []).length, 1, slug + ": expected one article H1");
+  }
+
   const collection = await read("/resources/ai-study-skills", 200);
   assert.match(collection.body, /Free AI Study Skills for Students/);
   assert.match(collection.body, /Common questions/);
@@ -54,7 +75,7 @@ try {
   const robots = await read("/robots.txt", 200);
   assert.match(robots.body, /Sitemap: https:\/\/example\.test\/sitemap\.xml/);
   assert.doesNotMatch(robots.body, /https:\/\/aiforstudents\.in/);
-  console.log("PASS: SEO HTTP smoke verified article, resources, parent/plans pages, 404s, canonical, sitemap and robots.");
+  console.log("PASS: SEO HTTP smoke verified six guide decisions/canonicals, resources, parent/plans, 404s, sitemap and robots.");
 } finally {
   await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
 }

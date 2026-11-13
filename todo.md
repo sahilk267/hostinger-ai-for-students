@@ -919,3 +919,10 @@
 - [x] Add contract tests to GitHub Actions source-quality gate.
 - [x] Verify source commit 3ae36c0 in GitHub Actions run 43416149358 (TypeScript, learning/guide checks, build and SEO HTTP smoke successful).
 - [ ] Complete real mobile/keyboard/screen-reader guide flows, deployed SEO validation and learner/parent pilot feedback before release claims.
+
+
+## Phase 12 — expanded public guide HTTP verification (2026-11-13)
+- [x] Audit historical Phase 7–11 source and verified CI evidence.
+- [x] Add six-guide SEO HTTP checks for rendered decisions, feedback, single canonical and H1.
+- [ ] Record Phase 12 CI result for the new source commit.
+- [ ] Run actual browser E2E and accessibility/device tests; no deployment performed.
