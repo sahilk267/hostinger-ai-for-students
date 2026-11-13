@@ -4,10 +4,10 @@
 import assert from "node:assert/strict";
 import { once } from "node:events";
 import express from "express";
-import { registerPublicSeoPages } from "../dist/seo-pages-smoke.mjs";
-
 process.env.NODE_ENV = "production";
 process.env.SITE_URL = "https://example.test";
+// The SEO module reads SITE_URL at module initialization; import after setting it.
+const { registerPublicSeoPages } = await import("../dist/seo-pages-smoke.mjs");
 
 const app = express();
 registerPublicSeoPages(app);
