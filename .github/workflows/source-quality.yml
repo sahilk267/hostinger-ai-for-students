@@ -32,6 +32,10 @@ jobs:
         run: pnpm exec vitest run client/src/lib/learningEcosystem.test.ts server/seo.routes.test.ts server/spa.routes.test.ts
       - name: Build Vite client and production Node bundle
         run: pnpm run build
+      - name: Bundle public SEO HTTP smoke target
+        run: pnpm exec esbuild server/_core/seoPages.ts --platform=node --packages=external --bundle --format=esm --outfile=dist/seo-pages-smoke.mjs
+      - name: Check generated public SEO responses over HTTP
+        run: node scripts/seo-http-smoke.mjs
       - name: Verify built server and client entrypoints
         run: |
           test -f dist/index.js
