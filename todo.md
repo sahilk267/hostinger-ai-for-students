@@ -946,3 +946,6 @@
 - [x] Add 390px and desktop viewport checks and download assertions.
 - [ ] Inspect browser workflow result and fix any failures.
 - [ ] Complete manual accessibility, print and production-integrated checks.
+
+- [x] Investigated Phase 15 browser CI setup failure (Playwright Ubuntu 26.04 incompatibility); pinned runner to Ubuntu 24.04.
+- [ ] Verify browser workflow after runner fix.

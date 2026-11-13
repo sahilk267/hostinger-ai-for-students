@@ -19,3 +19,8 @@
 
 ## Next acceptance
 Expand to real game completion and progress persistence, and add manual accessibility and print checks before production readiness.
+
+## CI failure triage (2026-11-13)
+- Browser workflow 43467686573 failed before opening any browser: ubuntu-latest resolved to Ubuntu 26.04, unsupported by pinned Playwright 1.58.2 Chromium dependency installer.
+- Fixed runner to ubuntu-24.04. Corrected guide heading assertions to match source content.
+- Source quality workflow 43467686699 passed; browser workflow must rerun on this fix commit before it can be claimed successful.

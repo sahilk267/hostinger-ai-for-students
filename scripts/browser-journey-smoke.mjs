@@ -49,8 +49,8 @@ try {
       await page.getByRole("button", { name: "Download worksheet" }).click();
       assert.match((await parentDownload).suggestedFilename(), /family-reflection-2\.txt$/);
 
-      await visit("/guides/how-to-check-ai-answers", "How to Fact-Check AI Answers");
-      await page.getByRole("heading", { name: "What would you do next?" }).waitFor();
+      await visit("/guides/how-to-check-ai-answers", "How to Fact-Check AI Answers and Spot Hallucinations");
+      await page.getByRole("heading", { name: "Worked examples and practice" }).waitFor();
       assert.equal(errors.length, 0, "Browser runtime errors: " + errors.join(" | "));
       console.log("PASS browser journeys at " + viewport.width + "px: start, teacher export, parent export, guide decision");
     } catch (error) {
