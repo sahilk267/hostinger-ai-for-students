@@ -874,3 +874,14 @@
 - [x] Extend source-quality GitHub Action test list with direct-link regression tests.
 - [x] Document release checks and source-only verification limits in RELEASE-GATES-PHASE-8.md.
 - [ ] Observe a green GitHub Actions run, run full test/build suite and verify live browser and HTTP responses before deployment.
+
+## Phase 9 — Executed CI and local SEO HTTP verification (13 November 2026)
+
+- [x] Verify successful prior GitHub Actions run 43330260224 (source commit 42fad7785681).
+- [x] Add standalone Express production-style HTTP smoke tests for public guides, clusters, plans and parents pages.
+- [x] Assert correct HTTP 200/404, canonical URL, sitemap and robots using a synthetic verified test hostname.
+- [x] Include SEO HTTP smoke bundling and execution after the full build in GitHub Actions quality workflow.
+- [x] Diagnose and fix first smoke CI failure caused by environment assignment after static module import.
+- [x] Verify source commit a208175c3e97 has successful CI run 43334048657, including passing TypeScript, targeted tests, build and HTTP smoke.
+- [x] Document evidence and remaining production/browser gates in RELEASE-VERIFICATION-PHASE-9.md.
+- [ ] Browser/mobile end-to-end smoke tests; printable exports; login/database integration; live production domain and deployed SEO checks.
