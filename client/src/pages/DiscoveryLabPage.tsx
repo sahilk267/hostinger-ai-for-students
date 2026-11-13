@@ -1,5 +1,5 @@
 import CompletionNextSteps from "@/components/game/CompletionNextSteps";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Brain, Check, Eye, FlaskConical, RotateCcw, Sparkles, Wrench } from "lucide-react";
 import { completeGame, GameId, startGame } from "@/lib/learningProgress";
 import { trackLearningEvent } from "@/lib/analytics";
@@ -85,8 +85,72 @@ export default function DiscoveryLabPage() {
   const [sessionId, setSessionId] = useState(() => visualSessionId("pattern-builder"));
   const [sessionStartedAt, setSessionStartedAt] = useState(() => Date.now());
   const [events, setEvents] = useState<VisualRoundEvent[]>([]);
+  // Synchronous input lock: React state updates alone cannot prevent rapid double taps.
+  const answerLocked = useRef(false);
+  const pendingAdvance = useRef<number | null>(null);
+  const sessionGeneration = useRef(0);
+  useEffect(() => () => {
+    sessionGeneration.current += 1;
+    if (pendingAdvance.current !== null) window.clearTimeout(pendingAdvance.current);
+  }, []);
+
   const game = useMemo(() => visualGames.find((item) => item.id === gameId) || visualGames[0], [gameId]);
-  const begin = (next: VisualGameId) => { const nextSessionId = visualSessionId(next); const startedAt = Date.now(); setGameId(next); setStarted(true); setRound(0); setScore(0); setResult(null); setSessionId(nextSessionId); setSessionStartedAt(startedAt); setEvents([{ sessionId: nextSessionId, gameId: next, round: 0, action: "start" }]); startGame(next as GameId); trackLearningEvent("visual_game_started", { game: next }); };
-  const answer = (correct: boolean) => { const event: VisualRoundEvent = { sessionId, gameId, round: round + 1, action: "choose", correct, elapsedMs: Date.now() - sessionStartedAt }; const nextEvents = [...events, event]; const summary = scoreVisualSession(nextEvents, 5); const nextScore = summary.score; setEvents(nextEvents); setScore(nextScore); setResult(correct ? 1 : 0); trackLearningEvent("visual_game_answer", { game: gameId, round: round + 1, correct }); window.setTimeout(() => { if (round === 4) { const completedEvents = [...nextEvents, { sessionId, gameId, round: 5, action: "complete" as const }]; const completedSummary = scoreVisualSession(completedEvents, 5); completeGame(gameId as GameId, completedSummary.score); trackLearningEvent("visual_game_completed", { game: gameId, score: completedSummary.score, rounds: completedSummary.rounds, quality: completedSummary.quality }); setStarted(false); setResult(completedSummary.score); } else { setRound((value) => value + 1); setResult(null); } }, 550); };
-  return <div className="visual-lab-page"><header className="mission-header"><a className="mission-brand" href="/"><img src={assetUrls.mark} alt="" /><span><strong>AI</strong> for <em>Students</em></span></a><a className="mission-back" href="/play"><ArrowLeft size={15} /> Back to games</a><AuthControls /></header><main className="visual-lab-main"><section className="visual-lab-hero"><div><span className="mission-kicker"><Eye size={14} /> DISCOVERY LAB / PLAY FIRST</span><h1>Think with your eyes.<br /><em>Try, notice, discover.</em></h1><p>No long reading. No typing. Use colors, shapes, memory and simple choices to explore how you solve a challenge today.</p></div><div className="visual-lab-boundary"><strong>Practice only</strong><span>These activities are not IQ tests, diagnoses or career predictions.</span></div></section><section className="visual-lab-grid"><aside className="visual-game-list" aria-label="Visual discovery games"><span className="visual-section-label">CHOOSE A WORLD</span>{visualGames.map(({ id, title, note, icon: Icon, color }) => <button key={id} type="button" className={gameId === id ? "is-active" : ""} onClick={() => begin(id)}><span className="visual-game-icon" style={{ background: color }}><Icon size={18} /></span><span><strong>{title}</strong><small>{note}</small></span></button>)}</aside><section className="visual-board"><div className="visual-board-top"><span>ROUND {Math.min(round + 1, 5)} / 5</span><span>{game.title}</span></div>{!started && result === null ? <div className="visual-start"><div className="visual-start-symbol" style={{ background: game.color }}><Sparkles size={32} /></div><h2>{game.title}</h2><p>{game.note}. Tap the shapes, tiles or outcomes—words are only helpers.</p><button className="mission-button" type="button" onClick={() => begin(gameId)}>Start visual challenge</button></div> : started ? <>{gameId === "pattern-builder" && <PatternRound round={round} onResult={answer} />}{gameId === "memory-adventure" && <MemoryRound round={round} onResult={answer} />}{gameId === "mini-scientist" && <ScientistRound round={round} onResult={answer} />}{gameId === "bridge-builder" && <BridgeRound round={round} onResult={answer} />}{gameId === "robot-programmer" && <RobotRound round={round} onResult={answer} />}{gameId === "traffic-controller" && <TrafficRound round={round} onResult={answer} />}{gameId === "mission-commander" && <CommanderRound round={round} onResult={answer} />}{gameId === "creative-studio" && <CreativeRound round={round} onResult={answer} />}{gameId === "performance-arena" && <PerformanceRound round={round} onResult={answer} />}{result !== null && <div className={`visual-feedback ${result ? "is-good" : "is-try"}`} role="status">{result ? <><Check size={18} /> Nice noticing. Try the next one.</> : <>Try another pattern. You are learning by testing.</>}</div>}</> : <div className="visual-complete"><Check size={28} /><h2>Challenge complete</h2><strong>{result} / 5</strong><p>Based on this play only. Explore another world to build more varied evidence.</p><button className="mission-button" type="button" onClick={() => begin(gameId)}><RotateCcw size={16} /> Play again</button><CompletionNextSteps gameId={gameId} /></div>}</section></section></main><footer className="mission-footer"><span>AI for Students</span><span>Practice is evidence. Labels are not.</span></footer></div>;
+  const begin = (next: VisualGameId) => {
+    // Starting another game cancels any delayed response from a previous game.
+    sessionGeneration.current += 1;
+    if (pendingAdvance.current !== null) {
+      window.clearTimeout(pendingAdvance.current);
+      pendingAdvance.current = null;
+    }
+    answerLocked.current = false;
+    const nextSessionId = visualSessionId(next);
+    const startedAt = Date.now();
+    setGameId(next);
+    setStarted(true);
+    setRound(0);
+    setScore(0);
+    setResult(null);
+    setSessionId(nextSessionId);
+    setSessionStartedAt(startedAt);
+    setEvents([{ sessionId: nextSessionId, gameId: next, round: 0, action: "start" }]);
+    startGame(next as GameId);
+    trackLearningEvent("visual_game_started", { game: next });
+  };
+  const answer = (correct: boolean) => {
+    if (!started || answerLocked.current) return;
+    answerLocked.current = true;
+    const generation = sessionGeneration.current;
+    const event: VisualRoundEvent = {
+      sessionId, gameId, round: round + 1, action: "choose", correct,
+      elapsedMs: Date.now() - sessionStartedAt
+    };
+    const nextEvents = [...events, event];
+    const summary = scoreVisualSession(nextEvents, 5);
+    setEvents(nextEvents);
+    setScore(summary.score);
+    setResult(correct ? 1 : 0);
+    trackLearningEvent("visual_game_answer", { game: gameId, round: round + 1, correct });
+    pendingAdvance.current = window.setTimeout(() => {
+      pendingAdvance.current = null;
+      if (generation !== sessionGeneration.current) return;
+      if (round === 4) {
+        const completedEvents: VisualRoundEvent[] = [
+          ...nextEvents, { sessionId, gameId, round: 5, action: "complete" }
+        ];
+        const completedSummary = scoreVisualSession(completedEvents, 5);
+        completeGame(gameId as GameId, completedSummary.score);
+        trackLearningEvent("visual_game_completed", {
+          game: gameId, score: completedSummary.score,
+          rounds: completedSummary.rounds, quality: completedSummary.quality
+        });
+        setStarted(false);
+        setResult(completedSummary.score);
+      } else {
+        setRound(value => value + 1);
+        setResult(null);
+        answerLocked.current = false;
+      }
+    }, 550);
+  };
+  return <div className="visual-lab-page"><header className="mission-header"><a className="mission-brand" href="/"><img src={assetUrls.mark} alt="" /><span><strong>AI</strong> for <em>Students</em></span></a><a className="mission-back" href="/play"><ArrowLeft size={15} /> Back to games</a><AuthControls /></header><main className="visual-lab-main"><section className="visual-lab-hero"><div><span className="mission-kicker"><Eye size={14} /> DISCOVERY LAB / PLAY FIRST</span><h1>Think with your eyes.<br /><em>Try, notice, discover.</em></h1><p>No long reading. No typing. Use colors, shapes, memory and simple choices to explore how you solve a challenge today.</p></div><div className="visual-lab-boundary"><strong>Practice only</strong><span>These activities are not IQ tests, diagnoses or career predictions.</span></div></section><section className="visual-lab-grid"><aside className="visual-game-list" aria-label="Visual discovery games"><span className="visual-section-label">CHOOSE A WORLD</span>{visualGames.map(({ id, title, note, icon: Icon, color }) => <button key={id} type="button" className={gameId === id ? "is-active" : ""} onClick={() => begin(id)} aria-pressed={gameId === id}><span className="visual-game-icon" style={{ background: color }}><Icon size={18} /></span><span><strong>{title}</strong><small>{note}</small></span></button>)}</aside><section className="visual-board"><div className="visual-board-top"><span>ROUND {Math.min(round + 1, 5)} / 5</span><span>{game.title}</span></div>{!started && result === null ? <div className="visual-start"><div className="visual-start-symbol" style={{ background: game.color }}><Sparkles size={32} /></div><h2>{game.title}</h2><p>{game.note}. Tap the shapes, tiles or outcomes—words are only helpers.</p><button className="mission-button" type="button" onClick={() => begin(gameId)}>Start visual challenge</button></div> : started ? <>{gameId === "pattern-builder" && <PatternRound round={round} onResult={answer} />}{gameId === "memory-adventure" && <MemoryRound round={round} onResult={answer} />}{gameId === "mini-scientist" && <ScientistRound round={round} onResult={answer} />}{gameId === "bridge-builder" && <BridgeRound round={round} onResult={answer} />}{gameId === "robot-programmer" && <RobotRound round={round} onResult={answer} />}{gameId === "traffic-controller" && <TrafficRound round={round} onResult={answer} />}{gameId === "mission-commander" && <CommanderRound round={round} onResult={answer} />}{gameId === "creative-studio" && <CreativeRound round={round} onResult={answer} />}{gameId === "performance-arena" && <PerformanceRound round={round} onResult={answer} />}{result !== null && <div className={`visual-feedback ${result ? "is-good" : "is-try"}`} role="status" aria-live="polite">{result ? <><Check size={18} /> Nice noticing. Try the next one.</> : <>Try another pattern. You are learning by testing.</>}</div>}</> : <div className="visual-complete"><Check size={28} /><h2>Challenge complete</h2><strong>{result} / 5</strong><p>Based on this play only. Explore another world to build more varied evidence.</p><button className="mission-button" type="button" onClick={() => begin(gameId)}><RotateCcw size={16} /> Play again</button><CompletionNextSteps gameId={gameId} /></div>}</section></section></main><footer className="mission-footer"><span>AI for Students</span><span>Practice is evidence. Labels are not.</span></footer></div>;
 }
