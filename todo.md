@@ -949,3 +949,9 @@
 
 - [x] Investigated Phase 15 browser CI setup failure (Playwright Ubuntu 26.04 incompatibility); pinned runner to Ubuntu 24.04.
 - [ ] Verify browser workflow after runner fix.
+
+
+## Phase 16 — end-to-end student progress
+- [x] Extend Chromium smoke with five-round Pattern Builder completion.
+- [x] Assert localStorage attempt/completion counts, reload persistence and /start recognition.
+- [ ] Verify Phase 16 CI and investigate failures, if any.

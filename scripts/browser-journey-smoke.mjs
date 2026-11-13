@@ -32,6 +32,32 @@ try {
       await page.getByRole("button", { name: /Make a small prediction/ }).click();
       await page.getByText("Make a small prediction", { exact: true }).first().waitFor();
 
+      // Complete a real five-round visual game and verify device-local persistence.
+      await visit("/discovery-lab?game=pattern-builder", "Think with your eyes.");
+      await page.getByRole("button", { name: "Start visual challenge" }).click();
+      for (let round = 1; round <= 5; round++) {
+        await page.locator(".visual-board-top").getByText("ROUND " + round + " / 5").waitFor();
+        await page.locator(".visual-challenge .visual-tile").first().click();
+        if (round < 5) await page.locator(".visual-board-top").getByText("ROUND " + (round + 1) + " / 5").waitFor();
+      }
+      await page.getByRole("heading", { name: "Challenge complete" }).waitFor();
+      const persisted = await page.evaluate(() => {
+        const raw = localStorage.getItem("ai-students-learning-progress");
+        return raw ? JSON.parse(raw)["pattern-builder"] : null;
+      });
+      assert(persisted, "Pattern Builder progress missing from localStorage");
+      assert.equal(persisted.attempts, 1, "Expected exactly one started session");
+      assert.equal(persisted.completions, 1, "Expected exactly one completed session");
+      await page.reload({ waitUntil: "domcontentloaded" });
+      const afterReload = await page.evaluate(() => {
+        const raw = localStorage.getItem("ai-students-learning-progress");
+        return raw ? JSON.parse(raw)["pattern-builder"] : null;
+      });
+      assert.equal(afterReload?.completions, 1, "Completion must survive a reload");
+      await visit("/start", "What would you like to explore?");
+      await page.getByRole("button", { name: /Think with patterns/ }).click();
+      await page.getByText("COMPLETED ON THIS DEVICE").waitFor();
+
       await visit("/teachers", "Generate an activity pack");
       await page.getByRole("heading", { name: "End the lesson with an exit ticket" }).waitFor();
       await page.locator("#teacher-topic").selectOption("robotics");
@@ -52,7 +78,7 @@ try {
       await visit("/guides/how-to-check-ai-answers", "How to Fact-Check AI Answers and Spot Hallucinations");
       await page.getByRole("heading", { name: "Worked examples and practice" }).waitFor();
       assert.equal(errors.length, 0, "Browser runtime errors: " + errors.join(" | "));
-      console.log("PASS browser journeys at " + viewport.width + "px: start, teacher export, parent export, guide decision");
+      console.log("PASS browser journeys at " + viewport.width + "px: start, game completion and persistence, teacher export, parent export, guide");
     } catch (error) {
       await page.screenshot({ path: evidence + "/failure-" + viewport.width + ".png", fullPage: true }).catch(() => {});
       throw error;
