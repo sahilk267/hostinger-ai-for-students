@@ -31,3 +31,6 @@ The public platform permits free guest play on a device, and the family check-in
 7. Verify the actual production host's SEO response and client runtime separately before launch.
 
 **Unverified here:** real-device browser UX, live database sync, live indexing, actual traffic, production deployment and revenue.
+
+## Verified GitHub CI result
+**Run 43337789030** passed for latest source-changing commit **4027d82e7d074ebcb8ebb28ce2039c53e8797e91**: locked installation, TypeScript, regression tests including guest progress and family summaries, production Vite/Node build, SEO HTTP smoke and output artifact checks. Later documentation-only commits are excluded from CI by the markdown path filter. This does **not** verify the deployed UI on a browser.
