@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Compass, GraduationCap, RefreshCcw, Sparkles } from "lucide-react";
 import AuthControls from "@/components/AuthControls";
 import { SEO } from "@/components/SEO";
-import { getLearningProgress, type GameId } from "@/lib/learningProgress";
+import { getLearningProgress, isLearningProgressStorageAvailable, type GameId } from "@/lib/learningProgress";
 
 const paths: { id: string; name: string; description: string; lesson: string; practice: string; gameId: GameId; reflect: string }[] = [
   { id:"patterns",name:"Think with patterns",description:"Start with visual logic and explain what repeats.",lesson:"/learn",practice:"/discovery-lab?game=pattern-builder",gameId:"pattern-builder",reflect:"Which part of the sequence changed, and which part stayed the same?" },
@@ -13,12 +13,13 @@ const paths: { id: string; name: string; description: string; lesson: string; pr
 
 export default function StartLearningPage() {
   const [choice, setChoice] = useState(0);
+  const [canSaveLocally, setCanSaveLocally] = useState(true);
   const [completions, setCompletions] = useState<Record<string,number>>({});
   const refresh = () => {
     const history = getLearningProgress();
     setCompletions(Object.fromEntries(paths.map(path=>[path.gameId,history[path.gameId].completions])));
   };
-  useEffect(() => { refresh(); const onFocus = () => refresh(); window.addEventListener("focus",onFocus); return () => window.removeEventListener("focus",onFocus); }, []);
+  useEffect(() => { refresh(); setCanSaveLocally(isLearningProgressStorageAvailable()); const onFocus = () => { refresh(); setCanSaveLocally(isLearningProgressStorageAvailable()); }; window.addEventListener("focus",onFocus); return () => window.removeEventListener("focus",onFocus); }, []);
   const selected = paths[choice];
   const finished = (completions[selected.gameId] ?? 0)>0;
   const other = paths.find(p=>p.gameId!==selected.gameId && !(completions[p.gameId]>0)) ?? paths[(choice+1)%paths.length];
@@ -27,6 +28,7 @@ export default function StartLearningPage() {
     <header className="game-header"><a className="game-brand" href="/"><strong>AI for <em>Students</em></strong></a><a className="game-return" href="/"><ArrowLeft size={16}/> Back home</a><AuthControls/></header>
     <main className="topics-main">
       <section className="topics-hero"><span className="game-kicker">YOUR FIRST LEARNING JOURNEY</span><h1>Choose. Practise.<br/><em>Try again.</em></h1><p>Pick something interesting, try one short activity and reflect on what happened. No signup required. Practice records on this device show what you tried, not your intelligence.</p></section>
+      {!canSaveLocally && <aside className="learn-safety-note" role="status"><p><strong>Progress saving unavailable:</strong> Your browser is blocking local storage. Games can still be played, but completion and this device\u2019s practice history may not be saved. Enable site storage to keep your progress.</p></aside>}
       <section className="learn-path-panel" aria-labelledby="choose-learning-path">
         <div className="learn-panel-heading"><div><span className="game-kicker">STEP 1 / CHOOSE YOUR FIRST GOAL</span><h2 id="choose-learning-path">What would you like to explore?</h2></div><Compass size={23}/></div>
         <div className="topic-filters" role="group" aria-label="Learning path">
