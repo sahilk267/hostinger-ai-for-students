@@ -4,6 +4,7 @@ import path from "node:path";
 import { getPublicGuide, publicGuides } from "../../client/src/data/publicGuides";
 import { getLearningCluster, learningClusters } from "../../client/src/data/learningClusters";
 import { guideExercises } from "../../client/src/data/guideExercises";
+import { guideSkillChecks } from "../../client/src/data/guideSkillChecks";
 
 const configuredOrigin = process.env.SITE_URL?.trim();
 const ORIGIN = configuredOrigin && /^https:\/\/[a-z0-9.-]+(?::\d+)?\/?$/i.test(configuredOrigin)
@@ -50,6 +51,7 @@ function articleMarkup(slug: string): string | null {
     `<h2>Step-by-step guide</h2>`,
     ...guide.steps.map((step) => `<section><h3>${esc(step.heading)}</h3><p>${esc(step.body)}</p></section>`),
     `<section><h2>Worked examples and exercises</h2>${(guideExercises[slug]??[]).map(item=>`<section><h3>${esc(item.label)}</h3><p><strong>Situation:</strong> ${esc(item.scenario)}</p><p><strong>Task:</strong> ${esc(item.task)}</p><p><strong>Example approach:</strong> ${esc(item.modelApproach)}</p><p><strong>Check:</strong> ${esc(item.check)}</p></section>`).join("")}</section>`,
+    ...(guideSkillChecks[slug] ? [`<section><h2>One-minute decision check</h2><p>${esc(guideSkillChecks[slug].question)}</p><ul>${guideSkillChecks[slug].choices.map(item => `<li>${esc(item.label)}</li>`).join("")}</ul><p><strong>Learning note:</strong> ${esc(guideSkillChecks[slug].choices.find(item => item.correct)?.feedback ?? "")}</p><p>Try the interactive choices in your browser for feedback.</p></section>`] : []),
     `<section><h2>Example prompt</h2><p>${esc(guide.example)}</p></section>`,
     `<section><h2>Quick checklist</h2><ul>${guide.checklist.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>`,
     `<p><a href="${guide.relatedHref}">${esc(guide.relatedLabel)}</a></p></article>`,

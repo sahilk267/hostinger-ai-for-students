@@ -14,7 +14,7 @@ export default function GuidesPage() {
     <SEO title="Free AI Guides for Students, Beginners and Parents" description="Explore free, practical AI learning guides: smarter studying, prompts, fact-checking, exam revision and AI safety for families." path="/guides" />
     <header className="game-header"><a className="game-brand" href="/"><strong>AI for <em>Students</em></strong></a><a className="game-return" href="/"><ArrowLeft size={16} /> Home</a><AuthControls /></header>
     <main className="topics-main">
-      <section className="topics-hero"><span className="game-kicker">FREE STUDENT LEARNING RESOURCES</span><h1>AI guides you can<br /><em>actually use.</em></h1><p>Practical how-to guides, reusable prompt examples, safety checks and a related activity in every guide. Free to read, without sign-in.</p>
+      <section className="topics-hero"><span className="game-kicker">FREE STUDENT LEARNING RESOURCES</span><h1>AI guides you can<br /><em>actually use.</em></h1><p>Practical how-to guides with worked examples, a one-minute decision check with feedback and a related activity in every guide. Free to read and practise, without sign-in.</p>
         <div className="topics-search"><Search size={18}/><input aria-label="Search free AI guides" placeholder="Find a guide about studying, prompts, safety..." value={query} onChange={event => setQuery(event.target.value)} /></div>
       </section>
       <section aria-labelledby="learning-collections-title" className="learn-path-panel">

@@ -9,6 +9,7 @@ import NotFound from "./NotFound";
 import { learningClusters } from "@/data/learningClusters";
 import { trackLearningEvent } from "@/lib/analytics";
 import { guideExercises } from "@/data/guideExercises";
+import GuideSkillCheckCard from "@/components/GuideSkillCheckCard";
 import { publicUrl } from "@/lib/siteUrl";
 
 export default function GuideArticlePage() {
@@ -53,6 +54,7 @@ export default function GuideArticlePage() {
               <p><strong>Check your work:</strong> {exercise.check}</p>
             </article>)}
           </section>
+          <GuideSkillCheckCard key={guide.slug} slug={guide.slug} practiceHref={guide.relatedHref} />
           <section style={{ padding: 24, background: "#e9e6dc", borderRadius: 14, margin: "36px 0" }}>
             <h2 style={{ fontSize: "1.5rem" }}>Try this example prompt</h2>
             <p style={{ whiteSpace: "pre-wrap", lineHeight: 1.75, margin: "18px 0" }}>{guide.example}</p>

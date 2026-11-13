@@ -910,3 +910,11 @@
 - [ ] Run real Chrome/Safari/Firefox mobile and keyboard/screen-reader QA and record outcomes.
 - [ ] Verify parent/teacher copy/download/print and optional analytics with deployed host.
 - [ ] Confirm canonical domain, Search Console indexing and production safety before launch.
+
+
+## Phase 11 — Guide-to-practice decision checks (2026-11-13)
+- [x] Author fictional one-minute decisions for six public guides.
+- [x] Add feedback, retries and relevant practice continuation without storing learner choices.
+- [x] Include decision content in initial Node HTML and document privacy-safe aggregate analytics.
+- [x] Add contract tests to GitHub Actions source-quality gate.
+- [ ] Verify CI outcome, mobile/keyboard/screen reader flows, deployed SEO response and pilot feedback before release claims.
