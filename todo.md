@@ -932,3 +932,10 @@
 - [x] Add visible topic-specific classroom exit tickets and copy/download/print actions.
 - [x] Add worksheet integrity tests to GitHub Actions.
 - [ ] Inspect Phase 13 CI run; browser/print/accessibility acceptance still pending.
+
+
+## Phase 14 — parent reflection worksheets
+- [x] Add visible three-question reflection for all four family activities.
+- [x] Add printable/downloadable worksheet with privacy guidance.
+- [x] Add worksheet tests to GitHub Actions.
+- [ ] Inspect Phase 14 CI and manually test print/mobile/accessibility.

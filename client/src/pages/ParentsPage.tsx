@@ -6,6 +6,7 @@ import { downloadTextFile, printPlainText } from "@/lib/resourceExport";
 import { getLearningProgress, type GameId } from "@/lib/learningProgress";
 import { buildFamilyPracticeSnapshot, formatFamilySnapshot, type FamilyPracticeSnapshot } from "@/lib/familyPracticeSummary";
 import { publicUrl } from "@/lib/siteUrl";
+import { familyReflectionPrompts, formatFamilyReflectionWorksheet } from "@/data/familyReflectionWorksheet";
 
 const activities = [
   { goal: "Make AI answers easier to verify", ages: "8+", duration: "10 minutes", href: "/play?game=fact", action: "Pick one claim and look for the original source together.", reflect: "Which part was a fact, and which was still uncertain?" },
@@ -32,6 +33,7 @@ export default function ParentsPage() {
     return () => window.removeEventListener("focus",handleFocus);
   }, []);
   const item = activities[selected];
+  const worksheet = useMemo(() => formatFamilyReflectionWorksheet(selected, item.goal, publicUrl(item.href)), [selected, item]);
   const week = useMemo(() => Array.from({length: 5}, (_, day) => {
     const activity = activities[(selected + day) % activities.length];
     const discussion = day === 4 ? "What strategy would you reuse next week?" : activity.reflect;
@@ -76,6 +78,19 @@ export default function ParentsPage() {
           <div className="learn-try"><Lightbulb size={18}/><span><strong>Afterwards, ask:</strong> {item.reflect}</span></div>
           <div className="learn-card-footer"><a href={item.href}>Open activity <ArrowRight size={16}/></a></div>
         </div>
+      </section>
+      <section className="learn-path-panel" aria-labelledby="family-reflection-title">
+        <div className="learn-panel-heading"><div><span className="game-kicker">FREE FAMILY WORKSHEET / NO SIGN-IN</span><h2 id="family-reflection-title">Talk about what you learned</h2></div><BookOpen size={22}/></div>
+        <p>Use these three questions after the selected activity. They help start a conversation; they do not grade a child or collect answers online.</p>
+        <div className="learn-card" style={{marginTop:20}}>
+          <h3>{item.goal}</h3>
+          <ol>{familyReflectionPrompts[selected].map(question=><li key={question}>{question}</li>)}</ol>
+          <div className="learn-card-footer">
+            <button type="button" onClick={()=>downloadTextFile("ai-for-students-family-reflection-"+selected+".txt",worksheet)}><Download size={16}/> Download worksheet</button>
+            <button type="button" onClick={()=>{if(!printPlainText("Family reflection worksheet",worksheet)) alert("Allow pop-ups to print or use Download.");}}><Printer size={16}/> Print / Save PDF</button>
+          </div>
+        </div>
+        <p style={{marginTop:12}}>The worksheet is created in your browser. No responses are requested or uploaded.</p>
       </section>
       <section className="learn-path-panel" aria-labelledby="family-practice-snapshot">
         <div className="learn-panel-heading"><div><span className="game-kicker">OBSERVED PRACTICE / THIS DEVICE</span><h2 id="family-practice-snapshot">See what has been tried</h2></div><ClipboardCheck size={21}/></div>
