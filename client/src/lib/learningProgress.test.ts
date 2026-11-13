@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-  completeGame, getLearningProgress, isGuestSessionExpired, resetLearningProgress,
+  completeGame, getLearningProgress, isGuestSessionExpired, isLearningProgressStorageAvailable, resetLearningProgress,
   startGame, GUEST_RETENTION_DAYS
 } from "./learningProgress";
 
@@ -53,6 +53,13 @@ describe("guest learning progress safety", () => {
     expect(getLearningProgress()["fact-check-quest"].attempts).toBe(0);
     expect(() => startGame("fact-check-quest")).not.toThrow();
     expect(getLearningProgress()["fact-check-quest"].attempts).toBe(1);
+  });
+
+  it("detects whether guest progress can actually persist", () => {
+    storageFixture();
+    expect(isLearningProgressStorageAvailable()).toBe(true);
+    storageFixture({}, true);
+    expect(isLearningProgressStorageAvailable()).toBe(false);
   });
 
   it("does not crash when browser storage is unavailable", () => {
