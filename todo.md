@@ -939,3 +939,10 @@
 - [x] Add printable/downloadable worksheet with privacy guidance.
 - [x] Add worksheet tests to GitHub Actions.
 - [ ] Inspect Phase 14 CI and manually test print/mobile/accessibility.
+
+
+## Phase 15 — browser smoke coverage
+- [x] Add Chromium Vite-preview workflow for student, parent, teacher and guide navigation.
+- [x] Add 390px and desktop viewport checks and download assertions.
+- [ ] Inspect browser workflow result and fix any failures.
+- [ ] Complete manual accessibility, print and production-integrated checks.

@@ -1,0 +1,52 @@
+name: Browser journey smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "client/**"
+      - "scripts/browser-journey-smoke.mjs"
+      - ".github/workflows/browser-journeys.yml"
+      - "vite.config.ts"
+      - "pnpm-lock.yaml"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - name: Install locked project dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build browser assets
+        run: pnpm exec vite build
+      - name: Install isolated browser runner
+        run: npm install --prefix /tmp/aifs-browser-smoke --no-save --no-package-lock playwright@1.58.2
+      - name: Install Chromium and Linux dependencies
+        run: /tmp/aifs-browser-smoke/node_modules/.bin/playwright install --with-deps chromium
+      - name: Start built-site preview
+        run: |
+          pnpm exec vite preview --host 127.0.0.1 --port 4173 --strictPort > /tmp/aifs-vite-preview.log 2>&1 &
+          echo $! > /tmp/aifs-vite-preview.pid
+      - name: Run browser journeys
+        run: node scripts/browser-journey-smoke.mjs
+      - name: Upload browser evidence on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-smoke-evidence
+          path: |
+            /tmp/aifs-browser-smoke/screenshots/
+            /tmp/aifs-vite-preview.log
+          if-no-files-found: ignore
