@@ -962,3 +962,11 @@
 - [x] Add Robot Programmer interrupted-session test and /start readiness check.
 - [ ] Verify Phase 17 CI and fix failures if any.
 - [ ] Manual keyboard, screen-reader and real mobile acceptance remains pending.
+
+
+## Phase 18 — accessibility and responsive browser smoke
+- [x] Check keyboard activation and aria-pressed for parent and teacher controls.
+- [x] Verify teacher dropdown accessible name.
+- [x] Check main content viewport bounds on four core routes at mobile and desktop sizes.
+- [ ] Verify Phase 18 browser CI; fix failures before calling it passed.
+- [ ] Manual WCAG and real-device accessibility acceptance remains pending.

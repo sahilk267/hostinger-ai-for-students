@@ -105,8 +105,39 @@ try {
 
       await visit("/guides/how-to-check-ai-answers", "How to Fact-Check AI Answers and Spot Hallucinations");
       await page.getByRole("heading", { name: "Worked examples and practice" }).waitFor();
+      // Accessibility smoke: the primary interactive controls must be reachable
+      // by keyboard, expose their selected state, and remain usable at both widths.
+      await visit("/parents", "Choose an activity for today");
+      const familyChoices = page.getByRole("group", { name: "Family practice activities" });
+      const privacyChoice = familyChoices.getByRole("button", { name: "Protect private information" });
+      await privacyChoice.focus();
+      assert.equal(await privacyChoice.evaluate(el => document.activeElement === el), true, "Parent choice is not focusable");
+      await page.keyboard.press("Space");
+      assert.equal(await privacyChoice.getAttribute("aria-pressed"), "true", "Parent selection must expose aria-pressed");
+      await page.getByText("Which details in the imaginary prompt were private?").waitFor();
+
+      await visit("/teachers", "Generate an activity pack");
+      const lengthChoices = page.getByRole("group", { name: "Session length" });
+      const shortSession = lengthChoices.getByRole("button", { name: "15 minutes" });
+      await shortSession.focus();
+      await page.keyboard.press("Enter");
+      assert.equal(await shortSession.getAttribute("aria-pressed"), "true", "Teacher session selection must expose aria-pressed");
+      const topicSelect = page.getByLabel("Choose a learning objective");
+      assert.equal(await topicSelect.count(), 1, "Teacher topic must have an accessible label");
+
+      // Catch major horizontal clipping of the primary content, not minor decorative overflow.
+      for (const path of ["/start", "/parents", "/teachers", "/discovery-lab"]) {
+        await page.goto(base + path, { waitUntil: "domcontentloaded" });
+        await page.locator("main").first().waitFor();
+        const geometry = await page.locator("main").first().evaluate(el => {
+          const box = el.getBoundingClientRect();
+          return {left: box.left, right: box.right, viewport: window.innerWidth};
+        });
+        assert(geometry.left >= -2 && geometry.right <= geometry.viewport + 2,
+          path + " main content extends outside viewport: " + JSON.stringify(geometry));
+      }
       assert.equal(errors.length, 0, "Browser runtime errors: " + errors.join(" | "));
-      console.log("PASS browser journeys at " + viewport.width + "px: start, two game completions, keyboard play, interrupted game, persistence, teacher and parent exports, guide");
+      console.log("PASS browser journeys at " + viewport.width + "px: start, two game completions, keyboard play, interrupted game, persistence, teacher and parent exports, keyboard selection and responsive layout, guide");
     } catch (error) {
       await page.screenshot({ path: evidence + "/failure-" + viewport.width + ".png", fullPage: true }).catch(() => {});
       throw error;
